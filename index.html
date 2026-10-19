@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 四大特效與外觀極致版</title>
+    <title>墨香 Online - 全服怪物同步共鬥版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -57,8 +57,8 @@
         <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
                 <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 視覺特效極致版</h1>
-                <p class="text-xs text-gray-400">腳底光環、暴擊震動、炫酷技能光影與立體怪物</p>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 共鬥同屏版</h1>
+                <p class="text-xs text-gray-400">全服怪物座標與血量同步 · 支援與朋友合擊打怪</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -82,13 +82,13 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 進入江湖體驗炫酷特效
+                ☁️ 進入江湖與朋友共鬥打寶
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 渲染特效引擎就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 雲端怪物同步引擎就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -102,9 +102,9 @@
     <div class="absolute top-4 right-4 text-right pointer-events-none z-10">
         <div class="text-xs tracking-widest text-amber-400/80 font-bold">MOXIANG ONLINE · 墨香</div>
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">分流 01</span>
+            <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">全服共鬥分流</span>
         </div>
-        <div class="text-xs text-gray-300 mt-1">高強化武器腳底光環 · 暴擊螢幕震動特效</div>
+        <div class="text-xs text-emerald-300 mt-1">🌐 野外怪物血量與位置全服即時同步 · 可與朋友圍毆同一隻怪</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
@@ -119,7 +119,7 @@
         <div class="p-3 space-y-2.5 text-xs">
             <div class="flex items-center gap-3 border-b border-gray-700/80 pb-2.5">
                 <div class="relative">
-                    <div class="w-13 h-13 rounded-full overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
                         <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=150" alt="少俠立繪" class="w-full h-full object-cover">
                     </div>
                     <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V1</span>
@@ -309,7 +309,7 @@
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 四大視覺特效與外觀系統已全面上線！</div>
+            <div class="text-amber-300">[系統] 雲端共享怪物已啟動！你與朋友現在能看見並合擊同一隻怪物！</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
@@ -377,6 +377,12 @@ const CLOUD_CONFIG = {
     supabaseUrl: 'https://eqhjxamfvrdgdipzquyg.supabase.co/rest/v1/',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxaGp4YW1mdnJkZ2RpcHpxdXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTk5NDMsImV4cCI6MjEwNzk5NTk0M30.x1PAG9XF7gKKcQi0dd1kdh4EL7gyQnjq2oucLygB6as'
 };
+
+// 固定座標種子，確保即使資料庫尚未建立也能對齊位置
+const FIXED_SLOTS = [
+    { rx: 0.22, ry: 0.28 }, { rx: 0.45, ry: 0.22 }, { rx: 0.75, ry: 0.28 }, { rx: 0.28, ry: 0.55 },
+    { rx: 0.55, ry: 0.52 }, { rx: 0.80, ry: 0.58 }, { rx: 0.35, ry: 0.78 }, { rx: 0.68, ry: 0.76 }
+];
 
 const MAPS = {
     lanzhou: { id: 'lanzhou', name: '蘭州 (安全區)', minLv: 1, safeZone: true, bgGradient: ['#292524', '#1c1917'], monsters: [] },
@@ -457,7 +463,6 @@ let screenShakeTimer = 0;
 let screenShakeIntensity = 0;
 const critParticles = [];
 
-// 怪物圖像預載
 const monsterImages = {
     '敦煌沙盜': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=120',
     '沙漠毒蠍': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120',
@@ -496,7 +501,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 四大視覺特效與外觀系統已全面上線！</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 雲端共享怪物已啟動！你與朋友現在能看見並合擊同一隻怪物！</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -508,26 +513,66 @@ async function fetchGlobalChats() {
     } catch (e) {}
 }
 
+// 🌟 同步玩家座標、強化光環、以及正在攻擊的怪物目標
 async function syncPlayerPresence() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
+        const payload = {
+            username: currentAccount,
+            map_id: player.currentMapId,
+            x: Math.round(player.x),
+            y: Math.round(player.y),
+            weapon_plus: player.weaponPlus,
+            weapon_id: player.currentWeapon,
+            attack_target_id: player.targetMonster ? player.targetMonster.id : null,
+            last_attack_ts: player.lastAttackTime || 0,
+            updated_at: new Date().toISOString()
+        };
+
         await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences`, {
             method: 'POST',
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
-            body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), weapon_plus: player.weaponPlus, updated_at: new Date().toISOString() })
+            body: JSON.stringify(payload)
         });
+
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             rows.forEach(r => {
-                if (!onlinePlayersMap[r.username]) {
-                    onlinePlayersMap[r.username] = { x: r.x, y: r.y, targetX: r.x, targetY: r.y, weaponPlus: r.weapon_plus || 0 };
+                const prev = onlinePlayersMap[r.username];
+                const wColor = WEAPONS[r.weapon_id || 'sword']?.color || '#38bdf8';
+
+                // 若偵測到朋友剛剛發動了新攻擊，為朋友畫出同步攻擊特效！
+                if (prev && r.last_attack_ts && r.last_attack_ts !== prev.lastAttackTs && r.attack_target_id) {
+                    const targetMob = monsters.find(m => m.id === r.attack_target_id);
+                    if (targetMob) {
+                        const dist = Math.hypot(targetMob.x - prev.x, targetMob.y - prev.y);
+                        if (dist > 110) {
+                            const angle = Math.atan2(targetMob.y - prev.y, targetMob.x - prev.x);
+                            projectiles.push({ x: prev.x, y: prev.y, vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14, color: wColor, radius: 7, life: 22, glow: true });
+                        } else {
+                            slashEffects.push({ x: targetMob.x, y: targetMob.y, radius: 12, maxRadius: 42, color: wColor, alpha: 1.0, width: 4 });
+                        }
+                    }
+                }
+
+                if (!prev) {
+                    onlinePlayersMap[r.username] = {
+                        x: r.x, y: r.y, targetX: r.x, targetY: r.y,
+                        weaponPlus: r.weapon_plus ?? 0,
+                        weaponId: r.weapon_id || 'sword',
+                        attackTargetId: r.attack_target_id || null,
+                        lastAttackTs: r.last_attack_ts || 0
+                    };
                 } else {
-                    onlinePlayersMap[r.username].targetX = r.x;
-                    onlinePlayersMap[r.username].targetY = r.y;
-                    onlinePlayersMap[r.username].weaponPlus = r.weapon_plus || 0;
+                    prev.targetX = r.x;
+                    prev.targetY = r.y;
+                    prev.weaponPlus = r.weapon_plus ?? 0;
+                    prev.weaponId = r.weapon_id || 'sword';
+                    prev.attackTargetId = r.attack_target_id || null;
+                    prev.lastAttackTs = r.last_attack_ts || 0;
                 }
             });
             const activeNames = rows.map(r => r.username);
@@ -536,9 +581,96 @@ async function syncPlayerPresence() {
     } catch (e) {}
 }
 
+// 🌟 全服雲端共享怪物同步引擎 (每 0.25 秒同步一次怪物座標與血量)
+async function syncWorldMonsters() {
+    const mapInfo = MAPS[player.currentMapId];
+    if (!currentAccount || !mapInfo || mapInfo.safeZone) return;
+
+    try {
+        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?map_id=eq.${player.currentMapId}&order=id.asc`, {
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
+        });
+        if (!res.ok) return; // 若資料表尚未建立，自動保留本機固定種子怪物
+        const rows = await res.json();
+        if (!Array.isArray(rows)) return;
+
+        // 如果雲端這張地圖還沒有怪物（第一位進入地圖的玩家），自動將 8 隻固定編號怪物寫入雲端
+        if (rows.length < FIXED_SLOTS.length) {
+            await seedCloudMonstersForMap(player.currentMapId);
+            return;
+        }
+
+        // 將雲端怪物的最新血量與座標同步至本機畫布
+        rows.forEach(r => {
+            let localMob = monsters.find(m => m.id === r.id);
+            if (!localMob) {
+                monsters.push({
+                    id: r.id, map_id: r.map_id, name: r.name, lv: r.lv,
+                    hp: r.hp, maxHp: r.max_hp, atk: r.atk, def: r.def,
+                    exp: r.exp, sp: r.sp, gold: r.gold, color: r.color, radius: r.radius,
+                    x: r.x, y: r.y, targetX: r.x, targetY: r.y, vx: 0, vy: 0, lastAttackTime: 0
+                });
+            } else {
+                localMob.hp = r.hp;
+                localMob.maxHp = r.max_hp;
+                localMob.name = r.name;
+                localMob.lv = r.lv;
+                localMob.color = r.color;
+                localMob.radius = r.radius;
+                localMob.targetX = r.x;
+                localMob.targetY = r.y;
+            }
+        });
+    } catch (e) {}
+}
+
+async function seedCloudMonstersForMap(mapId) {
+    const mapInfo = MAPS[mapId];
+    if (!mapInfo || mapInfo.safeZone) return;
+    const batch = FIXED_SLOTS.map((slot, idx) => {
+        const tpl = mapInfo.monsters[idx % mapInfo.monsters.length];
+        return {
+            id: `${mapId}_mob_${idx}`,
+            map_id: mapId,
+            name: tpl.name, lv: tpl.lv,
+            hp: tpl.hp, max_hp: tpl.hp,
+            atk: tpl.atk, def: tpl.def,
+            exp: tpl.exp, sp: tpl.sp, gold: tpl.gold,
+            color: tpl.color, radius: tpl.radius,
+            x: Math.round(slot.rx * 1200),
+            y: Math.round(slot.ry * 700),
+            updated_at: new Date().toISOString()
+        };
+    });
+    try {
+        await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters`, {
+            method: 'POST',
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            body: JSON.stringify(batch)
+        });
+    } catch (e) {}
+}
+
+async function pushMonsterStateToCloud(m) {
+    if (!CLOUD_CONFIG.supabaseUrl) return;
+    try {
+        await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?id=eq.${encodeURIComponent(m.id)}`, {
+            method: 'PATCH',
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                hp: Math.max(0, Math.round(m.hp)),
+                x: Math.round(m.x),
+                y: Math.round(m.y),
+                updated_at: new Date().toISOString()
+            })
+        });
+    } catch (e) {}
+}
+
 function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 setInterval(fetchGlobalChats, 3000);
 setInterval(syncPlayerPresence, 200);
+setInterval(syncWorldMonsters, 250);
 
 const MoxiangFormula = {
     recalcDerivedStats(player) {
@@ -623,32 +755,37 @@ function switchMap(mapId) {
         return;
     }
     player.currentMapId = mapId; toggleBot(false); player.targetMonster = null; droppedItems.length = 0;
+    onlinePlayersMap = {};
     initMonstersForCurrentMap();
     document.getElementById('ui-map-name').textContent = MAPS[mapId].name;
     document.getElementById('current-map-label').textContent = MAPS[mapId].name;
     renderTeleportMenu(); togglePanel('panel-teleport');
-    addLog(`🐎 抵達【${MAPS[mapId].name}】！`, 'text-amber-300 font-bold');
+    addLog(`🐎 抵達【${MAPS[mapId].name}】！正在同步該地圖的線上少俠與怪物...`, 'text-amber-300 font-bold');
     saveGame(false);
+    syncPlayerPresence();
+    syncWorldMonsters();
 }
 
 function initMonstersForCurrentMap() {
     monsters.length = 0;
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone || mapInfo.monsters.length === 0) return;
-    for (let i = 0; i < 10; i++) spawnSpecificMonster();
-}
 
-function spawnSpecificMonster() {
-    const mapInfo = MAPS[player.currentMapId];
-    if (!mapInfo || mapInfo.monsters.length === 0) return;
-    const tpl = mapInfo.monsters[Math.floor(Math.random() * mapInfo.monsters.length)];
-    const margin = 120;
-    monsters.push({
-        ...tpl, id: Math.random().toString(36).slice(2), maxHp: tpl.hp,
-        x: margin + Math.random() * (window.innerWidth - margin * 2),
-        y: margin + Math.random() * (window.innerHeight - margin * 2),
-        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, lastHitTime: 0
+    // 先以固定座標建立預設怪物，隨後立刻由 syncWorldMonsters 覆蓋為雲端真實血量與位置
+    FIXED_SLOTS.forEach((slot, idx) => {
+        const tpl = mapInfo.monsters[idx % mapInfo.monsters.length];
+        const mx = Math.round(slot.rx * 1200);
+        const my = Math.round(slot.ry * 700);
+        monsters.push({
+            ...tpl,
+            id: `${player.currentMapId}_mob_${idx}`,
+            map_id: player.currentMapId,
+            maxHp: tpl.hp,
+            x: mx, y: my, targetX: mx, targetY: my,
+            vx: 0, vy: 0, lastAttackTime: 0
+        });
     });
+    syncWorldMonsters();
 }
 
 function renderTeleportMenu() {
@@ -762,6 +899,8 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
         addLog(`📂 歡迎歸來，【${username}】！`, 'text-cyan-300 font-bold');
     }
     fetchGlobalChats();
+    syncPlayerPresence();
+    syncWorldMonsters();
 }
 
 function logoutAccount() {
@@ -773,7 +912,7 @@ function logoutAccount() {
 
 function serializePlayer() {
     return {
-        version: 9, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 10, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
         hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
         currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
@@ -933,7 +1072,7 @@ function enhanceWeapon() {
         player.weaponPlus++; MoxiangFormula.recalcDerivedStats(player);
         addLog(`【成功】兵器強化 +${player.weaponPlus}`, 'text-amber-300');
     } else { addLog(`【失敗】兵器維持 +${player.weaponPlus}`, 'text-gray-400'); }
-    updateUI(); saveGame(false);
+    updateUI(); saveGame(false); syncPlayerPresence();
 }
 
 function castBuff() {
@@ -1112,11 +1251,19 @@ function updateGame(now) {
 
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
+            // 平滑插值至雲端同步座標
+            if (typeof m.targetX === 'number' && typeof m.targetY === 'number') {
+                m.x += (m.targetX - m.x) * 0.25;
+                m.y += (m.targetY - m.y) * 0.25;
+            }
+
             const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
-            if (distToPlayer < 180) {
+            if (distToPlayer < 160) {
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
-                m.x += Math.cos(angle) * 1.2; m.y += Math.sin(angle) * 1.2;
-                if (distToPlayer <= 40 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
+                m.x += Math.cos(angle) * 1.1; m.y += Math.sin(angle) * 1.1;
+                m.targetX = m.x; m.targetY = m.y;
+
+                if (distToPlayer <= 42 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
                     m.lastAttackTime = now;
                     const taken = MoxiangFormula.applyDamageToPlayer(player, m.atk);
                     spawnFloatingText(player.x, player.y - 15, `-${taken.hpLost} (${m.name})`, '#f87171', 13);
@@ -1126,10 +1273,6 @@ function updateGame(now) {
                         addLog(`⚠️ 遭到【${m.name}】擊敗，送回蘭州安全區！`, 'text-red-400 font-bold');
                     }
                 }
-            } else {
-                m.x += m.vx; m.y += m.vy;
-                if (m.x < 80 || m.x > canvas.width - 80) m.vx *= -1;
-                if (m.y < 80 || m.y > canvas.height - 80) m.vy *= -1;
             }
         }
     }
@@ -1171,7 +1314,7 @@ function updateGame(now) {
     }
 
     Object.values(onlinePlayersMap).forEach(op => {
-        op.x += (op.targetX - op.x) * 0.2; op.y += (op.targetY - op.y) * 0.2;
+        op.x += (op.targetX - op.x) * 0.22; op.y += (op.targetY - op.y) * 0.22;
     });
 
     for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -1252,11 +1395,20 @@ function performAttack(monster, now) {
         }
         addLog(`擊敗【${monster.name}】掉落戰利品！`, 'text-amber-300 font-bold');
 
-        const idx = monsters.indexOf(monster);
-        if (idx !== -1) monsters.splice(idx, 1);
+        // 怪物死亡後自動重生於固定巡邏點並寫回雲端
+        const slotIdx = parseInt(monster.id.split('_').pop() || '0', 10) % FIXED_SLOTS.length;
+        const slot = FIXED_SLOTS[slotIdx];
+        monster.hp = monster.maxHp;
+        monster.x = Math.round(slot.rx * canvas.width);
+        monster.y = Math.round(slot.ry * canvas.height);
+        monster.targetX = monster.x;
+        monster.targetY = monster.y;
         player.targetMonster = null;
-        setTimeout(spawnSpecificMonster, 1200);
+        pushMonsterStateToCloud(monster);
         checkLevelUp();
+    } else {
+        // 同步扣血後的怪物血量至雲端，讓朋友即時看到血條減少
+        pushMonsterStateToCloud(monster);
     }
     updateUI();
 }
@@ -1282,7 +1434,7 @@ function renderGame() {
         ctx.font = 'bold 28px "Noto Serif TC"'; ctx.fillStyle = 'rgba(52, 211, 153, 0.25)'; ctx.textAlign = 'center';
         ctx.fillText('🛡️ 蘭州安全區域 · 禁止刀兵相見 🛡️', canvas.width / 2, canvas.height / 2 - 40);
         ctx.font = '14px "Noto Sans TC"'; ctx.fillStyle = 'rgba(156, 163, 175, 0.8)';
-        ctx.fillText('請點擊下方導覽列的【驛站傳送】前往野外地圖', canvas.width / 2, canvas.height / 2);
+        ctx.fillText('請點擊下方導覽列的【🐎 傳送】前往野外地圖與朋友共鬥', canvas.width / 2, canvas.height / 2);
     } else {
         const pulse = Math.sin(Date.now() / 200) * 3;
         for (const item of droppedItems) {
@@ -1296,11 +1448,21 @@ function renderGame() {
             ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `⚔️ ${item.name}`, item.x, item.y - 14);
         }
 
-        // 🌟 渲染立體怪物頭像與外框
+        // 🌟 渲染全服共享怪物 (若朋友正在攻擊該怪，顯示青色共鬥光圈)
         for (const m of monsters) {
+            const friendAttackers = Object.entries(onlinePlayersMap)
+                .filter(([_, op]) => op.attackTargetId === m.id)
+                .map(([uname]) => uname);
+
             if (player.targetMonster === m) {
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 7, 0, Math.PI * 2);
-                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.stroke();
+            }
+            if (friendAttackers.length > 0) {
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 11, 0, Math.PI * 2);
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+                ctx.font = 'bold 10px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
+                ctx.fillText(`⚔️ ${friendAttackers.join(', ')} 交戰中`, m.x, m.y - m.radius - 24);
             }
 
             const imgObj = loadedMonsterImages[m.name] || loadedMonsterImages['default'];
@@ -1323,26 +1485,28 @@ function renderGame() {
         }
     }
 
-    // 渲染線上其他玩家 (支援高強化腳底光環)
+    // 渲染線上其他玩家 (支援高強化腳底光環與強化數值顯示)
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
         if ((op.weaponPlus || 0) >= 3) {
             ctx.save();
             let auraColor = op.weaponPlus >= 9 ? '#facc15' : op.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
             let glowColor = op.weaponPlus >= 9 ? '#d97706' : op.weaponPlus >= 6 ? '#9333ea' : '#0284c7';
             const pulse = Math.sin(Date.now() / 180) * 4;
-            const auraGrad = ctx.createRadialGradient(op.x, op.y, 5, op.x, op.y, 32 + pulse);
+            const radius = 32 + pulse;
+            const auraGrad = ctx.createRadialGradient(op.x, op.y, 5, op.x, op.y, radius);
             auraGrad.addColorStop(0, 'rgba(255,255,255,0.8)'); auraGrad.addColorStop(0.4, auraColor); auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.beginPath(); ctx.arc(op.x, op.y, 32 + pulse, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
+            ctx.beginPath(); ctx.arc(op.x, op.y, radius, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
+            ctx.beginPath(); ctx.arc(op.x, op.y, radius - 4, 0, Math.PI * 2); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke();
             ctx.restore();
         }
 
+        const wColor = WEAPONS[op.weaponId || 'sword']?.color || '#38bdf8';
         ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = wColor; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
         ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
-        ctx.fillText(`【${username}】`, op.x, op.y - 24);
+        ctx.fillText(`【${username}】(+${op.weaponPlus || 0})`, op.x, op.y - 26);
     });
 
-    // 🌟 渲染炫酷發光技能彈道
     for (const p of projectiles) {
         ctx.save();
         if (p.glow) { ctx.shadowColor = p.color; ctx.shadowBlur = 15; }
@@ -1351,7 +1515,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 🌟 渲染炫酷近戰擴散光環
     for (const s of slashEffects) {
         ctx.save();
         ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
@@ -1360,7 +1523,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 🌟 渲染金黃色暴擊爆炸粒子
     for (const cp of critParticles) {
         ctx.save();
         ctx.beginPath(); ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
@@ -1368,7 +1530,6 @@ function renderGame() {
         ctx.restore();
     }
 
-    // 🌟 玩家高強化武器腳底光環 (+3藍、+6紫、+9金)
     if (player.weaponPlus >= 3) {
         ctx.save();
         let auraColor = player.weaponPlus >= 9 ? '#facc15' : player.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
