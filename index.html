@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 十格神裝強化與巨靈神紅圈滅世版</title>
+    <title>墨香 Online - PVP 死亡復活與同屏連線完美修復版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -65,9 +65,9 @@
     <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
         <div class="hud-panel w-[410px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
-                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE · V12</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 神裝百煉與滅世龍脈</h1>
-                <p class="text-xs text-gray-400">十格裝備獨立 +1~+9 強化 · 巨靈神紅圈滅世大招</p>
+                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE · V13</div>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 聯機重生理順版</h1>
+                <p class="text-xs text-gray-400">完美修復 PVP 殘血不朽與傳送回城隱身 Bug</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -91,13 +91,13 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 踏入蘭州安全區
+                ☁️ 進入蘭州安全區
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 十格強化與BOSS紅圈就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 聯機重生理順引擎就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -118,7 +118,6 @@
                 <div id="boss-hud-bar" class="h-full bg-gradient-to-r from-red-700 via-amber-500 to-red-500 bar-transition" style="width: 100%"></div>
             </div>
         </div>
-        <!-- 巨靈神紅圈大招預警橫幅 -->
         <div id="boss-aoe-warning" class="hidden bg-red-950/90 border-2 border-red-500 text-red-200 font-wuxia font-black text-center py-1.5 px-4 rounded-lg shadow-2xl animate-pulse text-sm">
             ⚠️ 巨靈神正在蓄力【震天滅地錘】！請立即點擊地面走出紅色預警圈！ ⚠️
         </div>
@@ -148,7 +147,7 @@
                     <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
                         <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=150" alt="少俠立繪" class="w-full h-full object-cover">
                     </div>
-                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V12</span>
+                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V13</span>
                 </div>
                 <div class="flex-1 overflow-hidden">
                     <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300 truncate">未登入·少俠</h2>
@@ -335,7 +334,7 @@
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 十格裝備獨立強化 (+1~+9) 與巨靈神全螢幕紅圈大招已實裝！</div>
+            <div class="text-amber-300">[系統] PVP 殘血不朽與傳送隱身 Bug 已完美修復！</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
@@ -348,7 +347,7 @@
         </div>
     </section>
 
-    <!-- 🌟 6. 十格紙娃娃裝備欄與獨立強化 (+1~+9) 視窗 -->
+    <!-- 6. 十格紙娃娃裝備欄與獨立強化視窗 -->
     <section id="panel-equip" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] z-40 border-2 border-amber-500/85">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-equip')">
             <span>🎒 十格神裝紙娃娃與裝備百煉強化 (+1~+9) [快捷鍵 B]</span>
@@ -360,12 +359,8 @@
                 <span class="text-gray-400">點左側名稱可卸下</span>
             </div>
 
-            <!-- 上半部：左6右4 裝備欄與中央少俠立繪 -->
             <div class="grid grid-cols-12 gap-2.5 items-center bg-gray-950/75 p-3 rounded-lg border border-amber-600/30">
-                <!-- 左邊 6 格：右戒指、左戒指、披風、項鍊、腰帶、護手 -->
                 <div id="equip-left-col" class="col-span-4 space-y-1.5"></div>
-
-                <!-- 中間少俠紙娃娃與裝備總加成統計 -->
                 <div class="col-span-4 flex flex-col items-center justify-center text-center space-y-2 px-1">
                     <div class="relative w-20 h-20 rounded-full border-2 border-amber-400 avatar-glow overflow-hidden bg-gray-900">
                         <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200" alt="角色立繪" class="w-full h-full object-cover">
@@ -379,12 +374,9 @@
                         <div>裝備暴擊：<b class="text-emerald-300">+0%</b></div>
                     </div>
                 </div>
-
-                <!-- 右邊 4 格：武器、頭飾、衣服、鞋子 -->
                 <div id="equip-right-col" class="col-span-4 space-y-2.5"></div>
             </div>
 
-            <!-- 下半部：行囊背包 (20格) -->
             <div class="space-y-1.5">
                 <div class="flex justify-between items-center">
                     <span class="text-amber-300 font-bold">行囊背包 (<span id="bag-count">0</span> / 20) · 點擊裝備穿戴：</span>
@@ -459,7 +451,6 @@ const FIXED_SLOTS = [
     { rx: 0.55, ry: 0.52 }, { rx: 0.80, ry: 0.58 }, { rx: 0.35, ry: 0.78 }, { rx: 0.68, ry: 0.76 }
 ];
 
-// 十格裝備欄位定義（左6右4）
 const EQUIP_SLOTS_LEFT = [
     { key: 'ringR',    label: '右戒指', icon: '💍' },
     { key: 'ringL',    label: '左戒指', icon: '💍' },
@@ -590,7 +581,6 @@ let screenShakeIntensity = 0;
 let lastProcessedPvpHitTs = 0;
 const critParticles = [];
 
-// 🌟 巨靈神全螢幕紅圈預警陣列与計時器
 const bossAoeZones = [];
 let lastBossAoeCastTime = 0;
 
@@ -611,7 +601,6 @@ Object.entries(monsterImages).forEach(([name, url]) => {
     loadedMonsterImages[name] = img;
 });
 
-// 產生隨機掉落裝備道具 (含獨立強化等級 plus: 0)
 function generateRandomEquipItem(mobLv = 5, isBoss = false) {
     const pool = EQUIP_ITEM_POOL[Math.floor(Math.random() * EQUIP_ITEM_POOL.length)];
     let tier = isBoss ? (Math.random() < 0.6 ? 3 : 2) : (Math.random() < 0.12 ? 2 : Math.random() < 0.45 ? 1 : 0);
@@ -635,17 +624,16 @@ function generateRandomEquipItem(mobLv = 5, isBoss = false) {
         name: `${pool.names[tier]}`,
         rarity: rarityLabels[tier],
         color: rarityColors[tier],
-        plus: 0, // 🌟 獨立裝備強化等級 (+0 ~ +9)
+        plus: 0,
         stats,
         price: (tier + 1) * 250
     };
 }
 
-// 計算單件裝備包含強化 (+1 ~ +9) 後的實際數值
 function getEffectiveItemStats(item) {
     if (!item || !item.stats) return {};
     const plus = item.plus || 0;
-    const mult = 1 + plus * 0.15; // 每 +1 強化提升 15% 基礎屬性
+    const mult = 1 + plus * 0.15;
     const out = {};
     if (item.stats.atk) out.atk = Math.round(item.stats.atk * mult);
     if (item.stats.def) out.def = Math.round(item.stats.def * mult);
@@ -655,7 +643,7 @@ function getEffectiveItemStats(item) {
     return out;
 }
 
-// 死亡扣 10% 經驗懲罰機制
+// 🌟 修正：玩家死亡後復活，立即將滿血狀態強行同步到 Supabase，解決攻擊方見到殘血不朽與傳送隱身 Bug
 function handlePlayerDeath(killerName) {
     const expPenalty = Math.max(10, Math.floor(player.maxExp * 0.10));
     const actualLost = Math.min(player.exp, expPenalty);
@@ -665,10 +653,13 @@ function handlePlayerDeath(killerName) {
     bossAoeZones.length = 0;
     toggleBot(false);
 
-    switchMap('lanzhou', false);
     player.hp = player.maxHp;
     player.shield = player.maxShield;
     player.mp = player.maxMp;
+
+    switchMap('lanzhou', false);
+    syncPlayerPresenceNow(); // 立即強制同步滿血狀態給所有人
+
     spawnFloatingText(player.x, player.y - 35, `💀 重傷落敗 -${actualLost} EXP`, '#ef4444', 16);
     addLog(`💀 您遭到【${killerName}】擊敗，損失了 ${actualLost} 點經驗值，已被送回蘭州安全區休養！`, 'text-red-400 font-bold');
     updateUI();
@@ -697,7 +688,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 十格裝備獨立強化 (+1~+9) 與巨靈神全螢幕紅圈大招已實裝！</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] PVP 殘血不朽與傳送隱身 Bug 已完美修復！</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -709,7 +700,7 @@ async function fetchGlobalChats() {
     } catch (e) {}
 }
 
-async function syncPlayerPresence() {
+async function syncPlayerPresenceNow() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
         const currentTargetId = player.targetMonster ? player.targetMonster.id : (player.targetPlayer ? `pvp_${player.targetPlayer}` : null);
@@ -735,6 +726,13 @@ async function syncPlayerPresence() {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
             body: JSON.stringify(payload)
         });
+    } catch (e) {}
+}
+
+async function syncPlayerPresence() {
+    if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
+    try {
+        await syncPlayerPresenceNow();
 
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
@@ -891,12 +889,10 @@ async function pushMonsterStateToCloud(m) {
     } catch (e) {}
 }
 
-function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 setInterval(fetchGlobalChats, 3000);
 setInterval(syncPlayerPresence, 200);
 setInterval(syncWorldMonsters, 250);
 
-// 🌟 計算十格穿戴裝備（包含各自的 +1~+9 強化倍率）的總和加成
 function getEquipBonuses(p) {
     const bonus = { atk: 0, def: 0, hp: 0, shield: 0, crit: 0 };
     if (!p.equipment) return bonus;
@@ -1000,7 +996,6 @@ const floatingTexts = [];
 const projectiles = [];
 const slashEffects = [];
 
-// 🌟 獨立強化十格穿戴裝備 (+1 ~ +9)
 function enhanceEquippedSlot(event, slotKey) {
     if (event) event.stopPropagation();
     if (!currentAccount) return;
@@ -1020,17 +1015,16 @@ function enhanceEquippedSlot(event, slotKey) {
     }
 
     player.gold -= cost;
-    // +1~+3 必定成功，+4~+6 成功率 70%，+7~+9 成功率 45%（失敗不掉級）
     const successRate = currentPlus < 3 ? 1.0 : (currentPlus < 6 ? 0.70 : 0.45);
 
     if (Math.random() <= successRate) {
         item.plus = currentPlus + 1;
         if (slotKey === 'weapon' && item.plus > player.weaponPlus) {
-            player.weaponPlus = item.plus; // 武器部位強化同步提升腳底光環
+            player.weaponPlus = item.plus;
         }
         MoxiangFormula.recalcDerivedStats(player);
         spawnFloatingText(player.x, player.y - 40, `⚒️ ${item.name} +${item.plus} 成功!`, '#fde047', 16);
-        addLog(`🎉 【百煉成鋼】成功將《${item.name}》強化至 +${item.plus}！屬性大幅提升！`, 'text-amber-300 font-bold');
+        addLog(`🎉 【百煉成鋼】成功將《${item.name}》強化至 +${item.plus}！`, 'text-amber-300 font-bold');
     } else {
         spawnFloatingText(player.x, player.y - 35, `⚒️ 強化失敗 (維持 +${currentPlus})`, '#9ca3af', 13);
         addLog(`💨 強化《${item.name}》失敗，消耗了 ${cost} 銀兩，裝備維持 +${currentPlus}。`, 'text-gray-400');
@@ -1039,10 +1033,9 @@ function enhanceEquippedSlot(event, slotKey) {
     renderEquipmentPanel();
     updateUI();
     saveGame(false);
-    syncPlayerPresence();
+    syncPlayerPresenceNow();
 }
 
-// 渲染十格紙娃娃裝備欄（支援 +1~+9 強化按鈕）与背包介面
 function renderEquipmentPanel() {
     document.getElementById('equip-char-name').textContent = currentAccount || '少俠';
     const leftCol = document.getElementById('equip-left-col');
@@ -1221,7 +1214,7 @@ function switchMap(mapId, closeMenu = true) {
     }
     addLog(`🐎 抵達【${mInfo.name}】！`, 'text-amber-300 font-bold');
     saveGame(false);
-    syncPlayerPresence();
+    syncPlayerPresenceNow();
     syncWorldMonsters();
 }
 
@@ -1249,12 +1242,10 @@ function initMonstersForCurrentMap() {
     syncWorldMonsters();
 }
 
-// 🌟 觸發巨靈神全螢幕紅圈預警大招《震天滅地錘》
 function triggerBossFullScreenAoe(bossMob, now) {
     bossAoeZones.length = 0;
-    const duration = 2500; // 2.5 秒預警時間
+    const duration = 2500;
 
-    // 第 1 個紅圈必定鎖定玩家當前腳下位置，迫使玩家走位！
     bossAoeZones.push({
         x: player.x,
         y: player.y,
@@ -1263,7 +1254,6 @@ function triggerBossFullScreenAoe(bossMob, now) {
         duration
     });
 
-    // 另外 4 個紅圈分佈於全螢幕四周與中央
     for (let i = 0; i < 4; i++) {
         bossAoeZones.push({
             x: 160 + Math.random() * (canvas.width - 320),
@@ -1393,7 +1383,7 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
         addLog(`📂 歡迎歸來，【${username}】！您已安全返回蘭州主城。`, 'text-cyan-300 font-bold');
     }
     fetchGlobalChats();
-    syncPlayerPresence();
+    syncPlayerPresenceNow();
     syncWorldMonsters();
 }
 
@@ -1406,7 +1396,7 @@ function logoutAccount() {
 
 function serializePlayer() {
     return {
-        version: 12, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 13, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
         hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
         currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
@@ -1572,7 +1562,7 @@ function enhanceWeapon() {
         player.weaponPlus++; MoxiangFormula.recalcDerivedStats(player);
         addLog(`【成功】兵器共鳴強化 +${player.weaponPlus}`, 'text-amber-300');
     } else { addLog(`【失敗】兵器共鳴維持 +${player.weaponPlus}`, 'text-gray-400'); }
-    updateUI(); saveGame(false); syncPlayerPresence();
+    updateUI(); saveGame(false); syncPlayerPresenceNow();
 }
 
 function castBuff() {
@@ -1768,7 +1758,6 @@ function updateGame(now) {
         }
     }
 
-    // 🌟 世界王巨靈神頂部血條與每 10 秒全螢幕紅圈大招邏輯
     const bossMob = monsters.find(m => m.isBoss && m.hp > 0);
     const bossHud = document.getElementById('boss-hud');
     const aoeWarnEl = document.getElementById('boss-aoe-warning');
@@ -1778,7 +1767,6 @@ function updateGame(now) {
         document.getElementById('boss-hud-hp-text').textContent = `${Math.max(0, Math.floor(bossMob.hp))} / ${bossMob.maxHp}`;
         document.getElementById('boss-hud-bar').style.width = `${Math.max(0, (bossMob.hp / bossMob.maxHp) * 100)}%`;
 
-        // 每 10 秒施放一次全螢幕紅圈預警大招
         if (!lastBossAoeCastTime) lastBossAoeCastTime = now;
         if (now - lastBossAoeCastTime >= 10000 && bossAoeZones.length === 0) {
             lastBossAoeCastTime = now;
@@ -1795,11 +1783,9 @@ function updateGame(now) {
         aoeWarnEl.classList.add('hidden');
     }
 
-    // 🌟 檢查巨靈神紅圈倒數是否引爆
     for (let i = bossAoeZones.length - 1; i >= 0; i--) {
         const z = bossAoeZones[i];
         if (now - z.startTime >= z.duration) {
-            // 引爆特效與強烈震動
             screenShakeTimer = 22;
             screenShakeIntensity = 14;
             slashEffects.push({ x: z.x, y: z.y, radius: 15, maxRadius: z.radius, color: '#ef4444', alpha: 1.0, width: 8 });
@@ -1815,7 +1801,6 @@ function updateGame(now) {
                 });
             }
 
-            // 判定玩家是否站在紅圈內
             if (currentAccount && Math.hypot(player.x - z.x, player.y - z.y) <= z.radius) {
                 const aoeDmg = Math.max(180, Math.floor(player.maxHp * 0.55));
                 player.hp = Math.max(1, player.hp - aoeDmg);
@@ -2083,33 +2068,16 @@ function renderGame(now = performance.now()) {
         ctx.fillText('注意：在演武場內被擊敗將損失 10% 經驗值並送回蘭州', canvas.width / 2, canvas.height / 2);
     }
 
-    // 🌟 渲染巨靈神全螢幕紅圈預警範圍 (Boss AOE Telegraph Zones)
     for (const z of bossAoeZones) {
         const progress = Math.min(1, Math.max(0, (now - z.startTime) / z.duration));
         const remainSec = Math.max(0, ((z.duration - (now - z.startTime)) / 1000)).toFixed(1);
         ctx.save();
-
-        // 外圍紅色警戒框
-        ctx.beginPath();
-        ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(220, 38, 38, 0.16)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([8, 6]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // 內部隨時間擴張填滿的深紅蓄力圈
-        ctx.beginPath();
-        ctx.arc(z.x, z.y, z.radius * progress, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.38)';
-        ctx.fill();
-
-        // 紅圈中央警告文字與倒數秒數
-        ctx.font = 'bold 13px "Noto Sans TC"';
-        ctx.fillStyle = '#fef08a';
-        ctx.textAlign = 'center';
+        ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.16)'; ctx.fill();
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; ctx.lineWidth = 3; ctx.setLineDash([8, 6]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(z.x, z.y, z.radius * progress, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.38)'; ctx.fill();
+        ctx.font = 'bold 13px "Noto Sans TC"'; ctx.fillStyle = '#fef08a'; ctx.textAlign = 'center';
         ctx.fillText(`⚠️ 滅世紅圈 ${remainSec}s`, z.x, z.y + 4);
         ctx.restore();
     }
@@ -2129,7 +2097,6 @@ function renderGame(now = performance.now()) {
             ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `${item.equipData.icon} ${item.equipData.name}`, item.x, item.y - 14);
         }
 
-        // 渲染怪物與大秦龍脈巨型 BOSS「巨靈神」
         for (const m of monsters) {
             const friendAttackers = Object.entries(onlinePlayersMap)
                 .filter(([_, op]) => op.attackTargetId === m.id)
@@ -2182,8 +2149,10 @@ function renderGame(now = performance.now()) {
         }
     }
 
-    // 渲染線上其他玩家
+    // 🌟 僅渲染同地圖的其他線上玩家 (防禦機制：自動過濾已死亡或血量 <= 1 的殘影)
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
+        if ((op.hp || 500) <= 1) return; // 略過死亡殘影
+
         if ((op.weaponPlus || 0) >= 3) {
             ctx.save();
             let auraColor = op.weaponPlus >= 9 ? '#facc15' : op.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
