@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 聯機同屏與野外怪物反擊版</title>
+    <title>墨香 Online - 高頻同屏與平滑插值(Lerp)版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -54,8 +54,8 @@
         <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
                 <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 全服同屏版</h1>
-                <p class="text-xs text-gray-400">支援野外怪物主動攻擊與線上玩家同屏</p>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 平滑同屏版</h1>
+                <p class="text-xs text-gray-400">高頻 0.2 秒同步與前端平滑內插移形換影</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -79,13 +79,13 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 進入江湖見證線上少俠
+                ☁️ 進入江湖見證流暢同屏
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 線上多人同步已啟用</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● Lerp 平滑插值同步就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -101,7 +101,7 @@
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">分流 01</span>
         </div>
-        <div class="text-xs text-gray-300 mt-1">野外怪物會主動攻擊玩家 · 請小心防範</div>
+        <div class="text-xs text-gray-300 mt-1">高頻率 0.2 秒座標同步 · 平滑移動追蹤</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
@@ -303,7 +303,7 @@
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 歡迎來到全服同屏版！線上玩家會即時顯示在畫面上。</div>
+            <div class="text-amber-300">[系統] 歡迎來到平滑同屏版！線上少俠移動已完美平滑化。</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音與全服玩家對話..." 
@@ -387,7 +387,7 @@
 <script>
 /**
  * ============================================================================
- * 【區塊 0：Supabase 與 多地圖/在線玩家同步設定】
+ * 【區塊 0：Supabase 與 多地圖/平滑同屏設定】
  * ============================================================================
  */
 const CLOUD_CONFIG = {
@@ -413,10 +413,10 @@ const MAPS = {
 
 /**
  * ============================================================================
- * 【區塊 1：全服千里傳音與在線玩家位置廣播 (Presence)】
+ * 【區塊 1：高頻同屏與平滑插值 (Lerp) 引擎】
  * ============================================================================
  */
-let onlinePlayers = []; // 儲存其他線上少俠的座標與狀態
+let onlinePlayersMap = {}; // 用於儲存並平滑內插其他玩家的位置
 
 async function sendGlobalChat(messageText) {
     if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
@@ -440,7 +440,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 歡迎來到全服同屏版！線上玩家會即時顯示在畫面上。</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 歡迎來到平滑同屏版！線上少俠移動已完美平滑化。</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -452,31 +452,42 @@ async function fetchGlobalChats() {
     } catch (e) { console.warn('同步聊天失敗', e); }
 }
 
-// 每秒同步玩家座標至 Supabase，並抓取同地圖的其他線上玩家
+// 提高至每 0.2 秒高頻同步座標
 async function syncPlayerPresence() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
-        // 1. 上傳自己目前的座標與地圖
         await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences`, {
             method: 'POST',
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
             body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), updated_at: new Date().toISOString() })
         });
 
-        // 2. 抓取同地圖的其他玩家 (排除自己，且 10 秒內有活動的)
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
-            onlinePlayers = rows;
+            // 更新目標位置，供畫布渲染時進行 Lerp 平滑內插
+            rows.forEach(r => {
+                if (!onlinePlayersMap[r.username]) {
+                    onlinePlayersMap[r.username] = { x: r.x, y: r.y, targetX: r.x, targetY: r.y };
+                } else {
+                    onlinePlayersMap[r.username].targetX = r.x;
+                    onlinePlayersMap[r.username].targetY = r.y;
+                }
+            });
+            // 清理已離線的玩家
+            const activeNames = rows.map(r => r.username);
+            Object.keys(onlinePlayersMap).forEach(name => {
+                if (!activeNames.includes(name)) delete onlinePlayersMap[name];
+            });
         }
-    } catch (e) { console.warn('玩家同屏同步失敗', e); }
+    } catch (e) { console.warn('座標同步失敗', e); }
 }
 
 function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 setInterval(fetchGlobalChats, 3000);
-setInterval(syncPlayerPresence, 1500); // 每 1.5 秒同步一次座標
+setInterval(syncPlayerPresence, 200); // 縮短至 0.2 秒高頻同步
 
 /**
  * ============================================================================
@@ -837,6 +848,7 @@ function switchWeapon(weaponId) {
     player.currentWeapon = weaponId;
     MoxiangFormula.recalcDerivedStats(player);
     renderWeaponButtons(); updateUI(); saveGame(false);
+    document.getElementById('skill-desc').textContent = WEAPONS[weaponId].desc;
     addLog(`切換兵器：${WEAPONS[weaponId].name}`, 'text-cyan-300');
 }
 
@@ -985,16 +997,15 @@ function updateGame(now) {
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone && player.autoBot) toggleBot(false);
 
+    // 野外怪物主動攻擊邏輯
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
-            // 怪物 AI：若玩家距離怪物小於 180 像素，怪物會主動走向玩家並攻擊！
             const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
             if (distToPlayer < 180) {
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
                 m.x += Math.cos(angle) * 1.2;
                 m.y += Math.sin(angle) * 1.2;
 
-                // 怪物靠近攻擊距離 (40px) 且攻擊冷刻到期，主動攻擊玩家！
                 if (distToPlayer <= 40 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
                     m.lastAttackTime = now;
                     const taken = MoxiangFormula.applyDamageToPlayer(player, m.atk);
@@ -1007,7 +1018,6 @@ function updateGame(now) {
                     }
                 }
             } else {
-                // 否則在野外隨機漫遊
                 m.x += m.vx; m.y += m.vy;
                 if (m.x < 80 || m.x > canvas.width - 80) m.vx *= -1;
                 if (m.y < 80 || m.y > canvas.height - 80) m.vy *= -1;
@@ -1054,6 +1064,12 @@ function updateGame(now) {
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
         }
     }
+
+    // 線上玩家平滑內插 (Lerp) 移動計算：每幀自動朝目標座標靠攏 20%
+    Object.values(onlinePlayersMap).forEach(op => {
+        op.x += (op.targetX - op.x) * 0.2;
+        op.y += (op.targetY - op.y) * 0.2;
+    });
 
     for (let i = projectiles.length - 1; i >= 0; i--) {
         projectiles[i].x += projectiles[i].vx; projectiles[i].y += projectiles[i].vy; projectiles[i].life--;
@@ -1125,13 +1141,13 @@ function renderGame() {
         }
     }
 
-    // 渲染同地圖的其他線上玩家
-    for (const op of onlinePlayers) {
+    // 渲染其他線上少俠（使用平滑內插座標，流暢滑動）
+    Object.entries(onlinePlayersMap).forEach(([username, op]) => {
         ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
         ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
         ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
-        ctx.fillText(`【${op.username}】`, op.x, op.y - 24);
-    }
+        ctx.fillText(`【${username}】`, op.x, op.y - 24);
+    });
 
     for (const p of projectiles) { ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); }
     for (const s of slashEffects) {
