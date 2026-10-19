@@ -820,6 +820,63 @@ async function fetchGlobalChats() {
     } catch (e) {}
 }
 
+const PRESENCE_STALE_MS = 4000;
+const MONSTER_RESPAWN_MS = 4000;
+
+function supabaseHeaders(extra = {}) {
+    return {
+        'apikey': CLOUD_CONFIG.supabaseAnonKey,
+        'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
+        ...extra
+    };
+}
+
+function isPresenceFresh(row) {
+    if (!row || !row.updated_at) return false;
+    const ts = new Date(row.updated_at).getTime();
+    return Number.isFinite(ts) && (Date.now() - ts) < PRESENCE_STALE_MS;
+}
+
+function pruneOnlinePlayers() {
+    const now = Date.now();
+    Object.keys(onlinePlayersMap).forEach(name => {
+        if (now - (onlinePlayersMap[name].lastSeen || 0) > PRESENCE_STALE_MS) {
+            if (player.targetPlayer === name) player.targetPlayer = null;
+            delete onlinePlayersMap[name];
+        }
+    });
+}
+
+async function deletePlayerPresence(username, keepalive = false) {
+    if (!username || !CLOUD_CONFIG.supabaseUrl) return;
+    try {
+        await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?username=eq.${encodeURIComponent(username)}`, {
+            method: 'DELETE',
+            headers: supabaseHeaders({ 'Prefer': 'return=minimal' }),
+            keepalive
+        });
+    } catch (e) {}
+}
+
+function respawnMonster(m) {
+    const mapInfo = MAPS[player.currentMapId];
+    if (!mapInfo) return;
+    const slotsToUse = mapInfo.bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
+    const slotIdx = parseInt(String(m.id).split('_').pop() || '0', 10) % slotsToUse.length;
+    const slot = slotsToUse[slotIdx];
+    m.hp = m.maxHp;
+    m.x = Math.round(slot.rx * canvas.width);
+    m.y = Math.round(slot.ry * canvas.height);
+    m.targetX = m.x;
+    m.targetY = m.y;
+    m.respawnAt = 0;
+    pushMonsterStateToCloud(m);
+}
+
+function isMonsterAlive(m) {
+    return m && m.hp > 0 && !m.respawnAt;
+}
+
 async function syncPlayerPresenceNow() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
@@ -843,7 +900,7 @@ async function syncPlayerPresenceNow() {
 
         await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences`, {
             method: 'POST',
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            headers: supabaseHeaders({ 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }),
             body: JSON.stringify(payload)
         });
     } catch (e) {}
@@ -855,11 +912,11 @@ async function syncPlayerPresence() {
         await syncPlayerPresenceNow();
 
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}`, {
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
+            headers: supabaseHeaders()
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
-            const selfRow = rows.find(r => r.username === currentAccount);
+            const selfRow = rows.find(r => r.username === currentAccount && isPresenceFresh(r));
             if (selfRow && selfRow.pvp_hit_ts && selfRow.pvp_hit_ts > lastProcessedPvpHitTs && selfRow.pvp_hit_dmg > 0) {
                 lastProcessedPvpHitTs = selfRow.pvp_hit_ts;
                 if (MAPS[player.currentMapId]?.pvp) {
@@ -872,7 +929,7 @@ async function syncPlayerPresence() {
                 }
             }
 
-            const otherRows = rows.filter(r => r.username !== currentAccount);
+            const otherRows = rows.filter(r => r.username !== currentAccount && isPresenceFresh(r));
             otherRows.forEach(r => {
                 const prev = onlinePlayersMap[r.username];
                 const wColor = WEAPONS[r.weapon_id || 'sword']?.color || '#38bdf8';
@@ -907,7 +964,8 @@ async function syncPlayerPresence() {
                         weaponPlus: r.weapon_plus ?? 0,
                         weaponId: r.weapon_id || 'sword',
                         attackTargetId: r.attack_target_id || null,
-                        lastAttackTs: r.last_attack_ts || 0
+                        lastAttackTs: r.last_attack_ts || 0,
+                        lastSeen: Date.now()
                     };
                 } else {
                     prev.targetX = r.x; prev.targetY = r.y;
@@ -917,10 +975,16 @@ async function syncPlayerPresence() {
                     prev.weaponId = r.weapon_id || 'sword';
                     prev.attackTargetId = r.attack_target_id || null;
                     prev.lastAttackTs = r.last_attack_ts || 0;
+                    prev.lastSeen = Date.now();
                 }
             });
             const activeNames = otherRows.map(r => r.username);
-            Object.keys(onlinePlayersMap).forEach(name => { if (!activeNames.includes(name)) delete onlinePlayersMap[name]; });
+            Object.keys(onlinePlayersMap).forEach(name => {
+                if (!activeNames.includes(name)) {
+                    if (player.targetPlayer === name) player.targetPlayer = null;
+                    delete onlinePlayersMap[name];
+                }
+            });
         }
     } catch (e) {}
 }
@@ -931,7 +995,7 @@ async function syncWorldMonsters() {
 
     try {
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?map_id=eq.${player.currentMapId}&order=id.asc`, {
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
+            headers: supabaseHeaders()
         });
         if (!res.ok) return;
         const rows = await res.json();
@@ -951,14 +1015,22 @@ async function syncWorldMonsters() {
                     id: r.id, map_id: r.map_id, name: r.name, lv: r.lv,
                     hp: r.hp, maxHp: r.max_hp, atk: r.atk, def: r.def,
                     exp: r.exp, sp: r.sp, gold: r.gold, color: r.color, radius: r.radius,
-                    isBoss, x: r.x, y: r.y, targetX: r.x, targetY: r.y, vx: 0, vy: 0, lastAttackTime: 0
+                    isBoss, x: r.x, y: r.y, targetX: r.x, targetY: r.y, vx: 0, vy: 0, lastAttackTime: 0,
+                    respawnAt: r.hp <= 0 ? Date.now() + MONSTER_RESPAWN_MS : 0
                 });
             } else {
-                localMob.hp = r.hp; localMob.maxHp = r.max_hp;
+                localMob.maxHp = r.max_hp;
                 localMob.name = r.name; localMob.lv = r.lv;
                 localMob.color = r.color; localMob.radius = r.radius;
                 localMob.isBoss = isBoss;
-                localMob.targetX = r.x; localMob.targetY = r.y;
+                if (r.hp <= 0) {
+                    localMob.hp = 0;
+                    if (!localMob.respawnAt) localMob.respawnAt = Date.now() + MONSTER_RESPAWN_MS;
+                    if (player.targetMonster === localMob) player.targetMonster = null;
+                } else if (!localMob.respawnAt) {
+                    localMob.hp = r.hp;
+                    localMob.targetX = r.x; localMob.targetY = r.y;
+                }
             }
         });
     } catch (e) {}
@@ -987,7 +1059,7 @@ async function seedCloudMonstersForMap(mapId) {
     try {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters`, {
             method: 'POST',
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            headers: supabaseHeaders({ 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' }),
             body: JSON.stringify(batch)
         });
     } catch (e) {}
@@ -998,7 +1070,7 @@ async function pushMonsterStateToCloud(m) {
     try {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?id=eq.${encodeURIComponent(m.id)}`, {
             method: 'PATCH',
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json' },
+            headers: supabaseHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
                 hp: Math.max(0, Math.round(m.hp)),
                 x: Math.round(m.x),
@@ -1520,11 +1592,21 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
 }
 
 function logoutAccount() {
-    if (currentAccount) saveGame(true);
-    toggleBot(false); currentAccount = null;
+    const leaving = currentAccount;
+    if (leaving) saveGame(true);
+    toggleBot(false);
+    currentAccount = null;
+    onlinePlayersMap = {};
+    player.targetMonster = null;
+    player.targetPlayer = null;
     localStorage.removeItem(SESSION_USER_KEY);
     document.getElementById('login-overlay').classList.remove('hidden');
+    if (leaving) deletePlayerPresence(leaving);
 }
+
+window.addEventListener('pagehide', () => {
+    if (currentAccount) deletePlayerPresence(currentAccount, true);
+});
 
 function serializePlayer() {
     return {
@@ -1769,6 +1851,7 @@ canvas.addEventListener('mousedown', (e) => {
     let clickedMob = null;
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
+            if (!isMonsterAlive(m)) continue;
             if (Math.hypot(m.x - clickX, m.y - clickY) <= m.radius + 12) { clickedMob = m; break; }
         }
     }
@@ -1873,10 +1956,18 @@ function updateUI() {
 }
 
 function updateGame(now) {
+    pruneOnlinePlayers();
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone && player.autoBot) toggleBot(false);
 
     if (screenShakeTimer > 0) screenShakeTimer--;
+
+    const nowMs = Date.now();
+    for (const m of monsters) {
+        if (m.hp <= 0 && m.respawnAt && nowMs >= m.respawnAt) {
+            respawnMonster(m);
+        }
+    }
 
     for (let i = critParticles.length - 1; i >= 0; i--) {
         const cp = critParticles[i];
@@ -1957,11 +2048,13 @@ function updateGame(now) {
 
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
+            if (!isMonsterAlive(m)) continue;
             if (typeof m.targetX === 'number' && typeof m.targetY === 'number') {
                 m.x += (m.targetX - m.x) * 0.25;
                 m.y += (m.targetY - m.y) * 0.25;
             }
 
+            if (!currentAccount) continue;
             const aggroRange = m.isBoss ? 280 : 160;
             const hitRange = m.radius + 24;
             const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
@@ -2001,6 +2094,7 @@ function updateGame(now) {
         } else if (!player.targetMonster || !monsters.includes(player.targetMonster)) {
             let nearest = null, minDist = Infinity;
             for (const m of monsters) {
+                if (!isMonsterAlive(m)) continue;
                 const d = Math.hypot(m.x - player.x, m.y - player.y);
                 if (d < minDist) { minDist = d; nearest = m; }
             }
@@ -2019,7 +2113,7 @@ function updateGame(now) {
         } else if (now - player.lastAttackTime >= skill.cooldown) {
             performPvpAttack(targetOp, now);
         }
-    } else if (player.targetMonster && monsters.includes(player.targetMonster) && !mapInfo.safeZone) {
+    } else if (player.targetMonster && isMonsterAlive(player.targetMonster) && monsters.includes(player.targetMonster) && !mapInfo.safeZone) {
         const m = player.targetMonster;
         const dist = Math.hypot(m.x - player.x, m.y - player.y);
         if (dist > skill.range + (m.isBoss ? 25 : 0)) {
@@ -2090,6 +2184,10 @@ async function performPvpAttack(targetOp, now) {
 }
 
 function performAttack(monster, now) {
+    if (!isMonsterAlive(monster)) {
+        player.targetMonster = null;
+        return;
+    }
     player.lastAttackTime = now;
     const skill = getCurrentSkill(player);
     const w = WEAPONS[player.currentWeapon];
@@ -2159,14 +2257,8 @@ function performAttack(monster, now) {
             addLog(`擊敗【${monster.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
         }
 
-        const slotsToUse = MAPS[player.currentMapId].bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
-        const slotIdx = parseInt(monster.id.split('_').pop() || '0', 10) % slotsToUse.length;
-        const slot = slotsToUse[slotIdx];
-        monster.hp = monster.maxHp;
-        monster.x = Math.round(slot.rx * canvas.width);
-        monster.y = Math.round(slot.ry * canvas.height);
-        monster.targetX = monster.x;
-        monster.targetY = monster.y;
+        monster.hp = 0;
+        monster.respawnAt = Date.now() + MONSTER_RESPAWN_MS;
         player.targetMonster = null;
         pushMonsterStateToCloud(monster);
         checkLevelUp();
@@ -2235,6 +2327,7 @@ function renderGame(now = performance.now()) {
         }
 
         for (const m of monsters) {
+            if (!isMonsterAlive(m)) continue;
             const mw = m.radius * 2;
             const mh = m.radius * 2.6;
             const friendAttackers = Object.entries(onlinePlayersMap)
@@ -2345,6 +2438,11 @@ function renderGame(now = performance.now()) {
         ctx.beginPath(); ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
         ctx.fillStyle = cp.color; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 10; ctx.fill();
         ctx.restore();
+    }
+
+    if (!currentAccount) {
+        ctx.restore();
+        return;
     }
 
     const selfAuraLv = Math.max(player.weaponPlus || 0, player.equipment?.weapon?.plus || 0);
