@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 高頻同屏與平滑插值(Lerp)版</title>
+    <title>墨香 Online - 四招絕學與兵器聯動版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -49,13 +49,13 @@
 </head>
 <body class="relative w-screen h-screen">
 
-    <!-- 0. 墨香江湖登入大廳 -->
+    <!-- 0. 登入大廳 -->
     <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
         <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
                 <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 平滑同屏版</h1>
-                <p class="text-xs text-gray-400">高頻 0.2 秒同步與前端平滑內插移形換影</p>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 四招絕學版</h1>
+                <p class="text-xs text-gray-400">單兵器解鎖四套絕學武功，隨心切換</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -79,29 +79,29 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 進入江湖見證流暢同屏
+                ☁️ 踏入江湖修練四招絕學
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● Lerp 平滑插值同步就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 武功聯動系統已就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
         </div>
     </div>
 
-    <!-- 底層遊戲畫布 -->
+    <!-- 遊戲畫布 -->
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
 
-    <!-- 右上角地圖名稱與狀態 -->
+    <!-- 右上角地圖名稱 -->
     <div class="absolute top-4 right-4 text-right pointer-events-none z-10">
         <div class="text-xs tracking-widest text-amber-400/80 font-bold">MOXIANG ONLINE · 墨香</div>
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">分流 01</span>
         </div>
-        <div class="text-xs text-gray-300 mt-1">高頻率 0.2 秒座標同步 · 平滑移動追蹤</div>
+        <div class="text-xs text-gray-300 mt-1">兵器可切換 4 種招式 · 打怪自動累積熟練度</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
@@ -117,7 +117,7 @@
             <div class="flex justify-between items-end border-b border-gray-700/80 pb-2">
                 <div>
                     <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300">未登入·少俠</h2>
-                    <small id="ui-weapon-label" class="text-gray-400">主修兵器：劍 (破魂擊)</small>
+                    <small id="ui-weapon-label" class="text-gray-400">主修兵器：劍</small>
                 </div>
                 <div class="text-right">
                     <div class="text-[11px] text-gray-400">銀兩 <b id="ui-gold" class="text-amber-400 font-mono text-sm">1,500</b></div>
@@ -167,10 +167,10 @@
         </div>
     </section>
 
-    <!-- 2. 左中：四維屬性配點視窗 -->
+    <!-- 2. 左中：屬性配點 -->
     <section id="panel-status" class="hud-panel absolute top-72 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-status')">
-            <span>人物屬性 (C++ 公式接口)</span>
+            <span>人物屬性</span>
             <button onclick="togglePanel('panel-status')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-2 text-xs">
@@ -178,38 +178,36 @@
                 <span class="text-amber-200">剩餘屬性點</span>
                 <b id="ui-stat-points" class="text-base font-mono text-amber-400">10</b>
             </div>
-
             <div class="space-y-1.5">
                 <div class="flex justify-between items-center bg-gray-800/60 px-2 py-1 rounded">
-                    <div><b class="text-red-300">力量 (STR)</b> <span class="text-[10px] text-gray-400">近戰外功</span></div>
+                    <div><b class="text-red-300">力量 (STR)</b></div>
                     <div class="flex items-center gap-2">
                         <span id="stat-str" class="font-mono font-bold text-sm">15</span>
                         <button onclick="addStat('str')" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-0.5 rounded text-xs">+</button>
                     </div>
                 </div>
                 <div class="flex justify-between items-center bg-gray-800/60 px-2 py-1 rounded">
-                    <div><b class="text-emerald-300">敏捷 (DEX)</b> <span class="text-[10px] text-gray-400">弓暗器/暴擊</span></div>
+                    <div><b class="text-emerald-300">敏捷 (DEX)</b></div>
                     <div class="flex items-center gap-2">
                         <span id="stat-dex" class="font-mono font-bold text-sm">12</span>
                         <button onclick="addStat('dex')" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-0.5 rounded text-xs">+</button>
                     </div>
                 </div>
                 <div class="flex justify-between items-center bg-gray-800/60 px-2 py-1 rounded">
-                    <div><b class="text-amber-300">體質 (CON)</b> <span class="text-[10px] text-gray-400">生命/防禦</span></div>
+                    <div><b class="text-amber-300">體質 (CON)</b></div>
                     <div class="flex items-center gap-2">
                         <span id="stat-con" class="font-mono font-bold text-sm">15</span>
                         <button onclick="addStat('con')" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-0.5 rounded text-xs">+</button>
                     </div>
                 </div>
                 <div class="flex justify-between items-center bg-gray-800/60 px-2 py-1 rounded">
-                    <div><b class="text-sky-300">心脈 (INT)</b> <span class="text-[10px] text-gray-400">內功/護體上限</span></div>
+                    <div><b class="text-sky-300">心脈 (INT)</b></div>
                     <div class="flex items-center gap-2">
                         <span id="stat-int" class="font-mono font-bold text-sm">15</span>
                         <button onclick="addStat('int')" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-0.5 rounded text-xs">+</button>
                     </div>
                 </div>
             </div>
-
             <div class="grid grid-cols-2 gap-1.5 pt-2 border-t border-gray-700/80 text-[11px] text-gray-300">
                 <div>外功攻擊：<b id="ui-atk" class="text-white font-mono">45</b></div>
                 <div>內功加成：<b id="ui-matk" class="text-sky-300 font-mono">+22%</b></div>
@@ -219,15 +217,23 @@
         </div>
     </section>
 
-    <!-- 3. 右側：六大兵器與武功熟練視窗 -->
+    <!-- 3. 右側：六大兵器與 4 大絕學武功視窗 -->
     <section id="panel-martial" class="hud-panel absolute top-24 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-martial')">
-            <span>六大兵器與武功絕學</span>
+            <span>兵器與四大絕學武功</span>
             <button onclick="togglePanel('panel-martial')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-3 text-xs">
-            <div class="text-[11px] text-gray-400">墨香無職業限制，切換兵器即切換對應外功與射程：</div>
+            <div class="text-[11px] text-gray-400">選擇兵器，並從下方切換對應的 4 種武功招式：</div>
             <div id="weapon-buttons" class="grid grid-cols-3 gap-1.5"></div>
+
+            <!-- 4 招武功切換選單 -->
+            <div class="space-y-1">
+                <label class="text-amber-300 font-bold">選擇當前施展招式 (4選1)：</label>
+                <select id="skill-select" onchange="switchSkill(this.value)" class="w-full bg-gray-950 border border-amber-600/60 rounded p-1.5 text-white font-bold focus:outline-none">
+                    <!-- 動態生成 4 招 -->
+                </select>
+            </div>
 
             <div class="bg-gray-900/90 border border-gray-700 p-2.5 rounded space-y-2">
                 <div class="flex justify-between items-center">
@@ -239,10 +245,10 @@
                         消耗 50 SP 升層
                     </button>
                 </div>
-                <p id="skill-desc" class="text-[11px] text-gray-400">凝聚劍氣斬擊目標，受【力量】與【心脈】雙重加成。</p>
+                <p id="skill-desc" class="text-[11px] text-gray-400">凝聚劍氣斬擊目標。</p>
                 <div>
                     <div class="flex justify-between text-[10px] text-gray-400 mb-0.5">
-                        <span>武功熟練度 (施展自動提升)</span>
+                        <span>武功熟練度</span>
                         <span id="skill-exp-text" class="font-mono">0%</span>
                     </div>
                     <div class="w-full h-1.5 bg-gray-800 rounded overflow-hidden">
@@ -253,7 +259,7 @@
 
             <div class="flex gap-2 pt-1">
                 <button onclick="castBuff()" class="flex-1 bg-red-900/70 hover:bg-red-800 border border-red-500/50 py-1.5 rounded text-red-200 font-bold">
-                    🔥 運轉【金鐘罩/火系內功】
+                    🔥 金鐘罩
                 </button>
                 <button onclick="enhanceWeapon()" class="flex-1 bg-amber-900/70 hover:bg-amber-800 border border-amber-500/50 py-1.5 rounded text-amber-200 font-bold">
                     ⚒️ 兵器強化 (<span id="weapon-plus">+0</span>)
@@ -262,51 +268,46 @@
         </div>
     </section>
 
-    <!-- 4. 右下：內建自動掛機系統 -->
+    <!-- 4. 右下：自動掛機系統 -->
     <section id="panel-bot" class="hud-panel absolute bottom-16 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-bot')">
-            <span>內建自動練功 (Auto-Bot)</span>
+            <span>自動掛機系統</span>
             <span id="bot-status-badge" class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded">休息中</span>
         </div>
         <div class="p-3 space-y-2.5 text-xs">
             <div class="flex items-center justify-between bg-gray-900/80 p-2 rounded border border-gray-700">
                 <div>
-                    <div class="font-bold text-amber-300">自動尋怪與施展武功</div>
-                    <div class="text-[10px] text-gray-400">按 [F] 或點擊地面可隨時中斷</div>
+                    <div class="font-bold text-amber-300">自動打怪與撿寶</div>
+                    <div class="text-[10px] text-gray-400">按 [F] 啟動/停止</div>
                 </div>
                 <button id="btn-toggle-bot" onclick="toggleBot()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow">
                     啟動掛機 [F]
                 </button>
             </div>
-
             <div class="space-y-1.5 text-[11px]">
                 <label class="flex items-center justify-between">
-                    <span>生命 HP 低於 60% 自動吃【金創藥】</span>
+                    <span>HP < 60% 自動吃金創藥</span>
                     <input type="checkbox" id="bot-auto-hp" checked class="accent-amber-500">
                 </label>
                 <label class="flex items-center justify-between">
-                    <span>護體罡氣低於 30% 自動運氣補充</span>
-                    <input type="checkbox" id="bot-auto-shield" checked class="accent-amber-500">
-                </label>
-                <label class="flex items-center justify-between">
-                    <span>內力 MP 低於 30% 自動吃【何首烏】</span>
-                    <input type="checkbox" id="bot-auto-mp" checked class="accent-amber-500">
+                    <span>自動撿取地上戰利品</span>
+                    <input type="checkbox" id="bot-auto-loot" checked class="accent-amber-500">
                 </label>
             </div>
         </div>
     </section>
 
-    <!-- 5. 左下：千里傳音與全服聊天紀錄 -->
+    <!-- 5. 左下：聊天紀錄 -->
     <section id="panel-log" class="hud-panel absolute bottom-16 left-4 w-96 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-log')">
-            <span>千里傳音 · 全服聊天紀錄</span>
+            <span>千里傳音 · 戰利品紀錄</span>
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 歡迎來到平滑同屏版！線上少俠移動已完美平滑化。</div>
+            <div class="text-amber-300">[系統] 墨香四招絕學系統已啟動！每種兵器皆可切換 4 種招式。</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
-            <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音與全服玩家對話..." 
+            <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
                 class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-[11px] text-white focus:outline-none focus:border-amber-500"
                 onkeydown="if(event.key==='Enter'){ sendGlobalChat(this.value); this.value=''; }">
             <button onclick="const inp=document.getElementById('chat-input'); sendGlobalChat(inp.value); inp.value='';" 
@@ -316,80 +317,57 @@
         </div>
     </section>
 
-    <!-- 6. 地圖驛站傳送視窗 -->
+    <!-- 6. 傳送視窗 -->
     <section id="panel-teleport" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-teleport')">
-            <span>驛站車夫 · 江湖地圖傳送</span>
+            <span>驛站車夫 · 地圖傳送</span>
             <button onclick="togglePanel('panel-teleport')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-4 space-y-2.5 text-xs">
             <div class="text-gray-300 text-[11px] pb-1 border-b border-gray-700">
-                目前所在地：<b id="current-map-label" class="text-amber-400">蘭州 (安全區)</b>。野外可遇見怪物與其他少俠。
+                目前所在地：<b id="current-map-label" class="text-amber-400">蘭州 (安全區)</b>
             </div>
             <div id="map-list" class="space-y-2"></div>
         </div>
     </section>
 
-    <!-- 7. 雲端存檔管理視窗 -->
+    <!-- 7. 存檔視窗 -->
     <section id="panel-save" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-save')">
-            <span>💾 雲端帳號管理 (Supabase 綁定中)</span>
+            <span>💾 雲端帳號管理</span>
             <button onclick="togglePanel('panel-save')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-4 space-y-3 text-xs">
             <div class="flex justify-between items-center bg-gray-900/90 p-2.5 rounded border border-gray-700">
                 <div>
                     <div class="text-amber-300 font-bold">雲端帳號：<span id="save-panel-user" class="text-white">未登入</span></div>
-                    <div id="last-save-time" class="text-[11px] text-gray-400">上次雲端同步：尚未同步</div>
+                    <div id="last-save-time" class="text-[11px] text-gray-400">上次同步：尚未同步</div>
                 </div>
                 <div class="flex gap-1.5">
-                    <button onclick="saveGame(true)" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2.5 py-1.5 rounded font-bold">
-                        立即同步
-                    </button>
-                    <button onclick="resetSaveData()" class="bg-red-900/80 hover:bg-red-700 text-red-200 px-2.5 py-1.5 rounded border border-red-500/40">
-                        重置角色
-                    </button>
+                    <button onclick="saveGame(true)" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2.5 py-1.5 rounded font-bold">立即同步</button>
+                    <button onclick="resetSaveData()" class="bg-red-900/80 hover:bg-red-700 text-red-200 px-2.5 py-1.5 rounded">重置</button>
                 </div>
             </div>
-
-            <div class="space-y-1.5">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-gray-300">跨裝置引繼碼 (Base64 加密存檔字串)：</span>
-                    <button onclick="exportSaveCode()" class="text-amber-400 hover:text-amber-300 font-bold underline">
-                        📋 產生並複製存檔碼
-                    </button>
-                </div>
-                <textarea id="save-code-input" rows="4" placeholder="可在此匯出當前備份..." class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-[11px] font-mono text-amber-200 focus:outline-none focus:border-amber-500"></textarea>
-            </div>
-
+            <textarea id="save-code-input" rows="3" placeholder="引繼碼..." class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-[11px] font-mono text-amber-200"></textarea>
             <div class="flex gap-2">
-                <button onclick="exportSaveCode()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-black font-bold py-2 rounded shadow">
-                    📤 匯出存檔碼
-                </button>
-                <button onclick="importSaveCode()" class="flex-1 bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 rounded shadow">
-                    📥 讀取存檔碼
-                </button>
+                <button onclick="exportSaveCode()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-black font-bold py-2 rounded">📤 匯出存檔碼</button>
+                <button onclick="importSaveCode()" class="flex-1 bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 rounded">📥 讀取存檔碼</button>
             </div>
         </div>
     </section>
 
-    <!-- 底部快捷導覽列 -->
+    <!-- 底部導覽列 -->
     <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 hud-panel px-4 py-1.5 flex gap-2 z-30 text-xs font-bold whitespace-nowrap">
-        <button onclick="togglePanel('panel-basic')" class="hover:text-amber-400 px-2 py-1">☯️ 基礎狀態</button>
-        <button onclick="togglePanel('panel-status')" class="hover:text-amber-400 px-2 py-1">📊 屬性配點</button>
-        <button onclick="togglePanel('panel-martial')" class="hover:text-amber-400 px-2 py-1">⚔️ 兵器武功</button>
-        <button onclick="togglePanel('panel-bot')" class="hover:text-amber-400 px-2 py-1">🤖 自動掛機 [F]</button>
-        <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded border border-cyan-500/40">🐎 驛站傳送</button>
-        <button onclick="togglePanel('panel-save')" class="bg-amber-900/70 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded border border-amber-500/40">💾 雲端存檔</button>
-        <button onclick="usePotionManual()" class="bg-red-900/80 hover:bg-red-700 text-red-100 px-2.5 py-1 rounded border border-red-500/40">💊 補血調息</button>
+        <button onclick="togglePanel('panel-basic')" class="hover:text-amber-400 px-2 py-1">☯️ 狀態</button>
+        <button onclick="togglePanel('panel-status')" class="hover:text-amber-400 px-2 py-1">📊 配點</button>
+        <button onclick="togglePanel('panel-martial')" class="hover:text-amber-400 px-2 py-1">⚔️ 武功</button>
+        <button onclick="togglePanel('panel-bot')" class="hover:text-amber-400 px-2 py-1">🤖 掛機 [F]</button>
+        <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded">🐎 傳送</button>
+        <button onclick="togglePanel('panel-save')" class="bg-amber-900/70 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded">💾 存檔</button>
+        <button onclick="usePotionManual()" class="bg-red-900/80 hover:bg-red-700 text-red-100 px-2.5 py-1 rounded">💊 補血</button>
     </nav>
 
 <script>
-/**
- * ============================================================================
- * 【區塊 0：Supabase 與 多地圖/平滑同屏設定】
- * ============================================================================
- */
 const CLOUD_CONFIG = {
     supabaseUrl: 'https://eqhjxamfvrdgdipzquyg.supabase.co/rest/v1/',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxaGp4YW1mdnJkZ2RpcHpxdXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTk5NDMsImV4cCI6MjEwNzk5NTk0M30.x1PAG9XF7gKKcQi0dd1kdh4EL7gyQnjq2oucLygB6as'
@@ -398,25 +376,79 @@ const CLOUD_CONFIG = {
 const MAPS = {
     lanzhou: { id: 'lanzhou', name: '蘭州 (安全區)', minLv: 1, safeZone: true, bgGradient: ['#292524', '#1c1917'], monsters: [] },
     dunhuang: { id: 'dunhuang', name: '敦煌野外', minLv: 1, safeZone: false, bgGradient: ['#451a03', '#1f1308'], monsters: [
-        { name: '敦煌沙盜', lv: 3, hp: 280, atk: 24, def: 8, exp: 65, sp: 32, gold: 85, color: '#ef4444', radius: 20 },
-        { name: '沙漠毒蠍', lv: 5, hp: 400, atk: 30, def: 10, exp: 100, sp: 50, gold: 120, color: '#f59e0b', radius: 21 }
+        { name: '敦煌沙盜', lv: 3, hp: 280, atk: 24, def: 8, exp: 65, sp: 32, gold: 180, color: '#ef4444', radius: 20 },
+        { name: '沙漠毒蠍', lv: 5, hp: 400, atk: 30, def: 10, exp: 100, sp: 50, gold: 260, color: '#f59e0b', radius: 21 }
     ]},
     huanghe: { id: 'huanghe', name: '黃河河畔', minLv: 6, safeZone: false, bgGradient: ['#0f172a', '#020617'], monsters: [
-        { name: '黃河水鬼', lv: 6, hp: 550, atk: 38, def: 15, exp: 150, sp: 75, gold: 180, color: '#38bdf8', radius: 22 },
-        { name: '河妖頭目', lv: 9, hp: 850, atk: 50, def: 22, exp: 260, sp: 130, gold: 320, color: '#6366f1', radius: 25 }
+        { name: '黃河水鬼', lv: 6, hp: 550, atk: 38, def: 15, exp: 150, sp: 75, gold: 450, color: '#38bdf8', radius: 22 },
+        { name: '河妖頭目', lv: 9, hp: 850, atk: 50, def: 22, exp: 260, sp: 130, gold: 800, color: '#6366f1', radius: 25 }
     ]},
     qinling: { id: 'qinling', name: '秦始皇陵地宮', minLv: 12, safeZone: false, bgGradient: ['#311042', '#12051c'], monsters: [
-        { name: '皇陵禁衛軍', lv: 12, hp: 1200, atk: 68, def: 32, exp: 450, sp: 220, gold: 580, color: '#a855f7', radius: 26 },
-        { name: '千年秦俑將軍', lv: 15, hp: 2200, atk: 95, def: 45, exp: 850, sp: 400, gold: 1100, color: '#eab308', radius: 30 }
+        { name: '皇陵禁衛軍', lv: 12, hp: 1200, atk: 68, def: 32, exp: 450, sp: 220, gold: 1500, color: '#a855f7', radius: 26 },
+        { name: '千年秦俑將軍', lv: 15, hp: 2200, atk: 95, def: 45, exp: 850, sp: 400, gold: 3000, color: '#eab308', radius: 30 }
     ]}
 };
 
-/**
- * ============================================================================
- * 【區塊 1：高頻同屏與平滑插值 (Lerp) 引擎】
- * ============================================================================
- */
-let onlinePlayersMap = {}; // 用於儲存並平滑內插其他玩家的位置
+// 🌟 六大兵器，每種兵器皆擁有 4 招獨門武功絕學
+const WEAPONS = {
+    sword: {
+        id: 'sword', name: '劍', scaling: 'STR', color: '#38bdf8',
+        skills: [
+            { id: 'sword_1', name: '破魂擊', range: 70, cooldown: 900, baseAtk: 18, dmgRatio: 1.25, critBonus: 3, desc: '凝聚劍氣斬擊目標，速度與威力兼具。' },
+            { id: 'sword_2', name: '回風舞', range: 75, cooldown: 1000, baseAtk: 22, dmgRatio: 1.40, critBonus: 5, desc: '如疾風般迴旋劍芒，對敵造成連續撕裂傷。' },
+            { id: 'sword_3', name: '御劍術', range: 120, cooldown: 1150, baseAtk: 26, dmgRatio: 1.60, critBonus: 8, desc: '以氣御劍遠距離穿刺，防不勝防。' },
+            { id: 'sword_4', name: '萬劍歸宗', range: 90, cooldown: 1400, baseAtk: 35, dmgRatio: 2.10, critBonus: 12, desc: '劍道終極奧義，萬道劍氣瞬間爆發毀滅打擊。' }
+        ]
+    },
+    blade: {
+        id: 'blade', name: '刀', scaling: 'STR', color: '#f87171',
+        skills: [
+            { id: 'blade_1', name: '狂風斬', range: 75, cooldown: 1100, baseAtk: 24, dmgRatio: 1.50, critBonus: 2, desc: '剛猛霸道的基礎刀法，單發威力極高。' },
+            { id: 'blade_2', name: '烈火刀法', range: 80, cooldown: 1200, baseAtk: 29, dmgRatio: 1.70, critBonus: 4, desc: '附帶灼燒內力的霸道斬擊。' },
+            { id: 'blade_3', name: '修羅連環', range: 75, cooldown: 1000, baseAtk: 33, dmgRatio: 1.85, critBonus: 6, desc: '煞氣逼人的連續重劈，招招致命。' },
+            { id: 'blade_4', name: '開天闢地', range: 85, cooldown: 1500, baseAtk: 42, dmgRatio: 2.40, critBonus: 10, desc: '刀氣縱橫三萬里，一刀斷水。' }
+        ]
+    },
+    spear: {
+        id: 'spear', name: '槍', scaling: 'STR', color: '#fbbf24',
+        skills: [
+            { id: 'spear_1', name: '橫掃千軍', range: 105, cooldown: 1050, baseAtk: 21, dmgRatio: 1.35, critBonus: 3, desc: '一寸長一寸強的中距強力穿刺。' },
+            { id: 'spear_2', name: '疾風刺', range: 115, cooldown: 950, baseAtk: 25, dmgRatio: 1.50, critBonus: 5, desc: '快如閃電的突刺，破甲能力極強。' },
+            { id: 'spear_3', name: '龍騰虎躍', range: 110, cooldown: 1250, baseAtk: 31, dmgRatio: 1.75, critBonus: 7, desc: '如游龍出海般橫掃千軍。' },
+            { id: 'spear_4', name: '霸王卸甲', range: 120, cooldown: 1450, baseAtk: 38, dmgRatio: 2.20, critBonus: 10, desc: '霸氣無雙的絕世槍芒。' }
+        ]
+    },
+    fist: {
+        id: 'fist', name: '拳', scaling: 'STR', color: '#a78bfa',
+        skills: [
+            { id: 'fist_1', name: '如來神掌', range: 60, cooldown: 650, baseAtk: 15, dmgRatio: 1.00, critBonus: 8, desc: '出拳如風的極速連擊絕學。' },
+            { id: 'fist_2', name: '羅漢拳', range: 60, cooldown: 750, baseAtk: 19, dmgRatio: 1.20, critBonus: 10, desc: '剛猛無儔的少林正宗拳法。' },
+            { id: 'fist_3', name: '降龍十八掌', range: 65, cooldown: 900, baseAtk: 27, dmgRatio: 1.65, critBonus: 14, desc: '震古爍今的至剛至陽掌力。' },
+            { id: 'fist_4', name: '佛光普照', range: 70, cooldown: 1300, baseAtk: 36, dmgRatio: 2.10, critBonus: 18, desc: '拳意化為金身佛像的毀滅一擊。' }
+        ]
+    },
+    bow: {
+        id: 'bow', name: '弓', scaling: 'DEX', color: '#34d399',
+        skills: [
+            { id: 'bow_1', name: '萬箭齊發', range: 240, cooldown: 1000, baseAtk: 18, dmgRatio: 1.20, critBonus: 6, desc: '百步穿楊的遠程狙擊。' },
+            { id: 'bow_2', name: '追魂箭', range: 260, cooldown: 1100, baseAtk: 23, dmgRatio: 1.45, critBonus: 9, desc: '鎖定敵人心脈的致命飛矢。' },
+            { id: 'bow_3', name: '暴雨梨花', range: 220, cooldown: 850, baseAtk: 28, dmgRatio: 1.65, critBonus: 12, desc: '瞬間射出大量箭雨壓制敵陣。' },
+            { id: 'bow_4', name: '后羿射日', range: 280, cooldown: 1400, baseAtk: 37, dmgRatio: 2.25, critBonus: 16, desc: '傳說中能貫穿日月的神箭。' }
+        ]
+    },
+    hidden: {
+        id: 'hidden', name: '暗器', scaling: 'DEX', color: '#f472b6',
+        skills: [
+            { id: 'hidden_1', name: '漫天花雨', range: 200, cooldown: 720, baseAtk: 15, dmgRatio: 1.05, critBonus: 12, desc: '淬毒飛鏢高速連發。' },
+            { id: 'hidden_2', name: '暴雨針', range: 210, cooldown: 800, baseAtk: 20, dmgRatio: 1.30, critBonus: 15, desc: '防不勝防的劇毒銀針。' },
+            { id: 'hidden_3', name: '閻王帖', range: 220, cooldown: 950, baseAtk: 26, dmgRatio: 1.55, critBonus: 18, desc: '索命無常的恐怖暗器。' },
+            { id: 'hidden_4', name: '孔雀翎', range: 250, cooldown: 1350, baseAtk: 34, dmgRatio: 2.10, critBonus: 22, desc: '天下第一暗器的燦爛絕殺。' }
+        ]
+    }
+};
+
+let onlinePlayersMap = {};
+let droppedItems = [];
 
 async function sendGlobalChat(messageText) {
     if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
@@ -428,7 +460,7 @@ async function sendGlobalChat(messageText) {
             body: JSON.stringify({ username: currentAccount, message: messageText.trim(), created_at: new Date().toISOString() })
         });
         fetchGlobalChats();
-    } catch (e) { console.error('發送聊天失敗', e); }
+    } catch (e) {}
 }
 
 async function fetchGlobalChats() {
@@ -440,7 +472,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 歡迎來到平滑同屏版！線上少俠移動已完美平滑化。</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 墨香四招絕學系統已啟動！每種兵器皆可切換 4 種招式。</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -449,10 +481,9 @@ async function fetchGlobalChats() {
             });
             if (box.innerHTML !== chatHtml) { box.innerHTML = chatHtml; box.scrollTop = box.scrollHeight; }
         }
-    } catch (e) { console.warn('同步聊天失敗', e); }
+    } catch (e) {}
 }
 
-// 提高至每 0.2 秒高頻同步座標
 async function syncPlayerPresence() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
@@ -461,13 +492,11 @@ async function syncPlayerPresence() {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
             body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), updated_at: new Date().toISOString() })
         });
-
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
-            // 更新目標位置，供畫布渲染時進行 Lerp 平滑內插
             rows.forEach(r => {
                 if (!onlinePlayersMap[r.username]) {
                     onlinePlayersMap[r.username] = { x: r.x, y: r.y, targetX: r.x, targetY: r.y };
@@ -476,44 +505,39 @@ async function syncPlayerPresence() {
                     onlinePlayersMap[r.username].targetY = r.y;
                 }
             });
-            // 清理已離線的玩家
             const activeNames = rows.map(r => r.username);
-            Object.keys(onlinePlayersMap).forEach(name => {
-                if (!activeNames.includes(name)) delete onlinePlayersMap[name];
-            });
+            Object.keys(onlinePlayersMap).forEach(name => { if (!activeNames.includes(name)) delete onlinePlayersMap[name]; });
         }
-    } catch (e) { console.warn('座標同步失敗', e); }
+    } catch (e) {}
 }
 
 function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 setInterval(fetchGlobalChats, 3000);
-setInterval(syncPlayerPresence, 200); // 縮短至 0.2 秒高頻同步
+setInterval(syncPlayerPresence, 200);
 
-/**
- * ============================================================================
- * 【區塊 A：墨香 C++ 源碼公式替換區】
- * ============================================================================
- */
 const MoxiangFormula = {
     recalcDerivedStats(player) {
         const w = WEAPONS[player.currentWeapon];
         const enhanceBonus = player.weaponPlus * 8;
         const mainStat = (w.scaling === 'DEX') ? player.stats.dex : player.stats.str;
-        player.derived.atk = Math.floor(mainStat * 2.4 + player.level * 4 + w.baseAtk + enhanceBonus);
+        player.derived.atk = Math.floor(mainStat * 2.4 + player.level * 4 + 20 + enhanceBonus);
         player.derived.innerBonusPct = Math.floor(player.stats.int * 1.5);
         player.maxHp = 300 + player.stats.con * 15 + player.level * 25;
         player.maxShield = 150 + player.stats.int * 12 + player.level * 15;
         player.maxMp = 100 + player.stats.int * 8 + player.level * 10;
         player.derived.def = Math.floor(player.stats.con * 0.8 + player.level * 1.5);
-        player.derived.critRate = Math.min(65, (player.stats.dex * 0.4 + w.critBonus)).toFixed(1);
+        
+        const activeSkill = getCurrentSkill(player);
+        player.derived.critRate = Math.min(65, (player.stats.dex * 0.4 + activeSkill.critBonus)).toFixed(1);
     },
     calculateAttackDamage(player, monster) {
-        const w = WEAPONS[player.currentWeapon];
-        const skillLv = player.skillLevels[player.currentWeapon];
+        const activeSkill = getCurrentSkill(player);
+        const skillLv = player.skillLevels[activeSkill.id] || 1;
         const skillMultiplier = 1.0 + (skillLv - 1) * 0.18 + (skillLv >= 12 ? 0.5 : 0);
         const innerMultiplier = 1.0 + (player.derived.innerBonusPct / 100);
         const buffMultiplier = player.buffTimer > 0 ? 1.25 : 1.0;
-        let rawDmg = (player.derived.atk * w.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - monster.def;
+
+        let rawDmg = (player.derived.atk * activeSkill.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - monster.def;
         rawDmg = Math.max(5, rawDmg * (0.92 + Math.random() * 0.16));
         const isCrit = (Math.random() * 100) < parseFloat(player.derived.critRate);
         if (isCrit) rawDmg *= 1.75;
@@ -534,20 +558,14 @@ const MoxiangFormula = {
     }
 };
 
-const WEAPONS = {
-    sword: { id: 'sword', name: '劍', skill: '破魂擊', range: 70, cooldown: 900, baseAtk: 18, dmgRatio: 1.25, critBonus: 3, scaling: 'STR', color: '#38bdf8', desc: '近戰均衡' },
-    blade: { id: 'blade', name: '刀', skill: '狂風斬', range: 75, cooldown: 1150, baseAtk: 26, dmgRatio: 1.55, critBonus: 1, scaling: 'STR', color: '#f87171', desc: '近戰重劈' },
-    spear: { id: 'spear', name: '槍', skill: '橫掃千軍', range: 105, cooldown: 1100, baseAtk: 22, dmgRatio: 1.35, critBonus: 2, scaling: 'STR', color: '#fbbf24', desc: '中距穿刺' },
-    fist: { id: 'fist', name: '拳', skill: '如來神掌', range: 60, cooldown: 650, baseAtk: 14, dmgRatio: 0.95, critBonus: 8, scaling: 'STR', color: '#a78bfa', desc: '極速連擊' },
-    bow: { id: 'bow', name: '弓', skill: '萬箭齊發', range: 240, cooldown: 1000, baseAtk: 19, dmgRatio: 1.20, critBonus: 6, scaling: 'DEX', color: '#34d399', desc: '遠程狙擊' },
-    hidden: { id: 'hidden', name: '暗器', skill: '漫天花雨', range: 200, cooldown: 720, baseAtk: 15, dmgRatio: 1.00, critBonus: 12, scaling: 'DEX', color: '#f472b6', desc: '遠程高速' }
-};
+function getCurrentSkill(p) {
+    const w = WEAPONS[p.currentWeapon];
+    if (!p.currentSkillId || !w.skills.some(s => s.id === p.currentSkillId)) {
+        p.currentSkillId = w.skills[0].id; // 預設第一招
+    }
+    return w.skills.find(s => s.id === p.currentSkillId);
+}
 
-/**
- * ============================================================================
- * 【區塊 C：雲端登入與地圖存檔系統】
- * ============================================================================
- */
 const ACCOUNT_DB_KEY = 'MOXIANG_ACCOUNTS_DB_V1';
 const SESSION_USER_KEY = 'MOXIANG_CURRENT_SESSION';
 let currentAccount = null;
@@ -560,9 +578,11 @@ function getDefaultPlayerState() {
         stats: { str: 15, dex: 12, con: 15, int: 15 },
         derived: { atk: 45, innerBonusPct: 22, def: 12, critRate: '8.5' },
         hp: 525, maxHp: 525, shield: 330, maxShield: 330, mp: 220, maxMp: 220,
-        currentWeapon: 'sword', weaponPlus: 0,
-        skillLevels: { sword: 1, blade: 1, spear: 1, fist: 1, bow: 1, hidden: 1 },
-        skillExp: { sword: 0, blade: 0, spear: 0, fist: 0, bow: 0, hidden: 0 },
+        currentWeapon: 'sword',
+        currentSkillId: 'sword_1',
+        weaponPlus: 0,
+        skillLevels: { sword_1: 1, sword_2: 1, sword_3: 1, sword_4: 1, blade_1: 1, blade_2: 1, blade_3: 1, blade_4: 1, spear_1: 1, spear_2: 1, spear_3: 1, spear_4: 1, fist_1: 1, fist_2: 1, fist_3: 1, fist_4: 1, bow_1: 1, bow_2: 1, bow_3: 1, bow_4: 1, hidden_1: 1, hidden_2: 1, hidden_3: 1, hidden_4: 1 },
+        skillExp: {},
         buffTimer: 0, autoBot: false, targetMonster: null, lastAttackTime: 0,
         currentMapId: 'lanzhou', lastSaveTimestamp: Date.now()
     };
@@ -577,12 +597,13 @@ const slashEffects = [];
 function switchMap(mapId) {
     if (!MAPS[mapId]) return;
     if (player.level < MAPS[mapId].minLv) {
-        addLog(`⚠️ 您的境界 Lv.${player.level} 不足，無法前往【${MAPS[mapId].name}】！`, 'text-red-400');
+        addLog(`⚠️ 境界不足，需 Lv.${MAPS[mapId].minLv}`, 'text-red-400');
         return;
     }
     player.currentMapId = mapId;
     toggleBot(false);
     player.targetMonster = null;
+    droppedItems.length = 0;
     initMonstersForCurrentMap();
     document.getElementById('ui-map-name').textContent = MAPS[mapId].name;
     document.getElementById('current-map-label').textContent = MAPS[mapId].name;
@@ -627,7 +648,7 @@ function renderTeleportMenu() {
                 <div class="text-[10px] text-gray-400">${m.safeZone ? '🟢 安全區' : `⚔️ 建議 Lv.${m.minLv}+`}</div>
             </div>
             <button onclick="switchMap('${m.id}')" ${isCurrent || isLocked ? 'disabled' : ''} class="px-3 py-1 rounded text-xs font-bold ${isCurrent ? 'bg-gray-700 text-gray-400 cursor-default' : isLocked ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-500 text-black shadow'}">
-                ${isCurrent ? '在此地' : isLocked ? `Lv.${m.minLv} 解鎖` : '傳送'}
+                ${isCurrent ? '在此地' : isLocked ? `Lv.${m.minLv}` : '傳送'}
             </button>
         `;
         container.appendChild(div);
@@ -645,10 +666,9 @@ function renderSavedAccountsList() {
     const usernames = Object.keys(db);
     if (usernames.length === 0) { listEl.innerHTML = '<span class="text-[11px] text-gray-500">尚無紀錄</span>'; return; }
     usernames.forEach(u => {
-        const lv = db[u].saveData?.level || 1;
         const btn = document.createElement('button');
         btn.className = 'bg-gray-800 hover:bg-amber-700/80 text-amber-200 border border-amber-500/30 px-2 py-1 rounded text-[11px]';
-        btn.textContent = `${u} (Lv.${lv})`;
+        btn.textContent = `${u} (Lv.${db[u].saveData?.level || 1})`;
         btn.onclick = () => { document.getElementById('auth-username').value = u; document.getElementById('auth-password').focus(); };
         listEl.appendChild(btn);
     });
@@ -662,9 +682,7 @@ async function handleLoginOrRegister() {
 
     if (userIn.length < 2) { errEl.textContent = '⚠️ 名號至少 2 字'; return; }
     if (pwdIn.length < 3) { errEl.textContent = '⚠️ 密碼至少 3 字'; return; }
-
     const pwdHash = hashPwd(pwdIn);
-    errEl.textContent = '⏳ 連線雲端驗證中...';
 
     let cloudData = null;
     if (CLOUD_CONFIG.supabaseUrl) {
@@ -674,19 +692,19 @@ async function handleLoginOrRegister() {
             });
             const rows = await res.json();
             if (rows && rows.length > 0) cloudData = rows[0];
-        } catch (e) { console.warn('雲端驗證失敗', e); }
+        } catch (e) {}
     }
 
     const db = getAccountsDB();
     if (cloudData) {
         if (cloudData.password_hash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
-        errEl.textContent = '';
         db[userIn] = { passwordHash: pwdHash, saveData: cloudData.save_data };
         saveAccountsDB(db);
         completeLoginSession(userIn, cloudData.save_data, false, remember);
     } else if (db[userIn]) {
         if (db[userIn].passwordHash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
-        errEl.textContent = '';
+        db[userIn] = { passwordHash: pwdHash, saveData: db[userIn].saveData };
+        saveAccountsDB(db);
         completeLoginSession(userIn, db[userIn].saveData, false, remember);
         syncToCloud(userIn, pwdHash, db[userIn].saveData);
     } else {
@@ -696,7 +714,6 @@ async function handleLoginOrRegister() {
         const initialSave = serializePlayer();
         db[userIn] = { passwordHash: pwdHash, saveData: initialSave };
         saveAccountsDB(db);
-        errEl.textContent = '';
         completeLoginSession(userIn, initialSave, true, remember);
         syncToCloud(userIn, pwdHash, initialSave);
     }
@@ -710,20 +727,18 @@ async function syncToCloud(username, pwdHash, saveData) {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
             body: JSON.stringify({ username: username, password_hash: pwdHash, save_data: saveData, updated_at: new Date().toISOString() })
         });
-    } catch (e) { console.error('雲端同步失敗', e); }
+    } catch (e) {}
 }
 
 function completeLoginSession(username, saveData, isNewAccount, remember) {
     currentAccount = username;
     if (remember) localStorage.setItem(SESSION_USER_KEY, username);
-    else localStorage.removeItem(SESSION_USER_KEY);
-
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('ui-char-title').textContent = username;
     document.getElementById('save-panel-user').textContent = username;
 
     if (isNewAccount) {
-        renderWeaponButtons(); updateUI(); saveGame(false);
+        renderWeaponButtons(); updateSkillSelect(); updateUI(); saveGame(false);
         addLog(`🎉 歡迎【${username}】踏入江湖！`, 'text-amber-300 font-bold');
     } else {
         applyLoadedData(saveData, false); saveGame(false);
@@ -736,16 +751,16 @@ function logoutAccount() {
     if (currentAccount) saveGame(true);
     toggleBot(false); currentAccount = null;
     localStorage.removeItem(SESSION_USER_KEY);
-    document.getElementById('auth-password').value = '';
     document.getElementById('login-overlay').classList.remove('hidden');
 }
 
 function serializePlayer() {
     return {
-        version: 5, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 7, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
         hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
-        weaponPlus: player.weaponPlus, skillLevels: { ...player.skillLevels }, skillExp: { ...player.skillExp },
+        currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
+        skillLevels: { ...player.skillLevels }, skillExp: { ...player.skillExp },
         currentMapId: player.currentMapId, lastSaveTimestamp: Date.now()
     };
 }
@@ -762,7 +777,7 @@ function saveGame(manual = false) {
         document.getElementById('last-save-time').textContent = `上次同步：${timeStr}`;
         document.getElementById('save-indicator').textContent = `☁️ [${currentAccount}] 雲端自動同步`;
         if (manual) addLog(`☁️ 存檔同步成功。`, 'text-emerald-300');
-    } catch (err) { console.error('存檔失敗', err); }
+    } catch (err) {}
 }
 
 function applyLoadedData(data, isImported = false) {
@@ -770,10 +785,21 @@ function applyLoadedData(data, isImported = false) {
     player.level = data.level ?? 1; player.exp = data.exp ?? 0; player.maxExp = data.maxExp ?? 100;
     player.gold = data.gold ?? 1500; player.sp = data.sp ?? 120; player.statPoints = data.statPoints ?? 10;
     if (data.stats) { player.stats.str = data.stats.str ?? 15; player.stats.dex = data.stats.dex ?? 12; player.stats.con = data.stats.con ?? 15; player.stats.int = data.stats.int ?? 15; }
-    if (data.currentWeapon && WEAPONS[data.currentWeapon]) player.currentWeapon = data.currentWeapon;
+    if (data.currentWeapon && WEAPONS[data.currentWeapon]) {
+        player.currentWeapon = data.currentWeapon;
+    }
+    if (data.currentSkillId) {
+        player.currentSkillId = data.currentSkillId;
+    } else {
+        player.currentSkillId = WEAPONS[player.currentWeapon].skills[0].id;
+    }
     player.weaponPlus = data.weaponPlus ?? 0;
-    if (data.skillLevels) Object.keys(WEAPONS).forEach(k => player.skillLevels[k] = data.skillLevels[k] ?? 1);
-    if (data.skillExp) Object.keys(WEAPONS).forEach(k => player.skillExp[k] = data.skillExp[k] ?? 0);
+    if (data.skillLevels) {
+        Object.keys(data.skillLevels).forEach(k => { player.skillLevels[k] = data.skillLevels[k]; });
+    }
+    if (data.skillExp) {
+        Object.keys(data.skillExp).forEach(k => { player.skillExp[k] = data.skillExp[k]; });
+    }
     player.currentMapId = data.currentMapId && MAPS[data.currentMapId] ? data.currentMapId : 'lanzhou';
     MoxiangFormula.recalcDerivedStats(player);
     player.hp = Math.min(player.maxHp, data.hp ?? player.maxHp);
@@ -782,7 +808,7 @@ function applyLoadedData(data, isImported = false) {
     initMonstersForCurrentMap();
     document.getElementById('ui-map-name').textContent = MAPS[player.currentMapId].name;
     document.getElementById('current-map-label').textContent = MAPS[player.currentMapId].name;
-    renderTeleportMenu(); renderWeaponButtons(); updateUI();
+    renderTeleportMenu(); renderWeaponButtons(); updateSkillSelect(); updateUI();
     return true;
 }
 
@@ -817,13 +843,12 @@ function resetSaveData() {
     const fresh = getDefaultPlayerState();
     Object.assign(player, fresh);
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons(); updateUI(); saveGame(true);
+    renderWeaponButtons(); updateSkillSelect(); updateUI(); saveGame(true);
     addLog(`🔄 角色已重置。`, 'text-amber-400');
 }
 
 setInterval(() => { if (currentAccount) saveGame(false); }, 5000);
 
-// Canvas 繪製與遊戲迴圈
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -837,19 +862,50 @@ function renderWeaponButtons() {
         const active = player.currentWeapon === w.id;
         const btn = document.createElement('button');
         btn.className = `py-1.5 px-2 rounded font-bold border transition ${active ? 'bg-amber-600 text-black border-amber-300 shadow' : 'bg-gray-800/80 text-gray-300 border-gray-700'}`;
-        btn.innerHTML = `${w.name} (Lv.${player.skillLevels[w.id]})`;
+        btn.textContent = w.name;
         btn.onclick = () => switchWeapon(w.id);
         container.appendChild(btn);
     });
 }
 
+// 🌟 修正：切換兵器時，自動切換至該兵器的第一招，並更新下拉選單與簡介
 function switchWeapon(weaponId) {
     if (!currentAccount) return;
     player.currentWeapon = weaponId;
+    const w = WEAPONS[weaponId];
+    player.currentSkillId = w.skills[0].id; // 自動切換為該兵器第一招
+
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons(); updateUI(); saveGame(false);
-    document.getElementById('skill-desc').textContent = WEAPONS[weaponId].desc;
-    addLog(`切換兵器：${WEAPONS[weaponId].name}`, 'text-cyan-300');
+    renderWeaponButtons();
+    updateSkillSelect();
+    updateUI();
+    saveGame(false);
+    addLog(`切換兵器：【${w.name}】，當前武功：《${getCurrentSkill(player).name}》`, 'text-cyan-300');
+}
+
+// 🌟 新增：切換特定招式 (4選1)
+function switchSkill(skillId) {
+    if (!currentAccount) return;
+    player.currentSkillId = skillId;
+    MoxiangFormula.recalcDerivedStats(player);
+    updateUI();
+    saveGame(false);
+    const skill = getCurrentSkill(player);
+    addLog(`切換絕學招式：《${skill.name}》`, 'text-amber-300');
+}
+
+function updateSkillSelect() {
+    const select = document.getElementById('skill-select');
+    const w = WEAPONS[player.currentWeapon];
+    select.innerHTML = '';
+    w.skills.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        const sLv = player.skillLevels[s.id] || 1;
+        opt.textContent = `${s.name} (Lv.${sLv})`;
+        if (s.id === player.currentSkillId) opt.selected = true;
+        select.appendChild(opt);
+    });
 }
 
 function addStat(statKey) {
@@ -860,11 +916,17 @@ function addStat(statKey) {
 
 function upgradeSkill() {
     if (!currentAccount) return;
-    const wId = player.currentWeapon;
-    if (player.skillLevels[wId] >= 12 || player.sp < 50) return;
-    player.sp -= 50; player.skillLevels[wId]++; player.skillExp[wId] = 0;
-    renderWeaponButtons(); updateUI(); saveGame(false);
-    addLog(`武功提升至第 ${player.skillLevels[wId]} 層！`, 'text-amber-300');
+    const skill = getCurrentSkill(player);
+    const sId = skill.id;
+    const currentLv = player.skillLevels[sId] || 1;
+    if (currentLv >= 12 || player.sp < 50) return;
+    player.sp -= 50;
+    player.skillLevels[sId] = currentLv + 1;
+    player.skillExp[sId] = 0;
+    updateSkillSelect();
+    updateUI();
+    saveGame(false);
+    addLog(`《${skill.name}》升至第 ${player.skillLevels[sId]} 層！`, 'text-amber-300');
 }
 
 function enhanceWeapon() {
@@ -904,7 +966,7 @@ function toggleBot(forceState) {
     if (player.autoBot) {
         badge.textContent = '掛機中'; badge.className = 'text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded animate-pulse';
         btn.textContent = '停止掛機 [F]'; btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        addLog(`【Auto-Bot】開始自動打怪。`, 'text-emerald-400');
+        addLog(`【Auto-Bot】自動打怪與撿寶中。`, 'text-emerald-400');
     } else {
         badge.textContent = '休息中'; badge.className = 'text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded';
         btn.textContent = '啟動掛機 [F]'; btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow';
@@ -924,6 +986,17 @@ canvas.addEventListener('mousedown', (e) => {
     const clickX = e.clientX - rect.left, clickY = e.clientY - rect.top;
     const mapInfo = MAPS[player.currentMapId];
 
+    let clickedItemIdx = -1;
+    for (let i = 0; i < droppedItems.length; i++) {
+        const item = droppedItems[i];
+        if (Math.hypot(item.x - clickX, item.y - clickY) <= 24) { clickedItemIdx = i; break; }
+    }
+    if (clickedItemIdx !== -1) {
+        const item = droppedItems.splice(clickedItemIdx, 1)[0];
+        lootItem(item);
+        return;
+    }
+
     let clickedMob = null;
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
@@ -939,6 +1012,20 @@ canvas.addEventListener('mousedown', (e) => {
         player.targetX = clickX; player.targetY = clickY;
     }
 });
+
+function lootItem(item) {
+    if (item.type === 'gold') {
+        player.gold += item.amount;
+        spawnFloatingText(item.x, item.y - 15, `💰 +${item.amount} 銀兩`, '#facc15', 14);
+        addLog(`💰 拾取戰利品：獲得銀兩 +${item.amount}`, 'text-amber-300 font-bold');
+    } else if (item.type === 'weapon') {
+        player.weaponPlus = Math.min(9, player.weaponPlus + 1);
+        MoxiangFormula.recalcDerivedStats(player);
+        spawnFloatingText(item.x, item.y - 15, `⚔️ 獲得 ${item.name} (+強化)`, '#38bdf8', 15);
+        addLog(`🎉 恭喜打怪掉落【${item.name}】！兵器威力大增！`, 'text-cyan-300 font-bold');
+    }
+    updateUI(); saveGame(false);
+}
 
 function spawnFloatingText(x, y, text, color = '#ffffff', size = 14) {
     floatingTexts.push({ x, y, text, color, size, alpha: 1.0, vy: -1.2 });
@@ -970,7 +1057,12 @@ function checkLevelUp() {
 
 function updateUI() {
     const w = WEAPONS[player.currentWeapon];
-    document.getElementById('ui-weapon-label').textContent = `主修：${w.name}`;
+    const skill = getCurrentSkill(player);
+    const sId = skill.id;
+    const sLv = player.skillLevels[sId] || 1;
+    const sExp = player.skillExp[sId] || 0;
+
+    document.getElementById('ui-weapon-label').textContent = `主修：${w.name} (${skill.name})`;
     document.getElementById('ui-gold').textContent = player.gold.toLocaleString();
     document.getElementById('ui-sp').textContent = player.sp.toLocaleString();
     document.getElementById('ui-hp-text').textContent = `${Math.floor(player.hp)} / ${player.maxHp}`;
@@ -991,30 +1083,42 @@ function updateUI() {
     document.getElementById('ui-matk').textContent = `+${player.derived.innerBonusPct}%`;
     document.getElementById('ui-def').textContent = player.derived.def;
     document.getElementById('ui-crit').textContent = `${player.derived.critRate}%`;
+
+    document.getElementById('skill-name').textContent = skill.name;
+    document.getElementById('skill-lv').textContent = sLv;
+    document.getElementById('skill-desc').textContent = skill.desc;
+    document.getElementById('skill-exp-text').textContent = `${sExp}%`;
+    document.getElementById('skill-exp-bar').style.width = `${sExp}%`;
+    document.getElementById('weapon-plus').textContent = `+${player.weaponPlus}`;
 }
 
 function updateGame(now) {
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone && player.autoBot) toggleBot(false);
 
-    // 野外怪物主動攻擊邏輯
+    if (player.autoBot && document.getElementById('bot-auto-loot').checked && droppedItems.length > 0) {
+        for (let i = droppedItems.length - 1; i >= 0; i--) {
+            const item = droppedItems[i];
+            if (Math.hypot(player.x - item.x, player.y - item.y) < 120) {
+                droppedItems.splice(i, 1); lootItem(item); break;
+            }
+        }
+    }
+
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
             const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
             if (distToPlayer < 180) {
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
-                m.x += Math.cos(angle) * 1.2;
-                m.y += Math.sin(angle) * 1.2;
-
+                m.x += Math.cos(angle) * 1.2; m.y += Math.sin(angle) * 1.2;
                 if (distToPlayer <= 40 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
                     m.lastAttackTime = now;
                     const taken = MoxiangFormula.applyDamageToPlayer(player, m.atk);
                     spawnFloatingText(player.x, player.y - 15, `-${taken.hpLost} (${m.name})`, '#f87171', 13);
                     updateUI();
                     if (player.hp <= 1) {
-                        switchMap('lanzhou');
-                        player.hp = player.maxHp;
-                        addLog(`⚠️ 遭到【${m.name}】擊敗，緊急送回蘭州安全區！`, 'text-red-400 font-bold');
+                        switchMap('lanzhou'); player.hp = player.maxHp;
+                        addLog(`⚠️ 遭到【${m.name}】擊敗，送回蘭州安全區！`, 'text-red-400 font-bold');
                     }
                 }
             } else {
@@ -1033,10 +1137,6 @@ function updateGame(now) {
             player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.45));
             spawnFloatingText(player.x, player.y - 20, '+金創藥', '#f87171', 12);
         }
-        if (document.getElementById('bot-auto-shield').checked && player.shield < player.maxShield * 0.3) {
-            player.shield = player.maxShield;
-            spawnFloatingText(player.x, player.y - 30, '+護體運氣', '#38bdf8', 12);
-        }
         if (!player.targetMonster || !monsters.includes(player.targetMonster)) {
             let nearest = null, minDist = Infinity;
             for (const m of monsters) {
@@ -1047,14 +1147,14 @@ function updateGame(now) {
         }
     }
 
-    const w = WEAPONS[player.currentWeapon];
+    const skill = getCurrentSkill(player);
     if (player.targetMonster && monsters.includes(player.targetMonster) && !mapInfo.safeZone) {
         const m = player.targetMonster;
         const dist = Math.hypot(m.x - player.x, m.y - player.y);
-        if (dist > w.range) {
+        if (dist > skill.range) {
             const angle = Math.atan2(m.y - player.y, m.x - player.x);
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
-        } else if (now - player.lastAttackTime >= w.cooldown) {
+        } else if (now - player.lastAttackTime >= skill.cooldown) {
             performAttack(m, now);
         }
     } else {
@@ -1065,10 +1165,8 @@ function updateGame(now) {
         }
     }
 
-    // 線上玩家平滑內插 (Lerp) 移動計算：每幀自動朝目標座標靠攏 20%
     Object.values(onlinePlayersMap).forEach(op => {
-        op.x += (op.targetX - op.x) * 0.2;
-        op.y += (op.targetY - op.y) * 0.2;
+        op.x += (op.targetX - op.x) * 0.2; op.y += (op.targetY - op.y) * 0.2;
     });
 
     for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -1087,21 +1185,44 @@ function updateGame(now) {
 
 function performAttack(monster, now) {
     player.lastAttackTime = now;
+    const skill = getCurrentSkill(player);
     const w = WEAPONS[player.currentWeapon];
     player.mp = Math.max(0, player.mp - 4);
-    if (w.range > 120) {
+
+    if (skill.range > 120) {
         const angle = Math.atan2(monster.y - player.y, monster.x - player.x);
         projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 11, vy: Math.sin(angle) * 11, color: w.color, life: 22 });
     } else {
         slashEffects.push({ x: monster.x, y: monster.y, radius: monster.radius + 18, color: w.color, alpha: 1.0 });
     }
+
     const res = MoxiangFormula.calculateAttackDamage(player, monster);
     monster.hp -= res.damage;
-    spawnFloatingText(monster.x, monster.y - 25, res.isCrit ? `💥暴擊 -${res.damage}` : `-${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
+    spawnFloatingText(monster.x, monster.y - 25, res.isCrit ? `💥暴擊 ${skill.name} -${res.damage}` : `${skill.name} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
+
+    // 累積該招式熟練度
+    const sId = skill.id;
+    if (!player.skillLevels[sId]) player.skillLevels[sId] = 1;
+    if (!player.skillExp[sId]) player.skillExp[sId] = 0;
+    if (player.skillLevels[sId] < 12) {
+        player.skillExp[sId] += 10;
+        if (player.skillExp[sId] >= 100) {
+            player.skillExp[sId] = 0;
+            player.skillLevels[sId]++;
+            updateSkillSelect();
+            addLog(`✨ 勤修苦練！《${skill.name}》突破至第 ${player.skillLevels[sId]} 層！`, 'text-cyan-300 font-bold');
+            saveGame(false);
+        }
+    }
 
     if (monster.hp <= 0) {
-        player.exp += monster.exp; player.sp += monster.sp; player.gold += monster.gold;
-        addLog(`擊敗【${monster.name}】獲 EXP +${monster.exp}`, 'text-gray-300');
+        player.exp += monster.exp; player.sp += monster.sp;
+        droppedItems.push({ type: 'gold', amount: monster.gold, x: monster.x - 12, y: monster.y });
+        if (Math.random() < 0.30) {
+            droppedItems.push({ type: 'weapon', name: '玄鐵精鋼劍', x: monster.x + 15, y: monster.y });
+        }
+        addLog(`擊敗【${monster.name}】掉落戰利品！`, 'text-amber-300 font-bold');
+
         const idx = monsters.indexOf(monster);
         if (idx !== -1) monsters.splice(idx, 1);
         player.targetMonster = null;
@@ -1127,6 +1248,18 @@ function renderGame() {
         ctx.font = '14px "Noto Sans TC"'; ctx.fillStyle = 'rgba(156, 163, 175, 0.8)';
         ctx.fillText('請點擊下方導覽列的【驛站傳送】前往野外地圖', canvas.width / 2, canvas.height / 2);
     } else {
+        const pulse = Math.sin(Date.now() / 200) * 3;
+        for (const item of droppedItems) {
+            ctx.beginPath(); ctx.arc(item.x, item.y, 12 + pulse, 0, Math.PI * 2);
+            ctx.fillStyle = item.type === 'gold' ? 'rgba(250, 204, 21, 0.35)' : 'rgba(56, 189, 248, 0.35)';
+            ctx.fill();
+            ctx.beginPath(); ctx.arc(item.x, item.y, 7, 0, Math.PI * 2);
+            ctx.fillStyle = item.type === 'gold' ? '#facc15' : '#38bdf8';
+            ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = item.type === 'gold' ? '#fde047' : '#7dd3fc'; ctx.textAlign = 'center';
+            ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `⚔️ ${item.name}`, item.x, item.y - 14);
+        }
+
         for (const m of monsters) {
             if (player.targetMonster === m) {
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 7, 0, Math.PI * 2);
@@ -1141,7 +1274,6 @@ function renderGame() {
         }
     }
 
-    // 渲染其他線上少俠（使用平滑內插座標，流暢滑動）
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
         ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
         ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
@@ -1162,10 +1294,11 @@ function renderGame() {
     }
 
     const w = WEAPONS[player.currentWeapon];
+    const skill = getCurrentSkill(player);
     ctx.beginPath(); ctx.arc(player.x, player.y, 17, 0, Math.PI * 2);
     ctx.fillStyle = w.color; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.font = 'bold 12px "Noto Sans TC"'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
-    ctx.fillText(`[${w.name}] ${currentAccount || '未登入'} (+${player.weaponPlus})`, player.x, player.y - 32);
+    ctx.fillText(`[${w.name}:${skill.name}] ${currentAccount || '未登入'} (+${player.weaponPlus})`, player.x, player.y - 32);
 
     for (const ft of floatingTexts) {
         ctx.globalAlpha = Math.max(0, ft.alpha);
@@ -1193,6 +1326,7 @@ function togglePanel(id) { document.getElementById(id).classList.toggle('hidden'
 
 MoxiangFormula.recalcDerivedStats(player);
 renderWeaponButtons();
+updateSkillSelect();
 initAuthSession();
 renderTeleportMenu();
 updateUI();
