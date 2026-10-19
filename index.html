@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 四招絕學與兵器聯動版</title>
+    <title>墨香 Online - 四大特效與外觀極致版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -42,6 +42,9 @@
         .bar-transition {
             transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .avatar-glow {
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+        }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
         ::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 3px; }
@@ -54,8 +57,8 @@
         <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
                 <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 四招絕學版</h1>
-                <p class="text-xs text-gray-400">單兵器解鎖四套絕學武功，隨心切換</p>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 視覺特效極致版</h1>
+                <p class="text-xs text-gray-400">腳底光環、暴擊震動、炫酷技能光影與立體怪物</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -79,13 +82,13 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 踏入江湖修練四招絕學
+                ☁️ 進入江湖體驗炫酷特效
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 武功聯動系統已就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 渲染特效引擎就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -101,11 +104,11 @@
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">分流 01</span>
         </div>
-        <div class="text-xs text-gray-300 mt-1">兵器可切換 4 種招式 · 打怪自動累積熟練度</div>
+        <div class="text-xs text-gray-300 mt-1">高強化武器腳底光環 · 暴擊螢幕震動特效</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
-    <!-- 1. 左上角：基礎狀態面板 -->
+    <!-- 1. 左上角：基礎狀態面板 (含少俠立繪) -->
     <section id="panel-basic" class="hud-panel absolute top-4 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-basic')">
             <span>江湖基礎資訊</span>
@@ -114,14 +117,20 @@
             </button>
         </div>
         <div class="p-3 space-y-2.5 text-xs">
-            <div class="flex justify-between items-end border-b border-gray-700/80 pb-2">
-                <div>
-                    <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300">未登入·少俠</h2>
-                    <small id="ui-weapon-label" class="text-gray-400">主修兵器：劍</small>
+            <div class="flex items-center gap-3 border-b border-gray-700/80 pb-2.5">
+                <div class="relative">
+                    <div class="w-13 h-13 rounded-full overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=150" alt="少俠立繪" class="w-full h-full object-cover">
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V1</span>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300 truncate">未登入·少俠</h2>
+                    <small id="ui-weapon-label" class="text-gray-400 block truncate">主修：劍</small>
                 </div>
                 <div class="text-right">
-                    <div class="text-[11px] text-gray-400">銀兩 <b id="ui-gold" class="text-amber-400 font-mono text-sm">1,500</b></div>
-                    <div class="text-[11px] text-cyan-300">技能點(SP) <b id="ui-sp" class="font-mono text-sm">120</b></div>
+                    <div class="text-[10px] text-gray-400">銀兩</div>
+                    <b id="ui-gold" class="text-amber-400 font-mono text-xs">1,500</b>
                 </div>
             </div>
 
@@ -155,14 +164,13 @@
                 </div>
             </div>
 
-            <div class="pt-1 border-t border-gray-700/80 space-y-1">
-                <div class="flex justify-between">
-                    <span>境界 <b class="text-amber-300">Lv.<span id="ui-lv">1</span></b></span>
-                    <span class="text-gray-400">EXP <b id="ui-exp-text" class="text-gray-200 font-mono">0 / 100</b></span>
-                </div>
-                <div class="w-full h-1.5 bg-gray-900 rounded overflow-hidden">
-                    <div id="ui-exp-bar" class="h-full bg-amber-500 bar-transition" style="width: 0%"></div>
-                </div>
+            <div class="pt-1 border-t border-gray-700/80 flex justify-between items-center">
+                <span>境界 <b class="text-amber-300">Lv.<span id="ui-lv">1</span></b></span>
+                <span class="text-cyan-300 text-[11px]">SP: <b id="ui-sp" class="font-mono">120</b></span>
+                <span class="text-gray-400 text-[11px]">EXP: <b id="ui-exp-text" class="font-mono">0/100</b></span>
+            </div>
+            <div class="w-full h-1.5 bg-gray-900 rounded overflow-hidden">
+                <div id="ui-exp-bar" class="h-full bg-amber-500 bar-transition" style="width: 0%"></div>
             </div>
         </div>
     </section>
@@ -217,22 +225,19 @@
         </div>
     </section>
 
-    <!-- 3. 右側：六大兵器與 4 大絕學武功視窗 -->
+    <!-- 3. 右側：兵器與 4 大絕學武功 -->
     <section id="panel-martial" class="hud-panel absolute top-24 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-martial')">
             <span>兵器與四大絕學武功</span>
             <button onclick="togglePanel('panel-martial')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-3 text-xs">
-            <div class="text-[11px] text-gray-400">選擇兵器，並從下方切換對應的 4 種武功招式：</div>
+            <div class="text-[11px] text-gray-400">選擇兵器，並切換對應的 4 種武功招式：</div>
             <div id="weapon-buttons" class="grid grid-cols-3 gap-1.5"></div>
 
-            <!-- 4 招武功切換選單 -->
             <div class="space-y-1">
                 <label class="text-amber-300 font-bold">選擇當前施展招式 (4選1)：</label>
-                <select id="skill-select" onchange="switchSkill(this.value)" class="w-full bg-gray-950 border border-amber-600/60 rounded p-1.5 text-white font-bold focus:outline-none">
-                    <!-- 動態生成 4 招 -->
-                </select>
+                <select id="skill-select" onchange="switchSkill(this.value)" class="w-full bg-gray-950 border border-amber-600/60 rounded p-1.5 text-white font-bold focus:outline-none"></select>
             </div>
 
             <div class="bg-gray-900/90 border border-gray-700 p-2.5 rounded space-y-2">
@@ -304,7 +309,7 @@
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 墨香四招絕學系統已啟動！每種兵器皆可切換 4 種招式。</div>
+            <div class="text-amber-300">[系統] 四大視覺特效與外觀系統已全面上線！</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
@@ -389,7 +394,6 @@ const MAPS = {
     ]}
 };
 
-// 🌟 六大兵器，每種兵器皆擁有 4 招獨門武功絕學
 const WEAPONS = {
     sword: {
         id: 'sword', name: '劍', scaling: 'STR', color: '#38bdf8',
@@ -449,6 +453,26 @@ const WEAPONS = {
 
 let onlinePlayersMap = {};
 let droppedItems = [];
+let screenShakeTimer = 0;
+let screenShakeIntensity = 0;
+const critParticles = [];
+
+// 怪物圖像預載
+const monsterImages = {
+    '敦煌沙盜': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=120',
+    '沙漠毒蠍': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120',
+    '黃河水鬼': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=120',
+    '河妖頭目': 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=120',
+    '皇陵禁衛軍': 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=120',
+    '千年秦俑將軍': 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120',
+    'default':  'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=120'
+};
+const loadedMonsterImages = {};
+Object.entries(monsterImages).forEach(([name, url]) => {
+    const img = new Image();
+    img.src = url;
+    loadedMonsterImages[name] = img;
+});
 
 async function sendGlobalChat(messageText) {
     if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
@@ -472,7 +496,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 墨香四招絕學系統已啟動！每種兵器皆可切換 4 種招式。</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 四大視覺特效與外觀系統已全面上線！</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -490,7 +514,7 @@ async function syncPlayerPresence() {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences`, {
             method: 'POST',
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
-            body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), updated_at: new Date().toISOString() })
+            body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), weapon_plus: player.weaponPlus, updated_at: new Date().toISOString() })
         });
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
@@ -499,10 +523,11 @@ async function syncPlayerPresence() {
         if (rows && Array.isArray(rows)) {
             rows.forEach(r => {
                 if (!onlinePlayersMap[r.username]) {
-                    onlinePlayersMap[r.username] = { x: r.x, y: r.y, targetX: r.x, targetY: r.y };
+                    onlinePlayersMap[r.username] = { x: r.x, y: r.y, targetX: r.x, targetY: r.y, weaponPlus: r.weapon_plus || 0 };
                 } else {
                     onlinePlayersMap[r.username].targetX = r.x;
                     onlinePlayersMap[r.username].targetY = r.y;
+                    onlinePlayersMap[r.username].weaponPlus = r.weapon_plus || 0;
                 }
             });
             const activeNames = rows.map(r => r.username);
@@ -561,7 +586,7 @@ const MoxiangFormula = {
 function getCurrentSkill(p) {
     const w = WEAPONS[p.currentWeapon];
     if (!p.currentSkillId || !w.skills.some(s => s.id === p.currentSkillId)) {
-        p.currentSkillId = w.skills[0].id; // 預設第一招
+        p.currentSkillId = w.skills[0].id;
     }
     return w.skills.find(s => s.id === p.currentSkillId);
 }
@@ -578,12 +603,9 @@ function getDefaultPlayerState() {
         stats: { str: 15, dex: 12, con: 15, int: 15 },
         derived: { atk: 45, innerBonusPct: 22, def: 12, critRate: '8.5' },
         hp: 525, maxHp: 525, shield: 330, maxShield: 330, mp: 220, maxMp: 220,
-        currentWeapon: 'sword',
-        currentSkillId: 'sword_1',
-        weaponPlus: 0,
+        currentWeapon: 'sword', currentSkillId: 'sword_1', weaponPlus: 0,
         skillLevels: { sword_1: 1, sword_2: 1, sword_3: 1, sword_4: 1, blade_1: 1, blade_2: 1, blade_3: 1, blade_4: 1, spear_1: 1, spear_2: 1, spear_3: 1, spear_4: 1, fist_1: 1, fist_2: 1, fist_3: 1, fist_4: 1, bow_1: 1, bow_2: 1, bow_3: 1, bow_4: 1, hidden_1: 1, hidden_2: 1, hidden_3: 1, hidden_4: 1 },
-        skillExp: {},
-        buffTimer: 0, autoBot: false, targetMonster: null, lastAttackTime: 0,
+        skillExp: {}, buffTimer: 0, autoBot: false, targetMonster: null, lastAttackTime: 0,
         currentMapId: 'lanzhou', lastSaveTimestamp: Date.now()
     };
 }
@@ -600,15 +622,11 @@ function switchMap(mapId) {
         addLog(`⚠️ 境界不足，需 Lv.${MAPS[mapId].minLv}`, 'text-red-400');
         return;
     }
-    player.currentMapId = mapId;
-    toggleBot(false);
-    player.targetMonster = null;
-    droppedItems.length = 0;
+    player.currentMapId = mapId; toggleBot(false); player.targetMonster = null; droppedItems.length = 0;
     initMonstersForCurrentMap();
     document.getElementById('ui-map-name').textContent = MAPS[mapId].name;
     document.getElementById('current-map-label').textContent = MAPS[mapId].name;
-    renderTeleportMenu();
-    togglePanel('panel-teleport');
+    renderTeleportMenu(); togglePanel('panel-teleport');
     addLog(`🐎 抵達【${MAPS[mapId].name}】！`, 'text-amber-300 font-bold');
     saveGame(false);
 }
@@ -629,8 +647,7 @@ function spawnSpecificMonster() {
         ...tpl, id: Math.random().toString(36).slice(2), maxHp: tpl.hp,
         x: margin + Math.random() * (window.innerWidth - margin * 2),
         y: margin + Math.random() * (window.innerHeight - margin * 2),
-        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
-        lastHitTime: 0
+        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, lastHitTime: 0
     });
 }
 
@@ -756,7 +773,7 @@ function logoutAccount() {
 
 function serializePlayer() {
     return {
-        version: 7, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 9, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
         hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
         currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
@@ -785,21 +802,11 @@ function applyLoadedData(data, isImported = false) {
     player.level = data.level ?? 1; player.exp = data.exp ?? 0; player.maxExp = data.maxExp ?? 100;
     player.gold = data.gold ?? 1500; player.sp = data.sp ?? 120; player.statPoints = data.statPoints ?? 10;
     if (data.stats) { player.stats.str = data.stats.str ?? 15; player.stats.dex = data.stats.dex ?? 12; player.stats.con = data.stats.con ?? 15; player.stats.int = data.stats.int ?? 15; }
-    if (data.currentWeapon && WEAPONS[data.currentWeapon]) {
-        player.currentWeapon = data.currentWeapon;
-    }
-    if (data.currentSkillId) {
-        player.currentSkillId = data.currentSkillId;
-    } else {
-        player.currentSkillId = WEAPONS[player.currentWeapon].skills[0].id;
-    }
+    if (data.currentWeapon && WEAPONS[data.currentWeapon]) { player.currentWeapon = data.currentWeapon; }
+    if (data.currentSkillId) { player.currentSkillId = data.currentSkillId; } else { player.currentSkillId = WEAPONS[player.currentWeapon].skills[0].id; }
     player.weaponPlus = data.weaponPlus ?? 0;
-    if (data.skillLevels) {
-        Object.keys(data.skillLevels).forEach(k => { player.skillLevels[k] = data.skillLevels[k]; });
-    }
-    if (data.skillExp) {
-        Object.keys(data.skillExp).forEach(k => { player.skillExp[k] = data.skillExp[k]; });
-    }
+    if (data.skillLevels) { Object.keys(data.skillLevels).forEach(k => { player.skillLevels[k] = data.skillLevels[k]; }); }
+    if (data.skillExp) { Object.keys(data.skillExp).forEach(k => { player.skillExp[k] = data.skillExp[k]; }); }
     player.currentMapId = data.currentMapId && MAPS[data.currentMapId] ? data.currentMapId : 'lanzhou';
     MoxiangFormula.recalcDerivedStats(player);
     player.hp = Math.min(player.maxHp, data.hp ?? player.maxHp);
@@ -868,30 +875,22 @@ function renderWeaponButtons() {
     });
 }
 
-// 🌟 修正：切換兵器時，自動切換至該兵器的第一招，並更新下拉選單與簡介
 function switchWeapon(weaponId) {
     if (!currentAccount) return;
     player.currentWeapon = weaponId;
     const w = WEAPONS[weaponId];
-    player.currentSkillId = w.skills[0].id; // 自動切換為該兵器第一招
-
+    player.currentSkillId = w.skills[0].id;
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons();
-    updateSkillSelect();
-    updateUI();
-    saveGame(false);
+    renderWeaponButtons(); updateSkillSelect(); updateUI(); saveGame(false);
     addLog(`切換兵器：【${w.name}】，當前武功：《${getCurrentSkill(player).name}》`, 'text-cyan-300');
 }
 
-// 🌟 新增：切換特定招式 (4選1)
 function switchSkill(skillId) {
     if (!currentAccount) return;
     player.currentSkillId = skillId;
     MoxiangFormula.recalcDerivedStats(player);
-    updateUI();
-    saveGame(false);
-    const skill = getCurrentSkill(player);
-    addLog(`切換絕學招式：《${skill.name}》`, 'text-amber-300');
+    updateUI(); saveGame(false);
+    addLog(`切換絕學招式：《${getCurrentSkill(player).name}》`, 'text-amber-300');
 }
 
 function updateSkillSelect() {
@@ -920,12 +919,8 @@ function upgradeSkill() {
     const sId = skill.id;
     const currentLv = player.skillLevels[sId] || 1;
     if (currentLv >= 12 || player.sp < 50) return;
-    player.sp -= 50;
-    player.skillLevels[sId] = currentLv + 1;
-    player.skillExp[sId] = 0;
-    updateSkillSelect();
-    updateUI();
-    saveGame(false);
+    player.sp -= 50; player.skillLevels[sId] = currentLv + 1; player.skillExp[sId] = 0;
+    updateSkillSelect(); updateUI(); saveGame(false);
     addLog(`《${skill.name}》升至第 ${player.skillLevels[sId]} 層！`, 'text-amber-300');
 }
 
@@ -1096,6 +1091,16 @@ function updateGame(now) {
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone && player.autoBot) toggleBot(false);
 
+    if (screenShakeTimer > 0) screenShakeTimer--;
+
+    for (let i = critParticles.length - 1; i >= 0; i--) {
+        const cp = critParticles[i];
+        cp.x += cp.vx; cp.y += cp.vy;
+        cp.vx *= 0.92; cp.vy *= 0.92;
+        cp.life--;
+        if (cp.life <= 0) critParticles.splice(i, 1);
+    }
+
     if (player.autoBot && document.getElementById('bot-auto-loot').checked && droppedItems.length > 0) {
         for (let i = droppedItems.length - 1; i >= 0; i--) {
             const item = droppedItems[i];
@@ -1174,7 +1179,7 @@ function updateGame(now) {
         if (projectiles[i].life <= 0) projectiles.splice(i, 1);
     }
     for (let i = slashEffects.length - 1; i >= 0; i--) {
-        slashEffects[i].alpha -= 0.06;
+        slashEffects[i].radius += 2.5; slashEffects[i].alpha -= 0.06;
         if (slashEffects[i].alpha <= 0) slashEffects.splice(i, 1);
     }
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
@@ -1191,24 +1196,48 @@ function performAttack(monster, now) {
 
     if (skill.range > 120) {
         const angle = Math.atan2(monster.y - player.y, monster.x - player.x);
-        projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 11, vy: Math.sin(angle) * 11, color: w.color, life: 22 });
+        projectiles.push({
+            x: player.x, y: player.y,
+            vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14,
+            color: w.color, radius: skill.id.includes('4') ? 10 : 6,
+            life: 25, glow: true
+        });
     } else {
-        slashEffects.push({ x: monster.x, y: monster.y, radius: monster.radius + 18, color: w.color, alpha: 1.0 });
+        slashEffects.push({
+            x: monster.x, y: monster.y,
+            radius: 10, maxRadius: skill.id.includes('4') ? 60 : 35,
+            color: w.color, alpha: 1.0, width: skill.id.includes('4') ? 6 : 3
+        });
     }
 
     const res = MoxiangFormula.calculateAttackDamage(player, monster);
     monster.hp -= res.damage;
+
+    if (res.isCrit) {
+        screenShakeTimer = 15;
+        screenShakeIntensity = 8;
+        for (let i = 0; i < 25; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 6;
+            critParticles.push({
+                x: monster.x, y: monster.y,
+                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                color: Math.random() > 0.5 ? '#facc15' : '#fde047',
+                radius: 2 + Math.random() * 3,
+                life: 20 + Math.random() * 15
+            });
+        }
+    }
+
     spawnFloatingText(monster.x, monster.y - 25, res.isCrit ? `💥暴擊 ${skill.name} -${res.damage}` : `${skill.name} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
 
-    // 累積該招式熟練度
     const sId = skill.id;
     if (!player.skillLevels[sId]) player.skillLevels[sId] = 1;
     if (!player.skillExp[sId]) player.skillExp[sId] = 0;
     if (player.skillLevels[sId] < 12) {
         player.skillExp[sId] += 10;
         if (player.skillExp[sId] >= 100) {
-            player.skillExp[sId] = 0;
-            player.skillLevels[sId]++;
+            player.skillExp[sId] = 0; player.skillLevels[sId]++;
             updateSkillSelect();
             addLog(`✨ 勤修苦練！《${skill.name}》突破至第 ${player.skillLevels[sId]} 層！`, 'text-cyan-300 font-bold');
             saveGame(false);
@@ -1233,6 +1262,13 @@ function performAttack(monster, now) {
 }
 
 function renderGame() {
+    ctx.save();
+    if (screenShakeTimer > 0) {
+        const offsetX = (Math.random() - 0.5) * screenShakeIntensity;
+        const offsetY = (Math.random() - 0.5) * screenShakeIntensity;
+        ctx.translate(offsetX, offsetY);
+    }
+
     const mapInfo = MAPS[player.currentMapId];
     const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 80, canvas.width/2, canvas.height/2, canvas.width);
     grad.addColorStop(0, mapInfo.bgGradient[0]); grad.addColorStop(1, mapInfo.bgGradient[1]);
@@ -1260,13 +1296,26 @@ function renderGame() {
             ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `⚔️ ${item.name}`, item.x, item.y - 14);
         }
 
+        // 🌟 渲染立體怪物頭像與外框
         for (const m of monsters) {
             if (player.targetMonster === m) {
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 7, 0, Math.PI * 2);
                 ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
             }
-            ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
-            ctx.fillStyle = m.color; ctx.fill(); ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.stroke();
+
+            const imgObj = loadedMonsterImages[m.name] || loadedMonsterImages['default'];
+            if (imgObj && imgObj.complete && imgObj.naturalHeight !== 0) {
+                ctx.save();
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2); ctx.clip();
+                ctx.drawImage(imgObj, m.x - m.radius, m.y - m.radius, m.radius * 2, m.radius * 2);
+                ctx.restore();
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
+            } else {
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+                ctx.fillStyle = m.color; ctx.fill(); ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.stroke();
+            }
+
             ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#f3f4f6'; ctx.textAlign = 'center';
             ctx.fillText(`Lv.${m.lv} ${m.name}`, m.x, m.y - m.radius - 12);
             ctx.fillStyle = '#1f2937'; ctx.fillRect(m.x - 23, m.y - m.radius - 8, 46, 5);
@@ -1274,17 +1323,63 @@ function renderGame() {
         }
     }
 
+    // 渲染線上其他玩家 (支援高強化腳底光環)
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
+        if ((op.weaponPlus || 0) >= 3) {
+            ctx.save();
+            let auraColor = op.weaponPlus >= 9 ? '#facc15' : op.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
+            let glowColor = op.weaponPlus >= 9 ? '#d97706' : op.weaponPlus >= 6 ? '#9333ea' : '#0284c7';
+            const pulse = Math.sin(Date.now() / 180) * 4;
+            const auraGrad = ctx.createRadialGradient(op.x, op.y, 5, op.x, op.y, 32 + pulse);
+            auraGrad.addColorStop(0, 'rgba(255,255,255,0.8)'); auraGrad.addColorStop(0.4, auraColor); auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath(); ctx.arc(op.x, op.y, 32 + pulse, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
+            ctx.restore();
+        }
+
         ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
         ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
         ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
         ctx.fillText(`【${username}】`, op.x, op.y - 24);
     });
 
-    for (const p of projectiles) { ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); }
+    // 🌟 渲染炫酷發光技能彈道
+    for (const p of projectiles) {
+        ctx.save();
+        if (p.glow) { ctx.shadowColor = p.color; ctx.shadowBlur = 15; }
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.restore();
+    }
+
+    // 🌟 渲染炫酷近戰擴散光環
     for (const s of slashEffects) {
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.strokeStyle = s.color;
-        ctx.globalAlpha = s.alpha; ctx.lineWidth = 4; ctx.stroke(); ctx.globalAlpha = 1.0;
+        ctx.save();
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = s.color; ctx.globalAlpha = Math.max(0, s.alpha); ctx.lineWidth = s.width || 3;
+        ctx.shadowColor = s.color; ctx.shadowBlur = 12; ctx.stroke();
+        ctx.restore();
+    }
+
+    // 🌟 渲染金黃色暴擊爆炸粒子
+    for (const cp of critParticles) {
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
+        ctx.fillStyle = cp.color; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 10; ctx.fill();
+        ctx.restore();
+    }
+
+    // 🌟 玩家高強化武器腳底光環 (+3藍、+6紫、+9金)
+    if (player.weaponPlus >= 3) {
+        ctx.save();
+        let auraColor = player.weaponPlus >= 9 ? '#facc15' : player.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
+        let glowColor = player.weaponPlus >= 9 ? '#d97706' : player.weaponPlus >= 6 ? '#9333ea' : '#0284c7';
+        const pulse = Math.sin(Date.now() / 180) * 4;
+        const radius = 32 + pulse;
+        const auraGrad = ctx.createRadialGradient(player.x, player.y, 5, player.x, player.y, radius);
+        auraGrad.addColorStop(0, 'rgba(255,255,255,0.8)'); auraGrad.addColorStop(0.4, auraColor); auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath(); ctx.arc(player.x, player.y, radius, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
+        ctx.beginPath(); ctx.arc(player.x, player.y, radius - 4, 0, Math.PI * 2); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke();
+        ctx.restore();
     }
 
     if (player.shield > 0) {
@@ -1305,6 +1400,8 @@ function renderGame() {
         ctx.font = `bold ${ft.size}px "Noto Sans TC"`; ctx.fillStyle = ft.color; ctx.textAlign = 'center';
         ctx.fillText(ft.text, ft.x, ft.y); ctx.globalAlpha = 1.0;
     }
+
+    ctx.restore();
 }
 
 function gameLoop(now) { updateGame(now); renderGame(); requestAnimationFrame(gameLoop); }
