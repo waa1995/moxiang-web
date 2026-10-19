@@ -18,7 +18,9 @@
             font-family: 'Noto Serif TC', serif;
         }
         .hud-panel {
-            background: rgba(17, 24, 39, 0.90);
+            background:
+                linear-gradient(180deg, rgba(17, 24, 39, 0.88) 0%, rgba(17, 24, 39, 0.94) 100%),
+                url('assets/ui/panel.png') center / cover no-repeat;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(217, 119, 6, 0.45);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), inset 0 0 12px rgba(217, 119, 6, 0.1);
@@ -26,7 +28,9 @@
             color: #f3f4f6;
         }
         .hud-header {
-            background: linear-gradient(90deg, rgba(146, 64, 14, 0.65) 0%, rgba(31, 41, 55, 0.45) 100%);
+            background:
+                linear-gradient(90deg, rgba(146, 64, 14, 0.72) 0%, rgba(31, 41, 55, 0.45) 100%),
+                url('assets/ui/banner.png') center / cover no-repeat;
             border-bottom: 1px solid rgba(217, 119, 6, 0.35);
             cursor: move;
             padding: 6px 12px;
@@ -54,6 +58,7 @@
             border-color: #fbbf24;
             background: rgba(30, 41, 59, 0.95);
         }
+        .image-pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
         ::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 3px; }
@@ -62,12 +67,13 @@
 <body class="relative w-screen h-screen">
 
     <!-- 0. 登入大廳 -->
-    <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
+    <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90" style="background: #050505 url('assets/ui/login_bar.png') center bottom / 100% auto no-repeat;">
         <div class="hud-panel w-[410px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
-                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE · V13</div>
+                <img src="assets/ui/logo.png" alt="墨香" class="mx-auto h-20 object-contain drop-shadow">
+                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE · 原作資源</div>
                 <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 聯機重生理順版</h1>
-                <p class="text-xs text-gray-400">完美修復 PVP 殘血不朽與傳送回城隱身 Bug</p>
+                <p class="text-xs text-gray-400">UI／武功／真技取自伺服器 SkillList 與客戶端圖集</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -145,7 +151,7 @@
             <div class="flex items-center gap-3 border-b border-gray-700/80 pb-2.5">
                 <div class="relative">
                     <div class="w-12 h-[4.25rem] rounded overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
-                        <img id="hud-char-img" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200" alt="少俠立繪" class="w-full h-full object-cover">
+                        <img id="hud-char-img" src="assets/weapons/sword.png" alt="少俠立繪" class="w-full h-full object-contain image-pixelated bg-black">
                     </div>
                     <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V13</span>
                 </div>
@@ -253,7 +259,7 @@
     <!-- 3. 右側：兵器與 4 大絕學武功 -->
     <section id="panel-martial" class="hud-panel absolute top-24 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-martial')">
-            <span>兵器與四大絕學武功</span>
+            <span>兵器與四大絕學（第4招為原作真技）</span>
             <button onclick="togglePanel('panel-martial')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-3 text-xs">
@@ -267,11 +273,11 @@
 
             <div class="bg-gray-900/90 border border-gray-700 p-2.5 rounded space-y-2">
                 <div class="flex gap-2.5 items-start">
-                    <img id="skill-img" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=160" alt="技能圖" class="w-14 h-14 rounded object-cover border border-amber-600/50 bg-gray-950 shrink-0">
+                    <img id="skill-img" src="assets/skills/sword_1.png" alt="技能圖" class="w-14 h-14 rounded object-contain border border-amber-600/50 bg-gray-950 shrink-0 image-pixelated">
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-center gap-1">
                             <div class="truncate">
-                                <span class="text-amber-400 font-bold text-sm" id="skill-name">破魂擊</span>
+                                <span class="text-amber-400 font-bold text-sm" id="skill-name">苍松迎客</span>
                                 <span class="ml-1 bg-amber-900/80 text-amber-200 px-1.5 py-0.5 rounded text-[10px]">第 <b id="skill-lv">1</b> 層</span>
                             </div>
                             <button onclick="upgradeSkill()" class="bg-cyan-700 hover:bg-cyan-600 text-white px-2 py-1 rounded text-[11px] font-bold shrink-0">
@@ -368,7 +374,7 @@
                 <div id="equip-left-col" class="col-span-4 space-y-1.5"></div>
                 <div class="col-span-4 flex flex-col items-center justify-center text-center space-y-2 px-1">
                     <div class="relative w-24 h-36 rounded border-2 border-amber-400 avatar-glow overflow-hidden bg-gray-900">
-                        <img id="equip-char-img" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300" alt="角色立繪" class="w-full h-full object-cover">
+                        <img id="equip-char-img" src="assets/weapons/sword.png" alt="角色立繪" class="w-full h-full object-contain image-pixelated bg-black">
                         <img id="equip-fashion-img" alt="時裝" class="absolute inset-0 w-full h-full object-cover hidden">
                     </div>
                     <div class="font-wuxia font-bold text-amber-300 text-sm" id="equip-char-name">少俠</div>
@@ -474,66 +480,16 @@ const EQUIP_SLOTS_RIGHT = [
 ];
 
 const EQUIP_ITEM_POOL = [
-    { slot: 'weapon',   names: ['青鋒劍', '百煉寶刀', '破陣霸王槍', '天魔神兵'], baseStat: { atk: 22, crit: 2 }, images: [
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=160',
-        'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=160',
-        'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=160',
-        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=160'
-    ]},
-    { slot: 'helmet',   names: ['紫金冠', '天蠶頭巾', '修羅戰盔', '龍脈帝王冕'], baseStat: { def: 8, hp: 90 }, images: [
-        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=160',
-        'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=160',
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=160',
-        'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=160'
-    ]},
-    { slot: 'armor',    names: ['天蠶寶甲', '玄鐵重鎧', '金絲軟蝟甲', '大秦龍鱗袍'], baseStat: { def: 15, hp: 160 }, images: [
-        'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=160',
-        'https://images.unsplash.com/photo-1563089145-599997674d42?w=160',
-        'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=160',
-        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=160'
-    ]},
-    { slot: 'shoes',    names: ['踏雲靴', '疾風戰靴', '追月靴', '龍行千里靴'], baseStat: { def: 6, crit: 2 }, images: [
-        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=160',
-        'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=160',
-        'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=160',
-        'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=160'
-    ]},
-    { slot: 'ringR',    names: ['白玉指環', '赤焰戒', '武聖扳指', '龍脈乾坤戒'], baseStat: { atk: 14, crit: 3 }, images: [
-        'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=160',
-        'https://images.unsplash.com/photo-1605100804763-247f83b2bd43?w=160',
-        'https://images.unsplash.com/photo-1603561596113-6e303becbfd3?w=160',
-        'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=160'
-    ]},
-    { slot: 'ringL',    names: ['翡翠指環', '寒冰戒', '破軍戒', '龍脈太極戒'], baseStat: { atk: 14, crit: 3 }, images: [
-        'https://images.unsplash.com/photo-1605100804763-247f83b2bd43?w=160',
-        'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=160',
-        'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=160',
-        'https://images.unsplash.com/photo-1603561596113-6e303becbfd3?w=160'
-    ]},
-    { slot: 'cape',     names: ['流雲披風', '血影斗篷', '天罡披風', '萬古龍皇披風'], baseStat: { def: 9, shield: 110 }, images: [
-        'https://images.unsplash.com/photo-1520975916090-3105956dac38?w=160',
-        'https://images.unsplash.com/photo-1483985988355-763728eac261?w=160',
-        'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=160',
-        'https://images.unsplash.com/photo-1445205170230-053ca3c127ba?w=160'
-    ]},
-    { slot: 'necklace', names: ['菩提唸珠', '勾玉項鍊', '攝魂魔鍊', '大秦傳國玉珮'], baseStat: { atk: 12, shield: 90 }, images: [
-        'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=160',
-        'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=160',
-        'https://images.unsplash.com/photo-1603561591411-71bbd6d3250c?w=160',
-        'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=160'
-    ]},
-    { slot: 'belt',     names: ['烏金腰帶', '磐石束腰', '狂龍腰帶', '皇陵鎮魂帶'], baseStat: { def: 7, hp: 130 }, images: [
-        'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=160',
-        'https://images.unsplash.com/photo-1624222247344-550fb60570bb?w=160',
-        'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=160',
-        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=160'
-    ]},
-    { slot: 'gloves',   names: ['鐵布護腕', '天罡護手', '修羅血爪', '巨靈神力護手'], baseStat: { atk: 12, def: 6 }, images: [
-        'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=160',
-        'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=160',
-        'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=160',
-        'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=160'
-    ]}
+    { slot: 'weapon',   names: ['青鋒劍', '百煉寶刀', '破陣霸王槍', '天魔神兵'], baseStat: { atk: 22, crit: 2 }, images: ['assets/items/item_1.png','assets/items/item_2.png','assets/items/item_3.png','assets/items/item_4.png']},
+    { slot: 'helmet',   names: ['紫金冠', '天蠶頭巾', '修羅戰盔', '龍脈帝王冕'], baseStat: { def: 8, hp: 90 }, images: ['assets/items/item_5.png','assets/items/item_6.png','assets/items/item_7.png','assets/items/item_8.png']},
+    { slot: 'armor',    names: ['天蠶寶甲', '玄鐵重鎧', '金絲軟蝟甲', '大秦龍鱗袍'], baseStat: { def: 15, hp: 160 }, images: ['assets/items/item_9.png','assets/items/item_10.png','assets/items/item_11.png','assets/items/item_12.png']},
+    { slot: 'shoes',    names: ['踏雲靴', '疾風戰靴', '追月靴', '龍行千里靴'], baseStat: { def: 6, crit: 2 }, images: ['assets/items/item_13.png','assets/items/item_14.png','assets/items/item_15.png','assets/items/item_16.png']},
+    { slot: 'ringR',    names: ['白玉指環', '赤焰戒', '武聖扳指', '龍脈乾坤戒'], baseStat: { atk: 14, crit: 3 }, images: ['assets/items/item_17.png','assets/items/item_18.png','assets/items/item_19.png','assets/items/item_20.png']},
+    { slot: 'ringL',    names: ['翡翠指環', '寒冰戒', '破軍戒', '龍脈太極戒'], baseStat: { atk: 14, crit: 3 }, images: ['assets/items/item_21.png','assets/items/item_22.png','assets/items/item_23.png','assets/items/item_24.png']},
+    { slot: 'cape',     names: ['流雲披風', '血影斗篷', '天罡披風', '萬古龍皇披風'], baseStat: { def: 9, shield: 110 }, images: ['assets/items/item_25.png','assets/items/item_26.png','assets/items/item_27.png','assets/items/item_28.png']},
+    { slot: 'necklace', names: ['菩提唸珠', '勾玉項鍊', '攝魂魔鍊', '大秦傳國玉珮'], baseStat: { atk: 12, shield: 90 }, images: ['assets/items/item_29.png','assets/items/item_30.png','assets/items/item_31.png','assets/items/item_32.png']},
+    { slot: 'belt',     names: ['烏金腰帶', '磐石束腰', '狂龍腰帶', '皇陵鎮魂帶'], baseStat: { def: 7, hp: 130 }, images: ['assets/items/item_33.png','assets/items/item_34.png','assets/items/item_35.png','assets/items/item_36.png']},
+    { slot: 'gloves',   names: ['鐵布護腕', '天罡護手', '修羅血爪', '巨靈神力護手'], baseStat: { atk: 12, def: 6 }, images: ['assets/items/item_37.png','assets/items/item_38.png','assets/items/item_39.png','assets/items/item_40.png']}
 ];
 
 const MAPS = {
@@ -574,66 +530,42 @@ const MAPS = {
 };
 
 const WEAPONS = {
-    sword: {
-        id: 'sword', name: '劍', scaling: 'STR', color: '#38bdf8',
-        img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=240',
-        skills: [
-            { id: 'sword_1', name: '破魂擊', range: 70, cooldown: 900, baseAtk: 18, dmgRatio: 1.25, critBonus: 3, desc: '凝聚劍氣斬擊目標，速度與威力兼具。', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=160' },
-            { id: 'sword_2', name: '回風舞', range: 75, cooldown: 1000, baseAtk: 22, dmgRatio: 1.40, critBonus: 5, desc: '如疾風般迴旋劍芒，對敵造成連續撕裂傷。', img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=160' },
-            { id: 'sword_3', name: '御劍術', range: 120, cooldown: 1150, baseAtk: 26, dmgRatio: 1.60, critBonus: 8, desc: '以氣御劍遠距離穿刺，防不勝防。', img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=160' },
-            { id: 'sword_4', name: '萬劍歸宗', range: 90, cooldown: 1400, baseAtk: 35, dmgRatio: 2.10, critBonus: 12, desc: '劍道終極奧義，萬道劍氣瞬間爆發毀滅打擊。', img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=160' }
-        ]
-    },
-    blade: {
-        id: 'blade', name: '刀', scaling: 'STR', color: '#f87171',
-        img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=240',
-        skills: [
-            { id: 'blade_1', name: '狂風斬', range: 75, cooldown: 1100, baseAtk: 24, dmgRatio: 1.50, critBonus: 2, desc: '剛猛霸道的基礎刀法，單發威力極高。', img: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=160' },
-            { id: 'blade_2', name: '烈火刀法', range: 80, cooldown: 1200, baseAtk: 29, dmgRatio: 1.70, critBonus: 4, desc: '附帶灼燒內力的霸道斬擊。', img: 'https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=160' },
-            { id: 'blade_3', name: '修羅連環', range: 75, cooldown: 1000, baseAtk: 33, dmgRatio: 1.85, critBonus: 6, desc: '煞氣逼人的連續重劈，招招致命。', img: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=160' },
-            { id: 'blade_4', name: '開天闢地', range: 85, cooldown: 1500, baseAtk: 42, dmgRatio: 2.40, critBonus: 10, desc: '刀氣縱橫三萬里，一刀斷水。', img: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=160' }
-        ]
-    },
-    spear: {
-        id: 'spear', name: '槍', scaling: 'STR', color: '#fbbf24',
-        img: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=240',
-        skills: [
-            { id: 'spear_1', name: '橫掃千軍', range: 105, cooldown: 1050, baseAtk: 21, dmgRatio: 1.35, critBonus: 3, desc: '一寸長一寸強的中距強力穿刺。', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=160' },
-            { id: 'spear_2', name: '疾風刺', range: 115, cooldown: 950, baseAtk: 25, dmgRatio: 1.50, critBonus: 5, desc: '快如閃電的突刺，破甲能力極強。', img: 'https://images.unsplash.com/photo-1476041800952-1e0c7d5f2df0?w=160' },
-            { id: 'spear_3', name: '龍騰虎躍', range: 110, cooldown: 1250, baseAtk: 31, dmgRatio: 1.75, critBonus: 7, desc: '如游龍出海般橫掃千軍。', img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=160' },
-            { id: 'spear_4', name: '霸王卸甲', range: 120, cooldown: 1450, baseAtk: 38, dmgRatio: 2.20, critBonus: 10, desc: '霸氣無雙的絕世槍芒。', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=160' }
-        ]
-    },
-    fist: {
-        id: 'fist', name: '拳', scaling: 'STR', color: '#a78bfa',
-        img: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=240',
-        skills: [
-            { id: 'fist_1', name: '如來神掌', range: 60, cooldown: 650, baseAtk: 15, dmgRatio: 1.00, critBonus: 8, desc: '出拳如風的極速連擊絕學。', img: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=160' },
-            { id: 'fist_2', name: '羅漢拳', range: 60, cooldown: 750, baseAtk: 19, dmgRatio: 1.20, critBonus: 10, desc: '剛猛無儔的少林正宗拳法。', img: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=160' },
-            { id: 'fist_3', name: '降龍十八掌', range: 65, cooldown: 900, baseAtk: 27, dmgRatio: 1.65, critBonus: 14, desc: '震古爍今的至剛至陽掌力。', img: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=160' },
-            { id: 'fist_4', name: '佛光普照', range: 70, cooldown: 1300, baseAtk: 36, dmgRatio: 2.10, critBonus: 18, desc: '拳意化為金身佛像的毀滅一擊。', img: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=160' }
-        ]
-    },
-    bow: {
-        id: 'bow', name: '弓', scaling: 'DEX', color: '#34d399',
-        img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=240',
-        skills: [
-            { id: 'bow_1', name: '萬箭齊發', range: 240, cooldown: 1000, baseAtk: 18, dmgRatio: 1.20, critBonus: 6, desc: '百步穿楊的遠程狙擊。', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=160' },
-            { id: 'bow_2', name: '追魂箭', range: 260, cooldown: 1100, baseAtk: 23, dmgRatio: 1.45, critBonus: 9, desc: '鎖定敵人心脈的致命飛矢。', img: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=160' },
-            { id: 'bow_3', name: '暴雨梨花', range: 220, cooldown: 850, baseAtk: 28, dmgRatio: 1.65, critBonus: 12, desc: '瞬間射出大量箭雨壓制敵陣。', img: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=160' },
-            { id: 'bow_4', name: '后羿射日', range: 280, cooldown: 1400, baseAtk: 37, dmgRatio: 2.25, critBonus: 16, desc: '傳說中能貫穿日月的神箭。', img: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=160' }
-        ]
-    },
-    hidden: {
-        id: 'hidden', name: '暗器', scaling: 'DEX', color: '#f472b6',
-        img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=240',
-        skills: [
-            { id: 'hidden_1', name: '漫天花雨', range: 200, cooldown: 720, baseAtk: 15, dmgRatio: 1.05, critBonus: 12, desc: '淬毒飛鏢高速連發。', img: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=160' },
-            { id: 'hidden_2', name: '暴雨針', range: 210, cooldown: 800, baseAtk: 20, dmgRatio: 1.30, critBonus: 15, desc: '防不勝防的劇毒銀針。', img: 'https://images.unsplash.com/photo-1482192505345-5655af888cc4?w=160' },
-            { id: 'hidden_3', name: '閻王帖', range: 220, cooldown: 950, baseAtk: 26, dmgRatio: 1.55, critBonus: 18, desc: '索命無常的恐怖暗器。', img: 'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=160' },
-            { id: 'hidden_4', name: '孔雀翎', range: 250, cooldown: 1350, baseAtk: 34, dmgRatio: 2.10, critBonus: 22, desc: '天下第一暗器的燦爛絕殺。', img: 'https://images.unsplash.com/photo-1452570053594-1b985d6ea890?w=160' }
-        ]
-    }
+    sword: { id: 'sword', name: '劍', scaling: 'STR', color: '#38bdf8', img: 'assets/weapons/sword.png', skills: [
+        { id: 'sword_1', srcIdx: 100, name: '苍松迎客', range: 94, cooldown: 1700, premierDelay: 0, baseAtk: 23, dmgRatio: 2.85, critBonus: 2, phySung: [2.85,3.09,3.33,3.57,3.81,4.05,4.77,5.01,5.25,5.49,5.73,7.67], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_001.beff', fxUse: 'm_mu01_003.beff', fxSelf: '0', premier: false, desc: '外功 2.85～7.67／內力 30／特效 m_mu01_003.beff', img: 'assets/skills/sword_1.png' },
+        { id: 'sword_2', srcIdx: 101, name: '三燕投林', range: 94, cooldown: 1066, premierDelay: 0, baseAtk: 22, dmgRatio: 2.7, critBonus: 2, phySung: [2.7,2.94,3.18,3.42,3.66,3.9,4.62,4.86,5.1,5.34,5.58,7.52], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_001.beff', fxUse: 'm_mu01_004.beff', fxSelf: '0', premier: false, desc: '外功 2.7～7.52／內力 30／特效 m_mu01_004.beff', img: 'assets/skills/sword_2.png' },
+        { id: 'sword_3', srcIdx: 102, name: '附骨之蛆', range: 94, cooldown: 2033, premierDelay: 0, baseAtk: 31, dmgRatio: 3.9, critBonus: 2, phySung: [3.9,4.14,4.38,4.62,4.86,5.1,5.82,6.06,6.3,6.54,6.78,8.72], mpSung: [29,35,41,46,52,58,64,70,75,81,87,102], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_001.beff', fxUse: 'm_mu01_002.beff', fxSelf: '0', premier: false, desc: '外功 3.9～8.72／內力 29／特效 m_mu01_002.beff', img: 'assets/skills/sword_3.png' },
+        { id: 'sword_4', srcIdx: 105, name: '真苍松迎客', range: 94, cooldown: 1700, premierDelay: 0, baseAtk: 73, dmgRatio: 9.1, critBonus: 2, phySung: [9.1,9.1,9.1,9.1,9.1,9.1,9.1,9.1,9.1,9.1,9.1,9.1], mpSung: [105,105,105,105,105,105,105,105,105,105,105,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_012.beff', fxUse: 'm_mu01_008.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 9.1～9.1／內力 105／特效 m_mu01_008.beff', img: 'assets/skills/sword_4.png' }
+    ]},
+    blade: { id: 'blade', name: '刀', scaling: 'STR', color: '#f87171', img: 'assets/weapons/blade.png', skills: [
+        { id: 'blade_1', srcIdx: 300, name: '旋风斩', range: 100, cooldown: 1833, premierDelay: 0, baseAtk: 24, dmgRatio: 3, critBonus: 5, phySung: [3,3.25,3.5,3.76,4.01,4.26,5.02,5.27,5.52,5.77,6.02,7.54], mpSung: [33,40,47,53,60,67,73,80,87,93,100,116], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0.05,0.06,0.07,0.08,0.09,0.1,0.12,0.13,0.14,0.15,0.15,0.15], fxStart: 'm_mu00_003.beff', fxUse: 'm_mu03_003.beff', fxSelf: '0', premier: false, desc: '外功 3～7.54／內力 33／特效 m_mu03_003.beff', img: 'assets/skills/blade_1.png' },
+        { id: 'blade_2', srcIdx: 301, name: '怒劈华山', range: 94, cooldown: 1200, premierDelay: 0, baseAtk: 24, dmgRatio: 3, critBonus: 5, phySung: [3,3.25,3.5,3.76,4.01,4.26,5.02,5.27,5.52,5.77,6.02,7.54], mpSung: [39,47,55,63,71,79,87,94,102,110,118,138], stunSung: [0.036,0.054,0.072,0.09,0.108,0.126,0.162,0.18,0.198,0.216,0.216,0.216], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0.05,0.06,0.07,0.08,0.09,0.1,0.12,0.13,0.14,0.15,0.15,0.15], fxStart: 'm_mu00_003.beff', fxUse: 'm_mu03_005.beff', fxSelf: '0', premier: false, desc: '外功 3～7.54／暈眩／內力 39／特效 m_mu03_005.beff', img: 'assets/skills/blade_2.png' },
+        { id: 'blade_3', srcIdx: 302, name: '万佛朝宗', range: 94, cooldown: 2166, premierDelay: 0, baseAtk: 32, dmgRatio: 4, critBonus: 5, phySung: [4,4.25,4.5,4.75,5,5.25,6,6.25,6.5,6.75,7,8.5], mpSung: [30,36,42,48,54,60,66,73,79,85,91,106], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0.05,0.06,0.07,0.08,0.09,0.1,0.12,0.13,0.14,0.15,0.15,0.15], fxStart: 'm_mu00_003.beff', fxUse: 'm_mu03_004.beff', fxSelf: '0', premier: false, desc: '外功 4～8.5／內力 30／特效 m_mu03_004.beff', img: 'assets/skills/blade_3.png' },
+        { id: 'blade_4', srcIdx: 303, name: '真旋风斩', range: 100, cooldown: 1833, premierDelay: 0, baseAtk: 72, dmgRatio: 9.04, critBonus: 16, phySung: [9.04,9.04,9.04,9.04,9.04,9.04,9.04,9.04,9.04,9.04,9.04,9.04], mpSung: [116,116,116,116,116,116,116,116,116,116,116,116], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16], fxStart: 'm_mu00_014.beff', fxUse: 'm_mu03_008.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 9.04～9.04／內力 116／特效 m_mu03_008.beff', img: 'assets/skills/blade_4.png' }
+    ]},
+    spear: { id: 'spear', name: '槍', scaling: 'STR', color: '#fbbf24', img: 'assets/weapons/spear.png', skills: [
+        { id: 'spear_1', srcIdx: 400, name: '毒蛇出洞', range: 94, cooldown: 1666, premierDelay: 0, baseAtk: 22, dmgRatio: 2.8, critBonus: 2, phySung: [2.8,3.05,3.3,3.55,3.8,4.05,4.8,5.05,5.3,5.55,5.8,7.8], mpSung: [28,34,39,45,50,56,62,67,73,78,84,98], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_004.beff', fxUse: 'm_mu04_001.beff', fxSelf: '0', premier: false, desc: '外功 2.8～7.8／內力 28／特效 m_mu04_001.beff', img: 'assets/skills/spear_1.png' },
+        { id: 'spear_2', srcIdx: 401, name: '横扫千军', range: 112, cooldown: 1833, premierDelay: 0, baseAtk: 22, dmgRatio: 2.8, critBonus: 2, phySung: [2.8,3.05,3.3,3.55,3.8,4.05,4.8,5.05,5.3,5.55,5.8,7.8], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_004.beff', fxUse: 'm_mu04_002.beff', fxSelf: '0', premier: false, desc: '外功 2.8～7.8／內力 30／特效 m_mu04_002.beff', img: 'assets/skills/spear_2.png' },
+        { id: 'spear_3', srcIdx: 403, name: '穿云见日', range: 94, cooldown: 2166, premierDelay: 0, baseAtk: 23, dmgRatio: 2.9, critBonus: 2, phySung: [2.9,3.15,3.4,3.65,3.9,4.15,4.9,5.15,5.4,5.65,5.9,7.9], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_004.beff', fxUse: 'm_mu04_003.beff', fxSelf: '0', premier: false, desc: '外功 2.9～7.9／內力 30／特效 m_mu04_003.beff', img: 'assets/skills/spear_3.png' },
+        { id: 'spear_4', srcIdx: 406, name: '真横扫千军', range: 112, cooldown: 1833, premierDelay: 0, baseAtk: 74, dmgRatio: 9.26, critBonus: 2, phySung: [9.26,9.26,9.26,9.26,9.26,9.26,9.26,9.26,9.26,9.26,9.26,9.26], mpSung: [105,105,105,105,105,105,105,105,105,105,105,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_015.beff', fxUse: 'm_mu04_007.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 9.26～9.26／內力 105／特效 m_mu04_007.beff', img: 'assets/skills/spear_4.png' }
+    ]},
+    fist: { id: 'fist', name: '拳', scaling: 'STR', color: '#a78bfa', img: 'assets/weapons/fist.png', skills: [
+        { id: 'fist_1', srcIdx: 200, name: '野球乱舞', range: 100, cooldown: 1566, premierDelay: 0, baseAtk: 21, dmgRatio: 2.6, critBonus: 2, phySung: [2.6,2.85,3.1,3.35,3.6,3.85,4.6,4.85,5.1,5.35,5.6,7.6], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0.0729,0.08748,0.10206,0.11664,0.13122,0.1458,0.17496,0.18954,0.20412,0.2187,0.2187,0.2187], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_002.beff', fxUse: 'm_mu02_004.beff', fxSelf: '0', premier: false, desc: '外功 2.6～7.6／暈眩／內力 30／特效 m_mu02_004.beff', img: 'assets/skills/fist_1.png' },
+        { id: 'fist_2', srcIdx: 201, name: '闯少林', range: 94, cooldown: 1400, premierDelay: 0, baseAtk: 22, dmgRatio: 2.8, critBonus: 2, phySung: [2.8,3.05,3.3,3.55,3.8,4.05,4.8,5.05,5.3,5.55,5.8,7.8], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0.081,0.0972,0.1134,0.1296,0.1458,0.162,0.1944,0.2106,0.2268,0.243,0.243,0.243], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_002.beff', fxUse: 'm_mu02_001.beff', fxSelf: '0', premier: false, desc: '外功 2.8～7.8／暈眩／內力 30／特效 m_mu02_001.beff', img: 'assets/skills/fist_2.png' },
+        { id: 'fist_3', srcIdx: 202, name: '分筋错骨', range: 94, cooldown: 1566, premierDelay: 0, baseAtk: 22, dmgRatio: 2.8, critBonus: 2, phySung: [2.8,3.05,3.3,3.55,3.8,4.05,4.8,5.05,5.3,5.55,5.8,7.8], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_002.beff', fxUse: 'm_mu02_003.beff', fxSelf: '0', premier: false, desc: '外功 2.8～7.8／內力 30／特效 m_mu02_003.beff', img: 'assets/skills/fist_3.png' },
+        { id: 'fist_4', srcIdx: 205, name: '真野球乱舞', range: 100, cooldown: 1566, premierDelay: 0, baseAtk: 72, dmgRatio: 9.02, critBonus: 2, phySung: [9.02,9.02,9.02,9.02,9.02,9.02,9.02,9.02,9.02,9.02,9.02,9.02], mpSung: [105,105,105,105,105,105,105,105,105,105,105,105], stunSung: [0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328,0.23328], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_013.beff', fxUse: 'm_mu02_009.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 9.02～9.02／暈眩／內力 105／特效 m_mu02_009.beff', img: 'assets/skills/fist_4.png' }
+    ]},
+    bow: { id: 'bow', name: '弓', scaling: 'DEX', color: '#34d399', img: 'assets/weapons/bow.png', skills: [
+        { id: 'bow_1', srcIdx: 500, name: '破天一箭', range: 250, cooldown: 1900, premierDelay: 0, baseAtk: 22, dmgRatio: 2.75, critBonus: 2, phySung: [2.75,2.98,3.21,3.43,3.66,3.89,4.57,4.8,5.03,5.26,5.49,6.85], mpSung: [27,32,38,43,49,54,59,65,70,76,81,94], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_005.beff', fxUse: 'm_mu05_003.beff', fxSelf: '0', premier: false, desc: '外功 2.75～6.85／內力 27／特效 m_mu05_003.beff', img: 'assets/skills/bow_1.png' },
+        { id: 'bow_2', srcIdx: 510, name: '万箭齐发', range: 275, cooldown: 2233, premierDelay: 0, baseAtk: 30, dmgRatio: 3.75, critBonus: 2, phySung: [3.75,4,4.25,4.5,4.75,5,5.75,6,6.25,6.5,6.75,8.25], mpSung: [30,36,42,48,54,60,66,72,78,84,90,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_005.beff', fxUse: 'm_mu05_002.beff', fxSelf: '0', premier: false, desc: '外功 3.75～8.25／內力 30／特效 m_mu05_002.beff', img: 'assets/skills/bow_2.png' },
+        { id: 'bow_3', srcIdx: 501, name: '百步穿杨', range: 188, cooldown: 1066, premierDelay: 0, baseAtk: 24, dmgRatio: 2.99, critBonus: 2, phySung: [2.99,3.23,3.47,3.71,3.95,4.67,4.91,5.15,5.39,5.63,7.07,7.87], mpSung: [34,41,48,55,61,68,75,82,89,96,102,120], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_005.beff', fxUse: 'm_mu05_005.beff', fxSelf: '0', premier: false, desc: '外功 2.99～7.87／內力 34／特效 m_mu05_005.beff', img: 'assets/skills/bow_3.png' },
+        { id: 'bow_4', srcIdx: 508, name: '真万箭齐发', range: 188, cooldown: 2233, premierDelay: 0, baseAtk: 79, dmgRatio: 9.9, critBonus: 2, phySung: [9.9,9.9,9.9,9.9,9.9,9.9,9.9,9.9,9.9,9.9,9.9,9.9], mpSung: [105,105,105,105,105,105,105,105,105,105,105,105], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_016.beff', fxUse: 'm_mu05_007.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 9.9～9.9／內力 105／特效 m_mu05_007.beff', img: 'assets/skills/bow_4.png' }
+    ]},
+    hidden: { id: 'hidden', name: '暗器', scaling: 'DEX', color: '#f472b6', img: 'assets/weapons/hidden.png', skills: [
+        { id: 'hidden_1', srcIdx: 600, name: '漫天花雨', range: 188, cooldown: 1533, premierDelay: 0, baseAtk: 20, dmgRatio: 2.55, critBonus: 2, phySung: [2.55,2.79,3.03,3.27,3.51,3.75,4.47,4.71,4.95,5.19,5.43,7.37], mpSung: [27,32,38,43,49,54,59,65,70,76,81,94], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_006.beff', fxUse: 'm_mu06_001.beff', fxSelf: '0', premier: false, desc: '外功 2.55～7.37／內力 27／特效 m_mu06_001.beff', img: 'assets/skills/hidden_1.png' },
+        { id: 'hidden_2', srcIdx: 601, name: '天罗地网', range: 188, cooldown: 1066, premierDelay: 0, baseAtk: 20, dmgRatio: 2.55, critBonus: 2, phySung: [2.55,2.79,3.03,3.27,3.51,3.75,4.47,4.71,4.95,5.19,5.43,6.67], mpSung: [27,32,38,43,49,54,59,65,70,76,81,95], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_006.beff', fxUse: 'm_mu06_004.beff', fxSelf: '0', premier: false, desc: '外功 2.55～6.67／內力 27／特效 m_mu06_004.beff', img: 'assets/skills/hidden_2.png' },
+        { id: 'hidden_3', srcIdx: 602, name: '心惊肉跳', range: 188, cooldown: 2033, premierDelay: 0, baseAtk: 28, dmgRatio: 3.55, critBonus: 2, phySung: [3.55,3.8,4.05,4.3,4.55,4.8,5.55,5.8,6.05,6.3,6.55,8.55], mpSung: [26,31,37,42,47,52,57,63,68,73,78,91], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_006.beff', fxUse: 'm_mu06_002.beff', fxSelf: '0', premier: false, desc: '外功 3.55～8.55／內力 26／特效 m_mu06_002.beff', img: 'assets/skills/hidden_3.png' },
+        { id: 'hidden_4', srcIdx: 605, name: '真漫天花雨', range: 188, cooldown: 1533, premierDelay: 0, baseAtk: 70, dmgRatio: 8.74, critBonus: 2, phySung: [8.74,8.74,8.74,8.74,8.74,8.74,8.74,8.74,8.74,8.74,8.74,8.74], mpSung: [94,94,94,94,94,94,94,94,94,94,94,94], stunSung: [0,0,0,0,0,0,0,0,0,0,0,0], vampSung: [0,0,0,0,0,0,0,0,0,0,0,0], critSung: [0,0,0,0,0,0,0,0,0,0,0,0], fxStart: 'm_mu00_017.beff', fxUse: 'm_mu06_006.beff', fxSelf: '0', premier: true, desc: '原作真技／外功 8.74～8.74／內力 94／特效 m_mu06_006.beff', img: 'assets/skills/hidden_4.png' }
+    ]}
 };
 
 let onlinePlayersMap = {};
@@ -647,13 +579,13 @@ const bossAoeZones = [];
 let lastBossAoeCastTime = 0;
 
 const characterImages = {
-    sword: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=240',
-    blade: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=240',
-    spear: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=240',
-    fist: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=240',
-    bow: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=240',
-    hidden: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=240',
-    default: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=240'
+    sword: 'assets/weapons/sword.png',
+    blade: 'assets/weapons/blade.png',
+    spear: 'assets/weapons/spear.png',
+    fist: 'assets/weapons/fist.png',
+    bow: 'assets/weapons/bow.png',
+    hidden: 'assets/weapons/hidden.png',
+    default: 'assets/weapons/sword.png'
 };
 
 const fashionImages = {};
@@ -662,17 +594,17 @@ EQUIP_ITEM_POOL.forEach(pool => {
         fashionImages[name] = pool.images[i];
     });
 });
-fashionImages.default = 'https://images.unsplash.com/photo-1520975916090-3105956dac38?w=160';
+fashionImages.default = 'assets/items/item_1.png';
 
 const monsterImages = {
-    '敦煌沙盜': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=160',
-    '沙漠毒蠍': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=160',
-    '黃河水鬼': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=160',
-    '河妖頭目': 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=160',
-    '皇陵禁衛軍': 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=160',
-    '千年秦俑將軍': 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=160',
-    '巨靈神': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=280',
-    'default':  'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=160'
+    '敦煌沙盜': 'assets/items/item_5.png',
+    '沙漠毒蠍': 'assets/items/item_8.png',
+    '黃河水鬼': 'assets/items/item_12.png',
+    '河妖頭目': 'assets/items/item_16.png',
+    '皇陵禁衛軍': 'assets/items/item_20.png',
+    '千年秦俑將軍': 'assets/items/item_24.png',
+    '巨靈神': 'assets/ui/logo.png',
+    'default':  'assets/ui/helper.png'
 };
 
 const imageCache = {};
@@ -714,7 +646,7 @@ function drawRectSprite(img, cx, cy, w, h, strokeColor, lineWidth) {
     ctx.strokeRect(x, y, w, h);
 }
 
-[...Object.values(characterImages), ...Object.values(fashionImages), ...Object.values(monsterImages)].forEach(getCachedImage);
+[...Object.values(characterImages), ...Object.values(fashionImages), ...Object.values(monsterImages), 'assets/ui/mugong_jin.png', 'assets/fx/critical.png'].forEach(getCachedImage);
 Object.values(WEAPONS).forEach(w => {
     if (w.img) getCachedImage(w.img);
     w.skills.forEach(s => { if (s.img) getCachedImage(s.img); });
@@ -1102,49 +1034,171 @@ function getEquipBonuses(p) {
 }
 
 const MoxiangFormula = {
+    SHIELD_MUGONG_RATIO: 0.7,
+    PVP_PHY_RATIO: 0.65,
+    CRIT_BONUS: 0.25,
+    MAX_DROP: 10000,
+    DROP_ITEM: 2500,
+    DROP_MONEY: 4500,
+
+    calcWeaponAttack(stat, weapon) {
+        const dW = Number(weapon) || 0;
+        const dS = Number(stat) || 0;
+        return Math.floor((dW * ((dS + 200) / 200) * ((dS + 1000) / 500) + dS) * 0.74 + Math.min(dS - 12, 25));
+    },
+
+    SUNG_REL: [1, 1.089, 1.179, 1.268, 1.357, 1.446, 1.714, 1.804, 1.893, 1.982, 2.071, 2.786],
+
+    sungMultiplier(skillLv) {
+        const sung = Math.min(12, Math.max(1, skillLv || 1));
+        return this.SUNG_REL[sung - 1];
+    },
+
+    phySungRate(skill, skillLv) {
+        const lv = Math.min(12, Math.max(1, skillLv || 1));
+        if (skill.phySung && skill.phySung.length >= lv) return skill.phySung[lv - 1];
+        return (skill.dmgRatio || 1) * this.sungMultiplier(lv);
+    },
+
+    getSkillTitle(skill, skillLv) {
+        const lv = skillLv || 1;
+        if (skill.premier || (skill.name && skill.name.charAt(0) === '真')) return skill.name;
+        return lv >= 12 ? `真·${skill.name}` : skill.name;
+    },
+
+    skillMpCost(skill, skillLv) {
+        const lv = Math.min(12, Math.max(1, skillLv || 1));
+        if (skill.mpSung && skill.mpSung.length >= lv) return skill.mpSung[lv - 1] || 8;
+        return 8;
+    },
+
+    enhanceSuccessRate(currentPlus) {
+        if (currentPlus < 3) return 1.0;
+        return Math.max(0.35, 1 - (currentPlus - 2) * 0.12);
+    },
+
+    phyDefenceLevel(targetDef, attackerLevel) {
+        let rate = (targetDef * 2.0 + 50) / (attackerLevel * 20 + 150);
+        if (rate < 0) rate = 0;
+        if (rate > 0.9) rate = 0.9;
+        return rate;
+    },
+
+    rollEquipDrop(isBoss) {
+        if (isBoss) return true;
+        return Math.floor(Math.random() * this.MAX_DROP) < this.DROP_ITEM;
+    },
+
     recalcDerivedStats(player) {
         const w = WEAPONS[player.currentWeapon];
         const enhanceBonus = player.weaponPlus * 8;
         const eqBonus = getEquipBonuses(player);
-        const mainStat = (w.scaling === 'DEX') ? player.stats.dex : player.stats.str;
-
-        player.derived.atk = Math.floor(mainStat * 2.4 + player.level * 4 + 20 + enhanceBonus + eqBonus.atk);
-        player.derived.innerBonusPct = Math.floor(player.stats.int * 1.5);
-        player.maxHp = 300 + player.stats.con * 15 + player.level * 25 + eqBonus.hp;
-        player.maxShield = 150 + player.stats.int * 12 + player.level * 15 + eqBonus.shield;
-        player.maxMp = 100 + player.stats.int * 8 + player.level * 10;
-        player.derived.def = Math.floor(player.stats.con * 0.8 + player.level * 1.5 + eqBonus.def);
-        
         const activeSkill = getCurrentSkill(player);
-        player.derived.critRate = Math.min(80, (player.stats.dex * 0.4 + activeSkill.critBonus + eqBonus.crit)).toFixed(1);
+        const ranged = w.scaling === 'DEX';
+        const mainStat = ranged ? player.stats.dex : player.stats.str;
+        const hasWeapon = !!(player.equipment && player.equipment.weapon);
+        const defaultPower = hasWeapon ? 0 : 5;
+        const weaponPower = (activeSkill.baseAtk || 18) + enhanceBonus + eqBonus.atk + defaultPower;
+
+        player.derived.atkMin = this.calcWeaponAttack(mainStat, weaponPower);
+        player.derived.atkMax = this.calcWeaponAttack(mainStat, weaponPower + Math.max(4, Math.floor(mainStat * 0.2)));
+        player.derived.atk = player.derived.atkMax;
+        player.derived.innerBonusPct = Math.floor(player.stats.int * 1.5);
+        player.derived.critical = Math.floor(player.stats.str / 4);
+        player.derived.decisive = Math.floor(player.stats.int / 4);
+
+        player.maxHp = Math.max(1, player.level * 5 + player.stats.con * 10 + eqBonus.hp);
+        player.maxShield = Math.max(1, player.level * 5 + player.stats.int * 10 + player.stats.str * 5 + player.stats.dex * 5 + eqBonus.shield);
+        player.maxMp = Math.max(1, player.level * 5 + player.stats.int * 10);
+        player.derived.def = Math.floor(player.stats.con / 1.5 + eqBonus.def);
+
+        const critStat = player.derived.critical + eqBonus.crit;
+        const baseCritPct = Math.min(0.2, (critStat + 20) / (player.level * 20 + 300)) * 100;
+        player.derived.critRate = Math.min(80, baseCritPct + (activeSkill.critBonus || 0)).toFixed(1);
+
+        if (player.hp > player.maxHp) player.hp = player.maxHp;
+        if (player.shield > player.maxShield) player.shield = player.maxShield;
+        if (player.mp > player.maxMp) player.mp = player.maxMp;
     },
-    calculateAttackDamage(player, targetDef = 10) {
+
+    calculateAttackDamage(player, target = 10) {
         const activeSkill = getCurrentSkill(player);
         const skillLv = player.skillLevels[activeSkill.id] || 1;
-        const skillMultiplier = 1.0 + (skillLv - 1) * 0.18 + (skillLv >= 12 ? 0.5 : 0);
-        const innerMultiplier = 1.0 + (player.derived.innerBonusPct / 100);
-        const buffMultiplier = player.buffTimer > 0 ? 1.25 : 1.0;
+        const targetObj = (target && typeof target === 'object') ? target : { def: target, lv: player.level };
+        const targetDef = targetObj.def ?? 10;
+        const targetLv = targetObj.lv || targetObj.level || player.level;
+        const isPvp = !!targetObj.isPlayer;
 
-        let rawDmg = (player.derived.atk * activeSkill.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - targetDef;
-        rawDmg = Math.max(5, rawDmg * (0.92 + Math.random() * 0.16));
-        const isCrit = (Math.random() * 100) < parseFloat(player.derived.critRate);
-        if (isCrit) rawDmg *= 1.75;
-        return { damage: Math.floor(rawDmg), isCrit };
+        const atkMin = player.derived.atkMin || player.derived.atk;
+        const atkMax = player.derived.atkMax || player.derived.atk;
+        let rawDmg = atkMin + Math.floor(Math.random() * (Math.max(0, atkMax - atkMin) + 1));
+        rawDmg *= this.phySungRate(activeSkill, skillLv);
+
+        const simMek = player.stats.int;
+        const innerRate = (simMek + 200) / 200;
+        rawDmg *= innerRate * (player.currentWeapon === 'fist' ? 1.15 : 1.0);
+        if (player.buffTimer > 0) rawDmg *= 1.25;
+
+        const critStat = (player.derived.critical || 0);
+        let critChance = Math.min(0.2, (critStat + 20) / (targetLv * 20 + 300));
+        const sungCrit = (activeSkill.critSung && activeSkill.critSung[skillLv - 1]) || 0;
+        critChance += sungCrit || ((activeSkill.critBonus || 0) / 100);
+        const isCrit = Math.random() < Math.min(0.8, critChance);
+        if (isCrit) rawDmg *= (1 + this.CRIT_BONUS);
+
+        rawDmg *= (1 - this.phyDefenceLevel(targetDef, player.level));
+        if (isPvp) rawDmg *= this.PVP_PHY_RATIO;
+        return { damage: Math.max(1, Math.floor(rawDmg)), isCrit };
     },
+
     applyDamageToPlayer(player, rawEnemyAtk) {
-        const actualDmg = Math.max(1, rawEnemyAtk - player.derived.def);
+        let actualDmg = Math.max(1, rawEnemyAtk);
+        actualDmg *= (1 - this.phyDefenceLevel(player.derived.def, player.level || 1));
+        actualDmg = Math.max(1, actualDmg);
+
         if (player.shield > 0) {
-            const shieldAbsorb = Math.min(player.shield, Math.ceil(actualDmg * 0.85));
-            const hpLeak = Math.max(1, actualDmg - shieldAbsorb);
+            const shieldHit = Math.ceil(actualDmg * this.SHIELD_MUGONG_RATIO);
+            const shieldAbsorb = Math.min(player.shield, shieldHit);
             player.shield = Math.max(0, player.shield - shieldAbsorb);
+            const hpLeak = Math.max(1, Math.floor(actualDmg - shieldAbsorb));
             player.hp = Math.max(1, player.hp - hpLeak);
             return { hpLost: hpLeak, shieldLost: shieldAbsorb };
-        } else {
-            player.hp = Math.max(1, player.hp - actualDmg);
-            return { hpLost: actualDmg, shieldLost: 0 };
         }
+        actualDmg = Math.max(1, Math.floor(actualDmg));
+        player.hp = Math.max(1, player.hp - actualDmg);
+        return { hpLost: actualDmg, shieldLost: 0 };
     }
 };
+
+function isTrueSkill(skill) {
+    return !!(skill && (skill.premier || (skill.name && skill.name.charAt(0) === '真')));
+}
+
+function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
+    const trueSkill = isTrueSkill(skill);
+    const fx = (skill && skill.fxUse) || '';
+    let color = (WEAPONS[player.currentWeapon] && WEAPONS[player.currentWeapon].color) || '#facc15';
+    let type = 'slash';
+    if (fx.indexOf('mu05') >= 0 || (skill && skill.range > 160)) type = 'arrow';
+    else if (fx.indexOf('mu06') >= 0) type = 'rain';
+    else if (fx.indexOf('mu02') >= 0) type = 'burst';
+    else if (fx.indexOf('mu04') >= 0) type = 'pierce';
+    else if (fx.indexOf('mu03') >= 0) type = 'arc';
+    if (trueSkill) {
+        skillFx.push({ type: 'jin', x: tx, y: ty, color: '#fde047', life: 22, maxLife: 22, img: 'assets/ui/mugong_jin.png' });
+        slashEffects.push({ x: tx, y: ty, radius: 16, maxRadius: 78, color: '#facc15', alpha: 1, width: 7 });
+    }
+    skillFx.push({ type, x: tx, y: ty, ox: ax, oy: ay, color, life: trueSkill ? 26 : 18, maxLife: trueSkill ? 26 : 18, trueSkill });
+    if (type === 'arrow' || type === 'rain') {
+        const n = type === 'rain' ? 8 : 3;
+        for (let i = 0; i < n; i++) {
+            const ang = Math.atan2(ty - ay, tx - ax) + (Math.random() - 0.5) * 0.4;
+            projectiles.push({ x: ax, y: ay, vx: Math.cos(ang) * (12 + Math.random() * 5), vy: Math.sin(ang) * (12 + Math.random() * 5), color, radius: trueSkill ? 9 : 6, life: 22, glow: true });
+        }
+    } else {
+        slashEffects.push({ x: tx, y: ty, radius: 10, maxRadius: trueSkill ? 70 : 38, color, alpha: 1, width: trueSkill ? 6 : 3 });
+    }
+}
 
 function getCurrentSkill(p) {
     const w = WEAPONS[p.currentWeapon];
@@ -1187,6 +1241,7 @@ const monsters = [];
 const floatingTexts = [];
 const projectiles = [];
 const slashEffects = [];
+const skillFx = [];
 
 function enhanceEquippedSlot(event, slotKey) {
     if (event) event.stopPropagation();
@@ -1207,7 +1262,7 @@ function enhanceEquippedSlot(event, slotKey) {
     }
 
     player.gold -= cost;
-    const successRate = currentPlus < 3 ? 1.0 : (currentPlus < 6 ? 0.70 : 0.45);
+    const successRate = MoxiangFormula.enhanceSuccessRate(currentPlus);
 
     if (Math.random() <= successRate) {
         item.plus = currentPlus + 1;
@@ -1711,8 +1766,8 @@ function renderWeaponButtons() {
     Object.values(WEAPONS).forEach(w => {
         const active = player.currentWeapon === w.id;
         const btn = document.createElement('button');
-        btn.className = `py-1.5 px-2 rounded font-bold border transition ${active ? 'bg-amber-600 text-black border-amber-300 shadow' : 'bg-gray-800/80 text-gray-300 border-gray-700'}`;
-        btn.textContent = w.name;
+        btn.className = `py-1.5 px-2 rounded font-bold border transition flex items-center justify-center gap-1 ${active ? 'bg-amber-600 text-black border-amber-300 shadow' : 'bg-gray-800/80 text-gray-300 border-gray-700'}`;
+        btn.innerHTML = `<img src="${w.img}" alt="" class="w-5 h-5 object-contain image-pixelated">${w.name}`;
         btn.onclick = () => switchWeapon(w.id);
         container.appendChild(btn);
     });
@@ -1744,7 +1799,7 @@ function updateSkillSelect() {
         const opt = document.createElement('option');
         opt.value = s.id;
         const sLv = player.skillLevels[s.id] || 1;
-        opt.textContent = `${s.name} (Lv.${sLv})`;
+        opt.textContent = `${MoxiangFormula.getSkillTitle(s, sLv)} (第${sLv}層)`;
         if (s.id === player.currentSkillId) opt.selected = true;
         select.appendChild(opt);
     });
@@ -1764,7 +1819,8 @@ function upgradeSkill() {
     if (currentLv >= 12 || player.sp < 50) return;
     player.sp -= 50; player.skillLevels[sId] = currentLv + 1; player.skillExp[sId] = 0;
     updateSkillSelect(); updateUI(); saveGame(false);
-    addLog(`《${skill.name}》升至第 ${player.skillLevels[sId]} 層！`, 'text-amber-300');
+    const newLv = player.skillLevels[sId];
+    addLog(`《${MoxiangFormula.getSkillTitle(skill, newLv)}》升至第 ${newLv} 層！`, 'text-amber-300');
 }
 
 function enhanceWeapon() {
@@ -1772,7 +1828,7 @@ function enhanceWeapon() {
     const cost = (player.weaponPlus + 1) * 300;
     if (player.gold < cost) { addLog(`銀兩不足`, 'text-red-400'); return; }
     player.gold -= cost;
-    if (Math.random() <= (player.weaponPlus < 3 ? 1.0 : 0.45)) {
+    if (Math.random() <= MoxiangFormula.enhanceSuccessRate(player.weaponPlus)) {
         player.weaponPlus++; MoxiangFormula.recalcDerivedStats(player);
         addLog(`【成功】兵器共鳴強化 +${player.weaponPlus}`, 'text-amber-300');
     } else { addLog(`【失敗】兵器共鳴維持 +${player.weaponPlus}`, 'text-gray-400'); }
@@ -1920,7 +1976,7 @@ function updateUI() {
     const sLv = player.skillLevels[sId] || 1;
     const sExp = player.skillExp[sId] || 0;
 
-    document.getElementById('ui-weapon-label').textContent = `主修：${w.name} (${skill.name})`;
+    document.getElementById('ui-weapon-label').textContent = `主修：${w.name} (${MoxiangFormula.getSkillTitle(skill, sLv)})`;
     document.getElementById('ui-gold').textContent = player.gold.toLocaleString();
     document.getElementById('ui-sp').textContent = player.sp.toLocaleString();
     document.getElementById('ui-hp-text').textContent = `${Math.floor(player.hp)} / ${player.maxHp}`;
@@ -1947,7 +2003,7 @@ function updateUI() {
     const equipCharImg = document.getElementById('equip-char-img');
     if (equipCharImg) equipCharImg.src = charUrl;
     document.getElementById('skill-img').src = skill.img || w.img || characterImages.default;
-    document.getElementById('skill-name').textContent = skill.name;
+    document.getElementById('skill-name').textContent = MoxiangFormula.getSkillTitle(skill, sLv);
     document.getElementById('skill-lv').textContent = sLv;
     document.getElementById('skill-desc').textContent = skill.desc;
     document.getElementById('skill-exp-text').textContent = `${sExp}%`;
@@ -2049,6 +2105,7 @@ function updateGame(now) {
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
             if (!isMonsterAlive(m)) continue;
+            if (m.stunUntil && now < m.stunUntil) continue;
             if (typeof m.targetX === 'number' && typeof m.targetY === 'number') {
                 m.x += (m.targetX - m.x) * 0.25;
                 m.y += (m.targetY - m.y) * 0.25;
@@ -2142,6 +2199,10 @@ function updateGame(now) {
         slashEffects[i].radius += 2.5; slashEffects[i].alpha -= 0.06;
         if (slashEffects[i].alpha <= 0) slashEffects.splice(i, 1);
     }
+    for (let i = skillFx.length - 1; i >= 0; i--) {
+        skillFx[i].life--;
+        if (skillFx[i].life <= 0) skillFx.splice(i, 1);
+    }
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
         floatingTexts[i].y += floatingTexts[i].vy; floatingTexts[i].alpha -= 0.02;
         if (floatingTexts[i].alpha <= 0) floatingTexts.splice(i, 1);
@@ -2149,19 +2210,15 @@ function updateGame(now) {
 }
 
 async function performPvpAttack(targetOp, now) {
-    player.lastAttackTime = now;
     const skill = getCurrentSkill(player);
     const w = WEAPONS[player.currentWeapon];
-    player.mp = Math.max(0, player.mp - 5);
+    const mpCost = MoxiangFormula.skillMpCost(skill, player.skillLevels[skill.id] || 1);
+    if (player.mp < mpCost) { addLog(`內力不足，無法施展《${skill.name}》`, 'text-sky-300'); return; }
+    player.lastAttackTime = now;
+    player.mp = Math.max(0, player.mp - mpCost);
+    spawnOfficialSkillFx(skill, player.x, player.y, targetOp.x, targetOp.y);
 
-    if (skill.range > 120) {
-        const angle = Math.atan2(targetOp.y - player.y, targetOp.x - player.x);
-        projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14, color: w.color, radius: 8, life: 25, glow: true });
-    } else {
-        slashEffects.push({ x: targetOp.x, y: targetOp.y, radius: 12, maxRadius: 45, color: w.color, alpha: 1.0, width: 5 });
-    }
-
-    const res = MoxiangFormula.calculateAttackDamage(player, 15);
+    const res = MoxiangFormula.calculateAttackDamage(player, { def: 15, lv: targetOp.level || player.level, isPlayer: true });
     const pvpDmg = Math.max(8, Math.floor(res.damage * 0.65));
 
     if (res.isCrit) {
@@ -2188,29 +2245,28 @@ function performAttack(monster, now) {
         player.targetMonster = null;
         return;
     }
-    player.lastAttackTime = now;
     const skill = getCurrentSkill(player);
     const w = WEAPONS[player.currentWeapon];
-    player.mp = Math.max(0, player.mp - 4);
+    const sLv = player.skillLevels[skill.id] || 1;
+    const mpCost = MoxiangFormula.skillMpCost(skill, sLv);
+    if (player.mp < mpCost) { addLog(`內力不足，無法施展《${skill.name}》`, 'text-sky-300'); return; }
+    player.lastAttackTime = now;
+    player.mp = Math.max(0, player.mp - mpCost);
+    spawnOfficialSkillFx(skill, player.x, player.y, monster.x, monster.y);
 
-    if (skill.range > 120) {
-        const angle = Math.atan2(monster.y - player.y, monster.x - player.x);
-        projectiles.push({
-            x: player.x, y: player.y,
-            vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14,
-            color: w.color, radius: skill.id.includes('4') ? 10 : 6,
-            life: 25, glow: true
-        });
-    } else {
-        slashEffects.push({
-            x: monster.x, y: monster.y,
-            radius: 10, maxRadius: skill.id.includes('4') ? 60 : 35,
-            color: w.color, alpha: 1.0, width: skill.id.includes('4') ? 6 : 3
-        });
-    }
-
-    const res = MoxiangFormula.calculateAttackDamage(player, monster.def);
+    const res = MoxiangFormula.calculateAttackDamage(player, monster);
     monster.hp -= res.damage;
+    const vamp = (skill.vampSung && skill.vampSung[sLv - 1]) || 0;
+    if (vamp > 0) {
+        const heal = Math.max(1, Math.floor(res.damage * vamp));
+        player.hp = Math.min(player.maxHp, player.hp + heal);
+        spawnFloatingText(player.x, player.y - 22, `+${heal}`, '#86efac', 12);
+    }
+    const stunRate = (skill.stunSung && skill.stunSung[sLv - 1]) || 0;
+    if (stunRate > 0 && Math.random() < stunRate) {
+        monster.stunUntil = now + 900;
+        spawnFloatingText(monster.x, monster.y - 40, '暈眩', '#e0e7ff', 12);
+    }
 
     if (res.isCrit) {
         screenShakeTimer = 15;
@@ -2228,7 +2284,8 @@ function performAttack(monster, now) {
         }
     }
 
-    spawnFloatingText(monster.x, monster.y - (monster.isBoss ? 65 : 25), res.isCrit ? `💥暴擊 ${skill.name} -${res.damage}` : `${skill.name} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
+    const sTitle = MoxiangFormula.getSkillTitle(skill, player.skillLevels[skill.id] || 1);
+    spawnFloatingText(monster.x, monster.y - (monster.isBoss ? 65 : 25), res.isCrit ? `💥暴擊 ${sTitle} -${res.damage}` : `${sTitle} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
 
     const sId = skill.id;
     if (!player.skillLevels[sId]) player.skillLevels[sId] = 1;
@@ -2238,7 +2295,7 @@ function performAttack(monster, now) {
         if (player.skillExp[sId] >= 100) {
             player.skillExp[sId] = 0; player.skillLevels[sId]++;
             updateSkillSelect();
-            addLog(`✨ 勤修苦練！《${skill.name}》突破至第 ${player.skillLevels[sId]} 層！`, 'text-cyan-300 font-bold');
+            addLog(`✨ 勤修苦練！《${MoxiangFormula.getSkillTitle(skill, player.skillLevels[sId])}》突破至第 ${player.skillLevels[sId]} 層！`, 'text-cyan-300 font-bold');
             saveGame(false);
         }
     }
@@ -2252,7 +2309,7 @@ function performAttack(monster, now) {
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 20, y: monster.y - 10 });
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 5, y: monster.y + 22 });
             addLog(`👑 【全服捷報】大秦龍脈世界王【${monster.name}】被討伐成功！地上爆出大量龍脈神裝！`, 'text-amber-300 font-bold');
-        } else if (Math.random() < 0.40) {
+        } else if (MoxiangFormula.rollEquipDrop(false)) {
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, false), x: monster.x + 16, y: monster.y });
             addLog(`擊敗【${monster.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
         }
@@ -2433,6 +2490,26 @@ function renderGame(now = performance.now()) {
         ctx.restore();
     }
 
+    for (const fx of skillFx) {
+        const t = fx.life / fx.maxLife;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, t);
+        if (fx.type === 'jin') {
+            const img = getCachedImage(fx.img);
+            const sz = 48 + (1 - t) * 36;
+            if (isImageReady(img)) ctx.drawImage(img, fx.x - sz / 2, fx.y - sz / 2, sz, sz);
+            ctx.beginPath(); ctx.arc(fx.x, fx.y, 28 + (1 - t) * 40, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fde047'; ctx.lineWidth = 3; ctx.shadowColor = '#facc15'; ctx.shadowBlur = 18; ctx.stroke();
+        } else if (fx.type === 'burst') {
+            ctx.beginPath(); ctx.arc(fx.x, fx.y, 18 + (1 - t) * 28, 0, Math.PI * 2);
+            ctx.fillStyle = fx.color; ctx.globalAlpha = t * 0.35; ctx.fill();
+        } else if (fx.type === 'pierce') {
+            ctx.strokeStyle = fx.color; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(fx.ox || fx.x - 20, fx.oy || fx.y); ctx.lineTo(fx.x, fx.y); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
     for (const cp of critParticles) {
         ctx.save();
         ctx.beginPath(); ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
@@ -2477,7 +2554,7 @@ function renderGame(now = performance.now()) {
         ctx.strokeRect(player.x - 16, player.y - 24, 32, 48);
     }
     ctx.font = 'bold 12px "Noto Sans TC"'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
-    ctx.fillText(`[${w.name}:${skill.name}] ${currentAccount || '未登入'} (+${selfAuraLv})`, player.x, player.y - 38);
+    ctx.fillText(`[${w.name}:${MoxiangFormula.getSkillTitle(skill, player.skillLevels[skill.id] || 1)}] ${currentAccount || '未登入'} (+${selfAuraLv})`, player.x, player.y - 38);
 
     for (const ft of floatingTexts) {
         ctx.globalAlpha = Math.max(0, ft.alpha);
@@ -2506,6 +2583,7 @@ window.addEventListener('mouseup', () => { dragTarget = null; });
 function togglePanel(id) { document.getElementById(id).classList.toggle('hidden'); }
 
 MoxiangFormula.recalcDerivedStats(player);
+player.hp = player.maxHp; player.shield = player.maxShield; player.mp = player.maxMp;
 renderWeaponButtons();
 updateSkillSelect();
 renderEquipmentPanel();
