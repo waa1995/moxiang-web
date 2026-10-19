@@ -309,15 +309,6 @@
         <div id="battle-log" class="p-2.5 h-36 overflow-y-auto space-y-1 text-[11px] font-mono">
             <div class="text-amber-300">[系統] 歡迎來到《墨香 Online》雲端存檔版！請登入大俠名號。</div>
         </div>
-<div class="pt-1.5 mt-1 border-t border-gray-700/80 flex gap-1 p-2">
-            <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音與全服玩家對話..." 
-                class="w-full bg-gray-950 border border-gray-700 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-amber-500"
-                onkeydown="if(event.key==='Enter'){ sendGlobalChat(this.value); this.value=''; }">
-            <button onclick="const inp=document.getElementById('chat-input'); sendGlobalChat(inp.value); inp.value='';" 
-                class="bg-amber-700 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[11px] font-bold">
-                發送
-            </button>
-        </div>
     </section>
 
     <!-- 6. 中央彈窗：帳號存檔管理與引繼碼 -->
@@ -1395,102 +1386,6 @@ renderWeaponButtons();
 initAuthSession();
 updateUI();
 requestAnimationFrame(gameLoop);
-/**
- * ============================================================================
- * 【Supabase Realtime 全服千里傳音聊天系統】
- * ============================================================================
- */
-
-// 1. 初始化載入歷史聊天紀錄
-async function fetchGlobalChatHistory() {
-    if (!CLOUD_CONFIG.supabaseUrl) return;
-    try {
-        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats?select=*&order=created_at.desc&limit=25`, {
-            headers: {
-                'apikey': CLOUD_CONFIG.supabaseAnonKey,
-                'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`
-            }
-        });
-        const rows = await res.json();
-        if (rows && Array.isArray(rows)) {
-            // 反轉順序讓舊的在上面、新的在下面
-            rows.reverse().forEach(row => {
-                appendChatMessage(row.username, row.message, false);
-            });
-        }
-    } catch (e) {
-        console.warn('載入歷史聊天紀錄失敗', e);
-    }
-}
-
-// 2. 發送千里傳音訊息到 Supabase
-async function sendGlobalChat(messageText) {
-    if (!currentAccount) {
-        addLog(`⚠️ 請先登入大俠名號才能使用千里傳音！`, 'text-red-400');
-        return;
-    }
-    if (!messageText || messageText.trim() === '') return;
-
-    try {
-        await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats`, {
-            method: 'POST',
-            headers: {
-                'apikey': CLOUD_CONFIG.supabaseAnonKey,
-                'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({
-                username: currentAccount,
-                message: messageText.trim(),
-                created_at: new Date().toISOString()
-            })
-        });
-    } catch (e) {
-        console.error('發送聊天訊息失敗', e);
-        addLog(`❌ 千里傳音發送失敗，請檢查網路連線。`, 'text-red-400');
-    }
-}
-
-// 3. 渲染聊天訊息到左下角戰鬥/傳音紀錄框
-function appendChatMessage(sender, msg, isSelf) {
-    const box = document.getElementById('battle-log');
-    const div = document.createElement('div');
-    const colorClass = isSelf ? 'text-amber-300 font-bold' : 'text-cyan-200';
-    div.innerHTML = `<span class="opacity-70">[千里傳音]</span> <b class="${isSelf ? 'text-amber-400' : 'text-sky-300'}">【${sender}】</b>：${escapeHtml(msg)}`;
-    box.appendChild(div);
-    while (box.children.length > 50) box.removeChild(box.firstChild);
-    box.scrollTop = box.scrollHeight;
-}
-
-// 簡易防 XSS 跳脫
-function escapeHtml(text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-// 4. 使用 Supabase Realtime (透過 CDN 引入客戶端庫，或使用 SSE/WebSocket 監聽)
-// 為了不影響目前的單一 HTML 架構，我們直接使用 Supabase 官方的 Realtime JS 客戶端：
-const scriptTag = document.createElement('script');
-scriptTag.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-scriptTag.onload = () => {
-    const supabaseClient = window.supabase.createClient(
-        CLOUD_CONFIG.supabaseUrl.replace('/rest/v1/', ''), 
-        CLOUD_CONFIG.supabaseAnonKey
-    );
-
-    // 即時訂閱 global_chats 資料表的 INSERT 事件
-    supabaseClient
-        .channel('public:global_chats')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chats' }, payload => {
-            const newMsg = payload.new;
-            if (newMsg) {
-                const isSelf = (newMsg.username === currentAccount);
-                appendChatMessage(newMsg.username, newMsg.message, isSelf);
-            }
-        })
-        .subscribe();
-};
-document.head.appendChild(scriptTag);
 </script>
 </body>
 </html>
