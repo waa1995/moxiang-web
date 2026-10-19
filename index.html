@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 全服怪物同步共鬥版</title>
+    <title>墨香 Online - 十格神裝強化與巨靈神紅圈滅世版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -18,10 +18,10 @@
             font-family: 'Noto Serif TC', serif;
         }
         .hud-panel {
-            background: rgba(17, 24, 39, 0.88);
+            background: rgba(17, 24, 39, 0.90);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(217, 119, 6, 0.45);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(217, 119, 6, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), inset 0 0 12px rgba(217, 119, 6, 0.1);
             border-radius: 8px;
             color: #f3f4f6;
         }
@@ -45,6 +45,15 @@
         .avatar-glow {
             box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
         }
+        .equip-slot {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(217, 119, 6, 0.35);
+            transition: all 0.15s ease;
+        }
+        .equip-slot:hover {
+            border-color: #fbbf24;
+            background: rgba(30, 41, 59, 0.95);
+        }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
         ::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 3px; }
@@ -54,11 +63,11 @@
 
     <!-- 0. 登入大廳 -->
     <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
-        <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
+        <div class="hud-panel w-[410px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
-                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 共鬥同屏版</h1>
-                <p class="text-xs text-gray-400">全服怪物座標與血量同步 · 支援與朋友合擊打怪</p>
+                <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE · V12</div>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 神裝百煉與滅世龍脈</h1>
+                <p class="text-xs text-gray-400">十格裝備獨立 +1~+9 強化 · 巨靈神紅圈滅世大招</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -75,20 +84,20 @@
                 <div class="flex items-center justify-between pt-1">
                     <label class="flex items-center gap-1.5 text-gray-300 cursor-pointer">
                         <input id="auth-remember" type="checkbox" checked class="accent-amber-500">
-                        <span>記住登入狀態 (自動進入江湖)</span>
+                        <span>記住登入狀態 (自動進入蘭州安全區)</span>
                     </label>
                 </div>
                 <div id="auth-error" class="text-red-400 font-bold text-center min-h-[18px]"></div>
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 進入江湖與朋友共鬥打寶
+                ☁️ 踏入蘭州安全區
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 雲端怪物同步引擎就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 十格強化與BOSS紅圈就緒</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -98,17 +107,34 @@
     <!-- 遊戲畫布 -->
     <canvas id="gameCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
 
+    <!-- 頂部中央：世界王巨靈神專屬血條與大招預警提示 -->
+    <div id="boss-hud" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-[500px] z-20 pointer-events-none space-y-1.5">
+        <div class="hud-panel p-2.5 border-2 border-red-500/80 bg-gray-950/90 shadow-2xl">
+            <div class="flex justify-between items-center text-xs mb-1">
+                <span id="boss-hud-name" class="font-wuxia font-black text-base text-amber-300 tracking-wider">👑 【大秦龍脈守護神】巨靈神 (Lv.25)</span>
+                <span id="boss-hud-hp-text" class="font-mono font-bold text-red-300">18000 / 18000</span>
+            </div>
+            <div class="w-full h-3.5 bg-gray-900 rounded-full overflow-hidden border border-red-500/50">
+                <div id="boss-hud-bar" class="h-full bg-gradient-to-r from-red-700 via-amber-500 to-red-500 bar-transition" style="width: 100%"></div>
+            </div>
+        </div>
+        <!-- 巨靈神紅圈大招預警橫幅 -->
+        <div id="boss-aoe-warning" class="hidden bg-red-950/90 border-2 border-red-500 text-red-200 font-wuxia font-black text-center py-1.5 px-4 rounded-lg shadow-2xl animate-pulse text-sm">
+            ⚠️ 巨靈神正在蓄力【震天滅地錘】！請立即點擊地面走出紅色預警圈！ ⚠️
+        </div>
+    </div>
+
     <!-- 右上角地圖名稱 -->
     <div class="absolute top-4 right-4 text-right pointer-events-none z-10">
         <div class="text-xs tracking-widest text-amber-400/80 font-bold">MOXIANG ONLINE · 墨香</div>
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">全服共鬥分流</span>
+            <span id="ui-map-name">蘭州 (安全區)</span> <span id="ui-map-tag" class="text-sm bg-emerald-700/90 px-1.5 py-0.5 rounded text-emerald-100 font-sans">安全區</span>
         </div>
-        <div class="text-xs text-emerald-300 mt-1">🌐 野外怪物血量與位置全服即時同步 · 可與朋友圍毆同一隻怪</div>
+        <div class="text-xs text-red-300 mt-1">⚠️ 注意：遭怪物或玩家擊殺將損失 10% 當前經驗值！</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
-    <!-- 1. 左上角：基礎狀態面板 (含少俠立繪) -->
+    <!-- 1. 左上角：基礎狀態面板 -->
     <section id="panel-basic" class="hud-panel absolute top-4 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-basic')">
             <span>江湖基礎資訊</span>
@@ -122,7 +148,7 @@
                     <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
                         <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=150" alt="少俠立繪" class="w-full h-full object-cover">
                     </div>
-                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V1</span>
+                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V12</span>
                 </div>
                 <div class="flex-1 overflow-hidden">
                     <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300 truncate">未登入·少俠</h2>
@@ -178,7 +204,7 @@
     <!-- 2. 左中：屬性配點 -->
     <section id="panel-status" class="hud-panel absolute top-72 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-status')">
-            <span>人物屬性</span>
+            <span>人物屬性 (含十格強化加成)</span>
             <button onclick="togglePanel('panel-status')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-2 text-xs">
@@ -267,7 +293,7 @@
                     🔥 金鐘罩
                 </button>
                 <button onclick="enhanceWeapon()" class="flex-1 bg-amber-900/70 hover:bg-amber-800 border border-amber-500/50 py-1.5 rounded text-amber-200 font-bold">
-                    ⚒️ 兵器強化 (<span id="weapon-plus">+0</span>)
+                    ⚒️ 兵器共鳴 (<span id="weapon-plus">+0</span>)
                 </button>
             </div>
         </div>
@@ -282,8 +308,8 @@
         <div class="p-3 space-y-2.5 text-xs">
             <div class="flex items-center justify-between bg-gray-900/80 p-2 rounded border border-gray-700">
                 <div>
-                    <div class="font-bold text-amber-300">自動打怪與撿寶</div>
-                    <div class="text-[10px] text-gray-400">按 [F] 啟動/停止</div>
+                    <div class="font-bold text-amber-300">自動打怪/演武與撿寶</div>
+                    <div class="text-[10px] text-gray-400">按 [F] 啟動/停止 · 點地面可走位躲紅圈</div>
                 </div>
                 <button id="btn-toggle-bot" onclick="toggleBot()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow">
                     啟動掛機 [F]
@@ -291,11 +317,11 @@
             </div>
             <div class="space-y-1.5 text-[11px]">
                 <label class="flex items-center justify-between">
-                    <span>HP < 60% 自動吃金創藥</span>
+                    <span>HP 低於 60% 自動吃金創藥</span>
                     <input type="checkbox" id="bot-auto-hp" checked class="accent-amber-500">
                 </label>
                 <label class="flex items-center justify-between">
-                    <span>自動撿取地上戰利品</span>
+                    <span>自動撿取地上銀兩與十格裝備</span>
                     <input type="checkbox" id="bot-auto-loot" checked class="accent-amber-500">
                 </label>
             </div>
@@ -305,11 +331,11 @@
     <!-- 5. 左下：聊天紀錄 -->
     <section id="panel-log" class="hud-panel absolute bottom-16 left-4 w-96 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-log')">
-            <span>千里傳音 · 戰利品紀錄</span>
+            <span>千里傳音 · 江湖戰報</span>
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 雲端共享怪物已啟動！你與朋友現在能看見並合擊同一隻怪物！</div>
+            <div class="text-amber-300">[系統] 十格裝備獨立強化 (+1~+9) 與巨靈神全螢幕紅圈大招已實裝！</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
@@ -322,21 +348,70 @@
         </div>
     </section>
 
-    <!-- 6. 傳送視窗 -->
-    <section id="panel-teleport" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] z-40 border-2 border-amber-500/80">
+    <!-- 🌟 6. 十格紙娃娃裝備欄與獨立強化 (+1~+9) 視窗 -->
+    <section id="panel-equip" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] z-40 border-2 border-amber-500/85">
+        <div class="hud-header" onmousedown="startDrag(event, 'panel-equip')">
+            <span>🎒 十格神裝紙娃娃與裝備百煉強化 (+1~+9) [快捷鍵 B]</span>
+            <button onclick="togglePanel('panel-equip')" class="text-gray-400 hover:text-white">✕</button>
+        </div>
+        <div class="p-4 space-y-3 text-xs">
+            <div class="text-[11px] text-amber-200/90 bg-amber-950/40 border border-amber-600/30 px-2.5 py-1 rounded flex justify-between items-center">
+                <span>💡 點擊已穿戴裝備右側【⚒️強化】可升至 +9（每 +1 提升該裝備 15% 屬性）</span>
+                <span class="text-gray-400">點左側名稱可卸下</span>
+            </div>
+
+            <!-- 上半部：左6右4 裝備欄與中央少俠立繪 -->
+            <div class="grid grid-cols-12 gap-2.5 items-center bg-gray-950/75 p-3 rounded-lg border border-amber-600/30">
+                <!-- 左邊 6 格：右戒指、左戒指、披風、項鍊、腰帶、護手 -->
+                <div id="equip-left-col" class="col-span-4 space-y-1.5"></div>
+
+                <!-- 中間少俠紙娃娃與裝備總加成統計 -->
+                <div class="col-span-4 flex flex-col items-center justify-center text-center space-y-2 px-1">
+                    <div class="relative w-20 h-20 rounded-full border-2 border-amber-400 avatar-glow overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200" alt="角色立繪" class="w-full h-full object-cover">
+                    </div>
+                    <div class="font-wuxia font-bold text-amber-300 text-sm" id="equip-char-name">少俠</div>
+                    <div id="equip-bonus-summary" class="w-full bg-gray-900/90 border border-gray-700 rounded p-2 text-[10px] text-left space-y-0.5 text-gray-300">
+                        <div>裝備外功：<b class="text-amber-300">+0</b></div>
+                        <div>裝備防禦：<b class="text-sky-300">+0</b></div>
+                        <div>裝備氣血：<b class="text-red-300">+0</b></div>
+                        <div>裝備護體：<b class="text-cyan-300">+0</b></div>
+                        <div>裝備暴擊：<b class="text-emerald-300">+0%</b></div>
+                    </div>
+                </div>
+
+                <!-- 右邊 4 格：武器、頭飾、衣服、鞋子 -->
+                <div id="equip-right-col" class="col-span-4 space-y-2.5"></div>
+            </div>
+
+            <!-- 下半部：行囊背包 (20格) -->
+            <div class="space-y-1.5">
+                <div class="flex justify-between items-center">
+                    <span class="text-amber-300 font-bold">行囊背包 (<span id="bag-count">0</span> / 20) · 點擊裝備穿戴：</span>
+                    <button onclick="sellAllBagItems()" class="bg-amber-800/80 hover:bg-amber-700 text-amber-100 px-2 py-0.5 rounded text-[11px] border border-amber-500/40">
+                        💰 一鍵出售閒置裝備
+                    </button>
+                </div>
+                <div id="bag-grid" class="grid grid-cols-5 gap-1.5 max-h-40 overflow-y-auto p-1.5 bg-gray-950/80 rounded border border-gray-800"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. 傳送視窗 -->
+    <section id="panel-teleport" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-teleport')">
-            <span>驛站車夫 · 地圖傳送</span>
+            <span>驛站車夫 · 地圖傳送 (含PVP與龍脈BOSS)</span>
             <button onclick="togglePanel('panel-teleport')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-4 space-y-2.5 text-xs">
             <div class="text-gray-300 text-[11px] pb-1 border-b border-gray-700">
                 目前所在地：<b id="current-map-label" class="text-amber-400">蘭州 (安全區)</b>
             </div>
-            <div id="map-list" class="space-y-2"></div>
+            <div id="map-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
         </div>
     </section>
 
-    <!-- 7. 存檔視窗 -->
+    <!-- 8. 存檔視窗 -->
     <section id="panel-save" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-save')">
             <span>💾 雲端帳號管理</span>
@@ -366,8 +441,9 @@
         <button onclick="togglePanel('panel-basic')" class="hover:text-amber-400 px-2 py-1">☯️ 狀態</button>
         <button onclick="togglePanel('panel-status')" class="hover:text-amber-400 px-2 py-1">📊 配點</button>
         <button onclick="togglePanel('panel-martial')" class="hover:text-amber-400 px-2 py-1">⚔️ 武功</button>
+        <button onclick="togglePanel('panel-equip')" class="bg-purple-900/80 hover:bg-purple-800 text-purple-100 px-2.5 py-1 rounded border border-purple-400/50">🎒 裝備強化 [B]</button>
         <button onclick="togglePanel('panel-bot')" class="hover:text-amber-400 px-2 py-1">🤖 掛機 [F]</button>
-        <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded">🐎 傳送</button>
+        <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded">🐎 驛站傳送</button>
         <button onclick="togglePanel('panel-save')" class="bg-amber-900/70 hover:bg-amber-800 text-amber-200 px-2.5 py-1 rounded">💾 存檔</button>
         <button onclick="usePotionManual()" class="bg-red-900/80 hover:bg-red-700 text-red-100 px-2.5 py-1 rounded">💊 補血</button>
     </nav>
@@ -378,26 +454,76 @@ const CLOUD_CONFIG = {
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxaGp4YW1mdnJkZ2RpcHpxdXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTk5NDMsImV4cCI6MjEwNzk5NTk0M30.x1PAG9XF7gKKcQi0dd1kdh4EL7gyQnjq2oucLygB6as'
 };
 
-// 固定座標種子，確保即使資料庫尚未建立也能對齊位置
 const FIXED_SLOTS = [
     { rx: 0.22, ry: 0.28 }, { rx: 0.45, ry: 0.22 }, { rx: 0.75, ry: 0.28 }, { rx: 0.28, ry: 0.55 },
     { rx: 0.55, ry: 0.52 }, { rx: 0.80, ry: 0.58 }, { rx: 0.35, ry: 0.78 }, { rx: 0.68, ry: 0.76 }
 ];
 
+// 十格裝備欄位定義（左6右4）
+const EQUIP_SLOTS_LEFT = [
+    { key: 'ringR',    label: '右戒指', icon: '💍' },
+    { key: 'ringL',    label: '左戒指', icon: '💍' },
+    { key: 'cape',     label: '披風',   icon: '🧣' },
+    { key: 'necklace', label: '項鍊',   icon: '📿' },
+    { key: 'belt',     label: '腰帶',   icon: '🎗️' },
+    { key: 'gloves',   label: '護手',   icon: '🧤' }
+];
+
+const EQUIP_SLOTS_RIGHT = [
+    { key: 'weapon',   label: '武器',   icon: '🗡️' },
+    { key: 'helmet',   label: '頭飾',   icon: '👑' },
+    { key: 'armor',    label: '衣服',   icon: '🥋' },
+    { key: 'shoes',    label: '鞋子',   icon: '👢' }
+];
+
+const EQUIP_ITEM_POOL = [
+    { slot: 'weapon',   names: ['青鋒劍', '百煉寶刀', '破陣霸王槍', '天魔神兵'], baseStat: { atk: 22, crit: 2 } },
+    { slot: 'helmet',   names: ['紫金冠', '天蠶頭巾', '修羅戰盔', '龍脈帝王冕'], baseStat: { def: 8, hp: 90 } },
+    { slot: 'armor',    names: ['天蠶寶甲', '玄鐵重鎧', '金絲軟蝟甲', '大秦龍鱗袍'], baseStat: { def: 15, hp: 160 } },
+    { slot: 'shoes',    names: ['踏雲靴', '疾風戰靴', '追月靴', '龍行千里靴'], baseStat: { def: 6, crit: 2 } },
+    { slot: 'ringR',    names: ['白玉指環', '赤焰戒', '武聖扳指', '龍脈乾坤戒'], baseStat: { atk: 14, crit: 3 } },
+    { slot: 'ringL',    names: ['翡翠指環', '寒冰戒', '破軍戒', '龍脈太極戒'], baseStat: { atk: 14, crit: 3 } },
+    { slot: 'cape',     names: ['流雲披風', '血影斗篷', '天罡披風', '萬古龍皇披風'], baseStat: { def: 9, shield: 110 } },
+    { slot: 'necklace', names: ['菩提唸珠', '勾玉項鍊', '攝魂魔鍊', '大秦傳國玉珮'], baseStat: { atk: 12, shield: 90 } },
+    { slot: 'belt',     names: ['烏金腰帶', '磐石束腰', '狂龍腰帶', '皇陵鎮魂帶'], baseStat: { def: 7, hp: 130 } },
+    { slot: 'gloves',   names: ['鐵布護腕', '天罡護手', '修羅血爪', '巨靈神力護手'], baseStat: { atk: 12, def: 6 } }
+];
+
 const MAPS = {
-    lanzhou: { id: 'lanzhou', name: '蘭州 (安全區)', minLv: 1, safeZone: true, bgGradient: ['#292524', '#1c1917'], monsters: [] },
-    dunhuang: { id: 'dunhuang', name: '敦煌野外', minLv: 1, safeZone: false, bgGradient: ['#451a03', '#1f1308'], monsters: [
+    lanzhou: { id: 'lanzhou', name: '蘭州 (安全區)', minLv: 1, safeZone: true, pvp: false, bgGradient: ['#292524', '#1c1917'], monsters: [] },
+    pvp_arena: {
+        id: 'pvp_arena',
+        name: '修羅演武場 (自由PK)',
+        minLv: 1,
+        safeZone: false,
+        pvp: true,
+        bgGradient: ['#450a0a', '#180404'],
+        monsters: []
+    },
+    dunhuang: { id: 'dunhuang', name: '敦煌野外', minLv: 1, safeZone: false, pvp: false, bgGradient: ['#451a03', '#1f1308'], monsters: [
         { name: '敦煌沙盜', lv: 3, hp: 280, atk: 24, def: 8, exp: 65, sp: 32, gold: 180, color: '#ef4444', radius: 20 },
         { name: '沙漠毒蠍', lv: 5, hp: 400, atk: 30, def: 10, exp: 100, sp: 50, gold: 260, color: '#f59e0b', radius: 21 }
     ]},
-    huanghe: { id: 'huanghe', name: '黃河河畔', minLv: 6, safeZone: false, bgGradient: ['#0f172a', '#020617'], monsters: [
+    huanghe: { id: 'huanghe', name: '黃河河畔', minLv: 6, safeZone: false, pvp: false, bgGradient: ['#0f172a', '#020617'], monsters: [
         { name: '黃河水鬼', lv: 6, hp: 550, atk: 38, def: 15, exp: 150, sp: 75, gold: 450, color: '#38bdf8', radius: 22 },
         { name: '河妖頭目', lv: 9, hp: 850, atk: 50, def: 22, exp: 260, sp: 130, gold: 800, color: '#6366f1', radius: 25 }
     ]},
-    qinling: { id: 'qinling', name: '秦始皇陵地宮', minLv: 12, safeZone: false, bgGradient: ['#311042', '#12051c'], monsters: [
+    qinling: { id: 'qinling', name: '秦始皇陵地宮', minLv: 12, safeZone: false, pvp: false, bgGradient: ['#311042', '#12051c'], monsters: [
         { name: '皇陵禁衛軍', lv: 12, hp: 1200, atk: 68, def: 32, exp: 450, sp: 220, gold: 1500, color: '#a855f7', radius: 26 },
         { name: '千年秦俑將軍', lv: 15, hp: 2200, atk: 95, def: 45, exp: 850, sp: 400, gold: 3000, color: '#eab308', radius: 30 }
-    ]}
+    ]},
+    longmai: {
+        id: 'longmai',
+        name: '大秦龍脈 (世界王)',
+        minLv: 10,
+        safeZone: false,
+        pvp: false,
+        bossOnly: true,
+        bgGradient: ['#3b0764', '#090214'],
+        monsters: [
+            { name: '巨靈神', lv: 25, hp: 18000, atk: 165, def: 55, exp: 4500, sp: 1500, gold: 15000, color: '#dc2626', radius: 56, isBoss: true }
+        ]
+    }
 };
 
 const WEAPONS = {
@@ -461,7 +587,12 @@ let onlinePlayersMap = {};
 let droppedItems = [];
 let screenShakeTimer = 0;
 let screenShakeIntensity = 0;
+let lastProcessedPvpHitTs = 0;
 const critParticles = [];
+
+// 🌟 巨靈神全螢幕紅圈預警陣列与計時器
+const bossAoeZones = [];
+let lastBossAoeCastTime = 0;
 
 const monsterImages = {
     '敦煌沙盜': 'https://images.unsplash.com/photo-1563089145-599997674d42?w=120',
@@ -470,6 +601,7 @@ const monsterImages = {
     '河妖頭目': 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=120',
     '皇陵禁衛軍': 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=120',
     '千年秦俑將軍': 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120',
+    '巨靈神': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=240',
     'default':  'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=120'
 };
 const loadedMonsterImages = {};
@@ -478,6 +610,70 @@ Object.entries(monsterImages).forEach(([name, url]) => {
     img.src = url;
     loadedMonsterImages[name] = img;
 });
+
+// 產生隨機掉落裝備道具 (含獨立強化等級 plus: 0)
+function generateRandomEquipItem(mobLv = 5, isBoss = false) {
+    const pool = EQUIP_ITEM_POOL[Math.floor(Math.random() * EQUIP_ITEM_POOL.length)];
+    let tier = isBoss ? (Math.random() < 0.6 ? 3 : 2) : (Math.random() < 0.12 ? 2 : Math.random() < 0.45 ? 1 : 0);
+    const rarityColors = ['#9ca3af', '#38bdf8', '#c084fc', '#facc15'];
+    const rarityLabels = ['凡品', '精良', '傳奇', '龍脈神裝'];
+    const mult = (1 + tier * 0.65) * (1 + mobLv * 0.08);
+
+    const stats = {};
+    if (pool.baseStat.atk) stats.atk = Math.round(pool.baseStat.atk * mult);
+    if (pool.baseStat.def) stats.def = Math.round(pool.baseStat.def * mult);
+    if (pool.baseStat.hp) stats.hp = Math.round(pool.baseStat.hp * mult);
+    if (pool.baseStat.shield) stats.shield = Math.round(pool.baseStat.shield * mult);
+    if (pool.baseStat.crit) stats.crit = Math.round(pool.baseStat.crit * (1 + tier * 0.5));
+
+    const slotMeta = [...EQUIP_SLOTS_LEFT, ...EQUIP_SLOTS_RIGHT].find(s => s.key === pool.slot);
+    return {
+        uid: 'eq_' + Math.random().toString(36).slice(2, 9),
+        slot: pool.slot,
+        slotLabel: slotMeta ? slotMeta.label : pool.slot,
+        icon: slotMeta ? slotMeta.icon : '📦',
+        name: `${pool.names[tier]}`,
+        rarity: rarityLabels[tier],
+        color: rarityColors[tier],
+        plus: 0, // 🌟 獨立裝備強化等級 (+0 ~ +9)
+        stats,
+        price: (tier + 1) * 250
+    };
+}
+
+// 計算單件裝備包含強化 (+1 ~ +9) 後的實際數值
+function getEffectiveItemStats(item) {
+    if (!item || !item.stats) return {};
+    const plus = item.plus || 0;
+    const mult = 1 + plus * 0.15; // 每 +1 強化提升 15% 基礎屬性
+    const out = {};
+    if (item.stats.atk) out.atk = Math.round(item.stats.atk * mult);
+    if (item.stats.def) out.def = Math.round(item.stats.def * mult);
+    if (item.stats.hp) out.hp = Math.round(item.stats.hp * mult);
+    if (item.stats.shield) out.shield = Math.round(item.stats.shield * mult);
+    if (item.stats.crit) out.crit = Math.round(item.stats.crit + Math.floor(plus * 0.6));
+    return out;
+}
+
+// 死亡扣 10% 經驗懲罰機制
+function handlePlayerDeath(killerName) {
+    const expPenalty = Math.max(10, Math.floor(player.maxExp * 0.10));
+    const actualLost = Math.min(player.exp, expPenalty);
+    player.exp = Math.max(0, player.exp - expPenalty);
+    player.targetMonster = null;
+    player.targetPlayer = null;
+    bossAoeZones.length = 0;
+    toggleBot(false);
+
+    switchMap('lanzhou', false);
+    player.hp = player.maxHp;
+    player.shield = player.maxShield;
+    player.mp = player.maxMp;
+    spawnFloatingText(player.x, player.y - 35, `💀 重傷落敗 -${actualLost} EXP`, '#ef4444', 16);
+    addLog(`💀 您遭到【${killerName}】擊敗，損失了 ${actualLost} 點經驗值，已被送回蘭州安全區休養！`, 'text-red-400 font-bold');
+    updateUI();
+    saveGame(true);
+}
 
 async function sendGlobalChat(messageText) {
     if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
@@ -501,7 +697,7 @@ async function fetchGlobalChats() {
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 雲端共享怪物已啟動！你與朋友現在能看見並合擊同一隻怪物！</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 十格裝備獨立強化 (+1~+9) 與巨靈神全螢幕紅圈大招已實裝！</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
@@ -513,18 +709,23 @@ async function fetchGlobalChats() {
     } catch (e) {}
 }
 
-// 🌟 同步玩家座標、強化光環、以及正在攻擊的怪物目標
 async function syncPlayerPresence() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
+        const currentTargetId = player.targetMonster ? player.targetMonster.id : (player.targetPlayer ? `pvp_${player.targetPlayer}` : null);
+        const auraPlus = Math.max(player.weaponPlus || 0, player.equipment?.weapon?.plus || 0);
         const payload = {
             username: currentAccount,
             map_id: player.currentMapId,
             x: Math.round(player.x),
             y: Math.round(player.y),
-            weapon_plus: player.weaponPlus,
+            hp: Math.round(player.hp),
+            max_hp: Math.round(player.maxHp),
+            shield: Math.round(player.shield),
+            max_shield: Math.round(player.maxShield),
+            weapon_plus: auraPlus,
             weapon_id: player.currentWeapon,
-            attack_target_id: player.targetMonster ? player.targetMonster.id : null,
+            attack_target_id: currentTargetId,
             last_attack_ts: player.lastAttackTime || 0,
             updated_at: new Date().toISOString()
         };
@@ -535,90 +736,111 @@ async function syncPlayerPresence() {
             body: JSON.stringify(payload)
         });
 
-        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
+        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
-            rows.forEach(r => {
+            const selfRow = rows.find(r => r.username === currentAccount);
+            if (selfRow && selfRow.pvp_hit_ts && selfRow.pvp_hit_ts > lastProcessedPvpHitTs && selfRow.pvp_hit_dmg > 0) {
+                lastProcessedPvpHitTs = selfRow.pvp_hit_ts;
+                if (MAPS[player.currentMapId]?.pvp) {
+                    const taken = MoxiangFormula.applyDamageToPlayer(player, selfRow.pvp_hit_dmg);
+                    spawnFloatingText(player.x, player.y - 20, `💥-${taken.hpLost} (${selfRow.pvp_attacker || '對手'})`, '#ef4444', 15);
+                    updateUI();
+                    if (player.hp <= 1) {
+                        handlePlayerDeath(`玩家·${selfRow.pvp_attacker || '神秘高手'}`);
+                    }
+                }
+            }
+
+            const otherRows = rows.filter(r => r.username !== currentAccount);
+            otherRows.forEach(r => {
                 const prev = onlinePlayersMap[r.username];
                 const wColor = WEAPONS[r.weapon_id || 'sword']?.color || '#38bdf8';
 
-                // 若偵測到朋友剛剛發動了新攻擊，為朋友畫出同步攻擊特效！
                 if (prev && r.last_attack_ts && r.last_attack_ts !== prev.lastAttackTs && r.attack_target_id) {
-                    const targetMob = monsters.find(m => m.id === r.attack_target_id);
-                    if (targetMob) {
-                        const dist = Math.hypot(targetMob.x - prev.x, targetMob.y - prev.y);
+                    let tx = null, ty = null;
+                    if (r.attack_target_id.startsWith('pvp_')) {
+                        const tName = r.attack_target_id.replace('pvp_', '');
+                        if (tName === currentAccount) { tx = player.x; ty = player.y; }
+                        else if (onlinePlayersMap[tName]) { tx = onlinePlayersMap[tName].x; ty = onlinePlayersMap[tName].y; }
+                    } else {
+                        const targetMob = monsters.find(m => m.id === r.attack_target_id);
+                        if (targetMob) { tx = targetMob.x; ty = targetMob.y; }
+                    }
+                    if (tx !== null && ty !== null) {
+                        const dist = Math.hypot(tx - prev.x, ty - prev.y);
                         if (dist > 110) {
-                            const angle = Math.atan2(targetMob.y - prev.y, targetMob.x - prev.x);
+                            const angle = Math.atan2(ty - prev.y, tx - prev.x);
                             projectiles.push({ x: prev.x, y: prev.y, vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14, color: wColor, radius: 7, life: 22, glow: true });
                         } else {
-                            slashEffects.push({ x: targetMob.x, y: targetMob.y, radius: 12, maxRadius: 42, color: wColor, alpha: 1.0, width: 4 });
+                            slashEffects.push({ x: tx, y: ty, radius: 12, maxRadius: 42, color: wColor, alpha: 1.0, width: 4 });
                         }
                     }
                 }
 
                 if (!prev) {
                     onlinePlayersMap[r.username] = {
+                        username: r.username,
                         x: r.x, y: r.y, targetX: r.x, targetY: r.y,
+                        hp: r.hp ?? 500, maxHp: r.max_hp ?? 500,
+                        shield: r.shield ?? 300, maxShield: r.max_shield ?? 300,
                         weaponPlus: r.weapon_plus ?? 0,
                         weaponId: r.weapon_id || 'sword',
                         attackTargetId: r.attack_target_id || null,
                         lastAttackTs: r.last_attack_ts || 0
                     };
                 } else {
-                    prev.targetX = r.x;
-                    prev.targetY = r.y;
+                    prev.targetX = r.x; prev.targetY = r.y;
+                    prev.hp = r.hp ?? prev.hp; prev.maxHp = r.max_hp ?? prev.maxHp;
+                    prev.shield = r.shield ?? prev.shield; prev.maxShield = r.max_shield ?? prev.maxShield;
                     prev.weaponPlus = r.weapon_plus ?? 0;
                     prev.weaponId = r.weapon_id || 'sword';
                     prev.attackTargetId = r.attack_target_id || null;
                     prev.lastAttackTs = r.last_attack_ts || 0;
                 }
             });
-            const activeNames = rows.map(r => r.username);
+            const activeNames = otherRows.map(r => r.username);
             Object.keys(onlinePlayersMap).forEach(name => { if (!activeNames.includes(name)) delete onlinePlayersMap[name]; });
         }
     } catch (e) {}
 }
 
-// 🌟 全服雲端共享怪物同步引擎 (每 0.25 秒同步一次怪物座標與血量)
 async function syncWorldMonsters() {
     const mapInfo = MAPS[player.currentMapId];
-    if (!currentAccount || !mapInfo || mapInfo.safeZone) return;
+    if (!currentAccount || !mapInfo || mapInfo.safeZone || mapInfo.monsters.length === 0) return;
 
     try {
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?map_id=eq.${player.currentMapId}&order=id.asc`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
-        if (!res.ok) return; // 若資料表尚未建立，自動保留本機固定種子怪物
+        if (!res.ok) return;
         const rows = await res.json();
         if (!Array.isArray(rows)) return;
 
-        // 如果雲端這張地圖還沒有怪物（第一位進入地圖的玩家），自動將 8 隻固定編號怪物寫入雲端
-        if (rows.length < FIXED_SLOTS.length) {
+        const expectedCount = mapInfo.bossOnly ? 1 : FIXED_SLOTS.length;
+        if (rows.length < expectedCount) {
             await seedCloudMonstersForMap(player.currentMapId);
             return;
         }
 
-        // 將雲端怪物的最新血量與座標同步至本機畫布
         rows.forEach(r => {
             let localMob = monsters.find(m => m.id === r.id);
+            const isBoss = (mapInfo.bossOnly || r.name === '巨靈神');
             if (!localMob) {
                 monsters.push({
                     id: r.id, map_id: r.map_id, name: r.name, lv: r.lv,
                     hp: r.hp, maxHp: r.max_hp, atk: r.atk, def: r.def,
                     exp: r.exp, sp: r.sp, gold: r.gold, color: r.color, radius: r.radius,
-                    x: r.x, y: r.y, targetX: r.x, targetY: r.y, vx: 0, vy: 0, lastAttackTime: 0
+                    isBoss, x: r.x, y: r.y, targetX: r.x, targetY: r.y, vx: 0, vy: 0, lastAttackTime: 0
                 });
             } else {
-                localMob.hp = r.hp;
-                localMob.maxHp = r.max_hp;
-                localMob.name = r.name;
-                localMob.lv = r.lv;
-                localMob.color = r.color;
-                localMob.radius = r.radius;
-                localMob.targetX = r.x;
-                localMob.targetY = r.y;
+                localMob.hp = r.hp; localMob.maxHp = r.max_hp;
+                localMob.name = r.name; localMob.lv = r.lv;
+                localMob.color = r.color; localMob.radius = r.radius;
+                localMob.isBoss = isBoss;
+                localMob.targetX = r.x; localMob.targetY = r.y;
             }
         });
     } catch (e) {}
@@ -626,8 +848,10 @@ async function syncWorldMonsters() {
 
 async function seedCloudMonstersForMap(mapId) {
     const mapInfo = MAPS[mapId];
-    if (!mapInfo || mapInfo.safeZone) return;
-    const batch = FIXED_SLOTS.map((slot, idx) => {
+    if (!mapInfo || mapInfo.safeZone || mapInfo.monsters.length === 0) return;
+
+    const slotsToUse = mapInfo.bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
+    const batch = slotsToUse.map((slot, idx) => {
         const tpl = mapInfo.monsters[idx % mapInfo.monsters.length];
         return {
             id: `${mapId}_mob_${idx}`,
@@ -672,29 +896,48 @@ setInterval(fetchGlobalChats, 3000);
 setInterval(syncPlayerPresence, 200);
 setInterval(syncWorldMonsters, 250);
 
+// 🌟 計算十格穿戴裝備（包含各自的 +1~+9 強化倍率）的總和加成
+function getEquipBonuses(p) {
+    const bonus = { atk: 0, def: 0, hp: 0, shield: 0, crit: 0 };
+    if (!p.equipment) return bonus;
+    Object.values(p.equipment).forEach(item => {
+        if (item && item.stats) {
+            const eff = getEffectiveItemStats(item);
+            bonus.atk += eff.atk || 0;
+            bonus.def += eff.def || 0;
+            bonus.hp += eff.hp || 0;
+            bonus.shield += eff.shield || 0;
+            bonus.crit += eff.crit || 0;
+        }
+    });
+    return bonus;
+}
+
 const MoxiangFormula = {
     recalcDerivedStats(player) {
         const w = WEAPONS[player.currentWeapon];
         const enhanceBonus = player.weaponPlus * 8;
+        const eqBonus = getEquipBonuses(player);
         const mainStat = (w.scaling === 'DEX') ? player.stats.dex : player.stats.str;
-        player.derived.atk = Math.floor(mainStat * 2.4 + player.level * 4 + 20 + enhanceBonus);
+
+        player.derived.atk = Math.floor(mainStat * 2.4 + player.level * 4 + 20 + enhanceBonus + eqBonus.atk);
         player.derived.innerBonusPct = Math.floor(player.stats.int * 1.5);
-        player.maxHp = 300 + player.stats.con * 15 + player.level * 25;
-        player.maxShield = 150 + player.stats.int * 12 + player.level * 15;
+        player.maxHp = 300 + player.stats.con * 15 + player.level * 25 + eqBonus.hp;
+        player.maxShield = 150 + player.stats.int * 12 + player.level * 15 + eqBonus.shield;
         player.maxMp = 100 + player.stats.int * 8 + player.level * 10;
-        player.derived.def = Math.floor(player.stats.con * 0.8 + player.level * 1.5);
+        player.derived.def = Math.floor(player.stats.con * 0.8 + player.level * 1.5 + eqBonus.def);
         
         const activeSkill = getCurrentSkill(player);
-        player.derived.critRate = Math.min(65, (player.stats.dex * 0.4 + activeSkill.critBonus)).toFixed(1);
+        player.derived.critRate = Math.min(80, (player.stats.dex * 0.4 + activeSkill.critBonus + eqBonus.crit)).toFixed(1);
     },
-    calculateAttackDamage(player, monster) {
+    calculateAttackDamage(player, targetDef = 10) {
         const activeSkill = getCurrentSkill(player);
         const skillLv = player.skillLevels[activeSkill.id] || 1;
         const skillMultiplier = 1.0 + (skillLv - 1) * 0.18 + (skillLv >= 12 ? 0.5 : 0);
         const innerMultiplier = 1.0 + (player.derived.innerBonusPct / 100);
         const buffMultiplier = player.buffTimer > 0 ? 1.25 : 1.0;
 
-        let rawDmg = (player.derived.atk * activeSkill.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - monster.def;
+        let rawDmg = (player.derived.atk * activeSkill.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - targetDef;
         rawDmg = Math.max(5, rawDmg * (0.92 + Math.random() * 0.16));
         const isCrit = (Math.random() * 100) < parseFloat(player.derived.critRate);
         if (isCrit) rawDmg *= 1.75;
@@ -737,7 +980,16 @@ function getDefaultPlayerState() {
         hp: 525, maxHp: 525, shield: 330, maxShield: 330, mp: 220, maxMp: 220,
         currentWeapon: 'sword', currentSkillId: 'sword_1', weaponPlus: 0,
         skillLevels: { sword_1: 1, sword_2: 1, sword_3: 1, sword_4: 1, blade_1: 1, blade_2: 1, blade_3: 1, blade_4: 1, spear_1: 1, spear_2: 1, spear_3: 1, spear_4: 1, fist_1: 1, fist_2: 1, fist_3: 1, fist_4: 1, bow_1: 1, bow_2: 1, bow_3: 1, bow_4: 1, hidden_1: 1, hidden_2: 1, hidden_3: 1, hidden_4: 1 },
-        skillExp: {}, buffTimer: 0, autoBot: false, targetMonster: null, lastAttackTime: 0,
+        skillExp: {},
+        equipment: {
+            weapon: null, helmet: null, armor: null, shoes: null,
+            ringR: null, ringL: null, cape: null, necklace: null, belt: null, gloves: null
+        },
+        bag: [
+            generateRandomEquipItem(1, false),
+            generateRandomEquipItem(1, false)
+        ],
+        buffTimer: 0, autoBot: false, targetMonster: null, targetPlayer: null, lastAttackTime: 0,
         currentMapId: 'lanzhou', lastSaveTimestamp: Date.now()
     };
 }
@@ -748,19 +1000,226 @@ const floatingTexts = [];
 const projectiles = [];
 const slashEffects = [];
 
-function switchMap(mapId) {
+// 🌟 獨立強化十格穿戴裝備 (+1 ~ +9)
+function enhanceEquippedSlot(event, slotKey) {
+    if (event) event.stopPropagation();
+    if (!currentAccount) return;
+    const item = player.equipment[slotKey];
+    if (!item) return;
+
+    const currentPlus = item.plus || 0;
+    if (currentPlus >= 9) {
+        addLog(`✨ 【${item.name}】已經達到最高強化境界 +9！`, 'text-amber-300 font-bold');
+        return;
+    }
+
+    const cost = (currentPlus + 1) * 250;
+    if (player.gold < cost) {
+        addLog(`⚠️ 強化【${item.name}】至 +${currentPlus + 1} 需要 ${cost} 銀兩（當前銀兩不足）！`, 'text-red-400');
+        return;
+    }
+
+    player.gold -= cost;
+    // +1~+3 必定成功，+4~+6 成功率 70%，+7~+9 成功率 45%（失敗不掉級）
+    const successRate = currentPlus < 3 ? 1.0 : (currentPlus < 6 ? 0.70 : 0.45);
+
+    if (Math.random() <= successRate) {
+        item.plus = currentPlus + 1;
+        if (slotKey === 'weapon' && item.plus > player.weaponPlus) {
+            player.weaponPlus = item.plus; // 武器部位強化同步提升腳底光環
+        }
+        MoxiangFormula.recalcDerivedStats(player);
+        spawnFloatingText(player.x, player.y - 40, `⚒️ ${item.name} +${item.plus} 成功!`, '#fde047', 16);
+        addLog(`🎉 【百煉成鋼】成功將《${item.name}》強化至 +${item.plus}！屬性大幅提升！`, 'text-amber-300 font-bold');
+    } else {
+        spawnFloatingText(player.x, player.y - 35, `⚒️ 強化失敗 (維持 +${currentPlus})`, '#9ca3af', 13);
+        addLog(`💨 強化《${item.name}》失敗，消耗了 ${cost} 銀兩，裝備維持 +${currentPlus}。`, 'text-gray-400');
+    }
+
+    renderEquipmentPanel();
+    updateUI();
+    saveGame(false);
+    syncPlayerPresence();
+}
+
+// 渲染十格紙娃娃裝備欄（支援 +1~+9 強化按鈕）与背包介面
+function renderEquipmentPanel() {
+    document.getElementById('equip-char-name').textContent = currentAccount || '少俠';
+    const leftCol = document.getElementById('equip-left-col');
+    const rightCol = document.getElementById('equip-right-col');
+    leftCol.innerHTML = '';
+    rightCol.innerHTML = '';
+
+    const createSlotHtml = (slotDef) => {
+        const eqItem = player.equipment[slotDef.key];
+        const div = document.createElement('div');
+        div.className = 'equip-slot p-1.5 rounded flex items-center justify-between gap-1';
+        if (eqItem) {
+            const plus = eqItem.plus || 0;
+            const nextCost = (plus + 1) * 250;
+            const effStats = getEffectiveItemStats(eqItem);
+            div.style.borderColor = eqItem.color;
+            div.innerHTML = `
+                <div onclick="unequipSlot('${slotDef.key}')" title="點擊卸下至背包" class="flex items-center gap-1.5 overflow-hidden flex-1 cursor-pointer">
+                    <span class="text-sm">${slotDef.icon}</span>
+                    <div class="truncate">
+                        <div class="font-bold truncate text-[11px]" style="color:${eqItem.color}">
+                            ${eqItem.name} ${plus > 0 ? `<span class="text-amber-300 font-mono">+${plus}</span>` : ''}
+                        </div>
+                        <div class="text-[9px] text-gray-300 truncate">${formatItemStats(effStats)}</div>
+                    </div>
+                </div>
+                ${plus < 9 ? `
+                    <button onclick="enhanceEquippedSlot(event, '${slotDef.key}')" title="消耗 ${nextCost} 銀兩強化至 +${plus + 1}" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-1 rounded text-[9px] shrink-0 shadow">
+                        ⚒️+${plus + 1}<br><span class="text-[8px] font-mono">${nextCost}兩</span>
+                    </button>
+                ` : `
+                    <span class="bg-yellow-500/20 border border-yellow-400 text-yellow-300 font-bold px-1 py-0.5 rounded text-[9px] shrink-0">極限+9</span>
+                `}
+            `;
+        } else {
+            div.innerHTML = `
+                <div class="flex items-center gap-1.5 text-gray-500 py-1">
+                    <span class="text-sm opacity-60">${slotDef.icon}</span>
+                    <span>${slotDef.label}</span>
+                </div>
+                <span class="text-[9px] text-gray-600">空置</span>
+            `;
+        }
+        return div;
+    };
+
+    EQUIP_SLOTS_LEFT.forEach(s => leftCol.appendChild(createSlotHtml(s)));
+    EQUIP_SLOTS_RIGHT.forEach(s => rightCol.appendChild(createSlotHtml(s)));
+
+    const eqBonus = getEquipBonuses(player);
+    document.getElementById('equip-bonus-summary').innerHTML = `
+        <div>裝備外功：<b class="text-amber-300">+${eqBonus.atk}</b></div>
+        <div>裝備防禦：<b class="text-sky-300">+${eqBonus.def}</b></div>
+        <div>裝備氣血：<b class="text-red-300">+${eqBonus.hp}</b></div>
+        <div>裝備護體：<b class="text-cyan-300">+${eqBonus.shield}</b></div>
+        <div>裝備暴擊：<b class="text-emerald-300">+${eqBonus.crit}%</b></div>
+    `;
+
+    const bagGrid = document.getElementById('bag-grid');
+    bagGrid.innerHTML = '';
+    document.getElementById('bag-count').textContent = player.bag.length;
+
+    for (let i = 0; i < 20; i++) {
+        const item = player.bag[i];
+        const cell = document.createElement('div');
+        cell.className = 'equip-slot h-14 rounded p-1 flex flex-col justify-between items-center text-center cursor-pointer relative';
+        if (item) {
+            const plus = item.plus || 0;
+            const effStats = getEffectiveItemStats(item);
+            cell.style.borderColor = item.color;
+            cell.onclick = () => equipFromBag(i);
+            cell.title = `${item.name} ${plus > 0 ? '+' + plus : ''} (${item.slotLabel}) - 點擊穿戴`;
+            cell.innerHTML = `
+                <div class="text-[9px] text-gray-400 w-full flex justify-between px-0.5">
+                    <span>${item.slotLabel}</span>
+                    <span class="text-amber-300 font-mono">${plus > 0 ? `+${plus}` : item.icon}</span>
+                </div>
+                <div class="font-bold text-[10px] truncate w-full" style="color:${item.color}">${item.name}</div>
+                <div class="text-[9px] text-gray-300 truncate w-full">${formatItemStats(effStats)}</div>
+            `;
+        } else {
+            cell.className += ' opacity-35 cursor-default';
+            cell.innerHTML = `<span class="text-[10px] text-gray-600 m-auto">空</span>`;
+        }
+        bagGrid.appendChild(cell);
+    }
+}
+
+function formatItemStats(st) {
+    const arr = [];
+    if (st.atk) arr.push(`攻+${st.atk}`);
+    if (st.def) arr.push(`防+${st.def}`);
+    if (st.hp) arr.push(`血+${st.hp}`);
+    if (st.shield) arr.push(`護+${st.shield}`);
+    if (st.crit) arr.push(`暴+${st.crit}%`);
+    return arr.join(' ');
+}
+
+function equipFromBag(bagIdx) {
+    const item = player.bag[bagIdx];
+    if (!item) return;
+    if (typeof item.plus !== 'number') item.plus = 0;
+    const oldEquip = player.equipment[item.slot];
+    player.equipment[item.slot] = item;
+    if (oldEquip) {
+        player.bag[bagIdx] = oldEquip;
+    } else {
+        player.bag.splice(bagIdx, 1);
+    }
+    MoxiangFormula.recalcDerivedStats(player);
+    renderEquipmentPanel();
+    updateUI();
+    saveGame(false);
+    addLog(`🎒 穿戴了【${item.name}${item.plus > 0 ? ' +' + item.plus : ''}】(${item.slotLabel})！`, 'text-emerald-300 font-bold');
+}
+
+function unequipSlot(slotKey) {
+    const item = player.equipment[slotKey];
+    if (!item) return;
+    if (player.bag.length >= 20) {
+        addLog(`⚠️ 行囊背包已滿 (20/20)，請先出售閒置裝備！`, 'text-red-400');
+        return;
+    }
+    player.equipment[slotKey] = null;
+    player.bag.push(item);
+    MoxiangFormula.recalcDerivedStats(player);
+    renderEquipmentPanel();
+    updateUI();
+    saveGame(false);
+    addLog(`🎒 卸下了【${item.name}】。`, 'text-gray-300');
+}
+
+function sellAllBagItems() {
+    if (player.bag.length === 0) return;
+    let totalGold = 0;
+    const count = player.bag.length;
+    player.bag.forEach(it => { totalGold += (it.price || 200) + (it.plus || 0) * 150; });
+    player.bag = [];
+    player.gold += totalGold;
+    renderEquipmentPanel();
+    updateUI();
+    saveGame(false);
+    addLog(`💰 一鍵出售了 ${count} 件裝備，獲得 ${totalGold} 銀兩！`, 'text-amber-300 font-bold');
+}
+
+function switchMap(mapId, closeMenu = true) {
     if (!MAPS[mapId]) return;
     if (player.level < MAPS[mapId].minLv) {
         addLog(`⚠️ 境界不足，需 Lv.${MAPS[mapId].minLv}`, 'text-red-400');
         return;
     }
-    player.currentMapId = mapId; toggleBot(false); player.targetMonster = null; droppedItems.length = 0;
+    player.currentMapId = mapId; toggleBot(false);
+    player.targetMonster = null; player.targetPlayer = null;
+    droppedItems.length = 0;
+    bossAoeZones.length = 0;
     onlinePlayersMap = {};
     initMonstersForCurrentMap();
-    document.getElementById('ui-map-name').textContent = MAPS[mapId].name;
-    document.getElementById('current-map-label').textContent = MAPS[mapId].name;
-    renderTeleportMenu(); togglePanel('panel-teleport');
-    addLog(`🐎 抵達【${MAPS[mapId].name}】！正在同步該地圖的線上少俠與怪物...`, 'text-amber-300 font-bold');
+
+    const mInfo = MAPS[mapId];
+    document.getElementById('ui-map-name').textContent = mInfo.name;
+    document.getElementById('current-map-label').textContent = mInfo.name;
+    const tagEl = document.getElementById('ui-map-tag');
+    if (mInfo.safeZone) {
+        tagEl.textContent = '安全區'; tagEl.className = 'text-sm bg-emerald-700/90 px-1.5 py-0.5 rounded text-emerald-100 font-sans';
+    } else if (mInfo.pvp) {
+        tagEl.textContent = '自由PK減經驗'; tagEl.className = 'text-sm bg-red-700/90 px-1.5 py-0.5 rounded text-red-100 font-sans animate-pulse';
+    } else if (mInfo.bossOnly) {
+        tagEl.textContent = '世界王領地'; tagEl.className = 'text-sm bg-purple-700/90 px-1.5 py-0.5 rounded text-purple-100 font-sans';
+    } else {
+        tagEl.textContent = '野外共鬥區'; tagEl.className = 'text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans';
+    }
+
+    renderTeleportMenu();
+    if (closeMenu && !document.getElementById('panel-teleport').classList.contains('hidden')) {
+        togglePanel('panel-teleport');
+    }
+    addLog(`🐎 抵達【${mInfo.name}】！`, 'text-amber-300 font-bold');
     saveGame(false);
     syncPlayerPresence();
     syncWorldMonsters();
@@ -771,8 +1230,8 @@ function initMonstersForCurrentMap() {
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone || mapInfo.monsters.length === 0) return;
 
-    // 先以固定座標建立預設怪物，隨後立刻由 syncWorldMonsters 覆蓋為雲端真實血量與位置
-    FIXED_SLOTS.forEach((slot, idx) => {
+    const slotsToUse = mapInfo.bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
+    slotsToUse.forEach((slot, idx) => {
         const tpl = mapInfo.monsters[idx % mapInfo.monsters.length];
         const mx = Math.round(slot.rx * 1200);
         const my = Math.round(slot.ry * 700);
@@ -781,11 +1240,42 @@ function initMonstersForCurrentMap() {
             id: `${player.currentMapId}_mob_${idx}`,
             map_id: player.currentMapId,
             maxHp: tpl.hp,
+            isBoss: !!tpl.isBoss,
             x: mx, y: my, targetX: mx, targetY: my,
             vx: 0, vy: 0, lastAttackTime: 0
         });
     });
+    lastBossAoeCastTime = performance.now();
     syncWorldMonsters();
+}
+
+// 🌟 觸發巨靈神全螢幕紅圈預警大招《震天滅地錘》
+function triggerBossFullScreenAoe(bossMob, now) {
+    bossAoeZones.length = 0;
+    const duration = 2500; // 2.5 秒預警時間
+
+    // 第 1 個紅圈必定鎖定玩家當前腳下位置，迫使玩家走位！
+    bossAoeZones.push({
+        x: player.x,
+        y: player.y,
+        radius: 115,
+        startTime: now,
+        duration
+    });
+
+    // 另外 4 個紅圈分佈於全螢幕四周與中央
+    for (let i = 0; i < 4; i++) {
+        bossAoeZones.push({
+            x: 160 + Math.random() * (canvas.width - 320),
+            y: 140 + Math.random() * (canvas.height - 280),
+            radius: 110 + Math.random() * 25,
+            startTime: now,
+            duration
+        });
+    }
+
+    spawnFloatingText(bossMob.x, bossMob.y - 80, `🌋 巨靈神蓄力：震天滅地錘！`, '#ef4444', 18);
+    addLog(`⚠️ 【BOSS大招預警】巨靈神施展全螢幕《震天滅地錘》，地面出現 5 個毀滅紅圈，2.5 秒後引爆！快閃避！`, 'text-red-400 font-bold');
 }
 
 function renderTeleportMenu() {
@@ -796,10 +1286,11 @@ function renderTeleportMenu() {
         const isLocked = player.level < m.minLv;
         const div = document.createElement('div');
         div.className = `flex justify-between items-center p-2.5 rounded border ${isCurrent ? 'bg-amber-950/60 border-amber-500' : 'bg-gray-900 border-gray-700'}`;
+        let descTag = m.safeZone ? '🟢 安全區 (登入點)' : m.pvp ? '🩸 玩家自由PK · 戰敗掉10%經驗' : m.bossOnly ? `👑 巨靈神(全螢幕紅圈大招) · Lv.${m.minLv}+` : `⚔️ 建議 Lv.${m.minLv}+ · 死亡掉10%經驗`;
         div.innerHTML = `
             <div>
                 <div class="font-bold text-white">${m.name} ${isCurrent ? '<span class="text-amber-400 text-[10px]">(當前)</span>' : ''}</div>
-                <div class="text-[10px] text-gray-400">${m.safeZone ? '🟢 安全區' : `⚔️ 建議 Lv.${m.minLv}+`}</div>
+                <div class="text-[10px] ${m.pvp ? 'text-red-400 font-bold' : m.bossOnly ? 'text-purple-300 font-bold' : 'text-gray-400'}">${descTag}</div>
             </div>
             <button onclick="switchMap('${m.id}')" ${isCurrent || isLocked ? 'disabled' : ''} class="px-3 py-1 rounded text-xs font-bold ${isCurrent ? 'bg-gray-700 text-gray-400 cursor-default' : isLocked ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-500 text-black shadow'}">
                 ${isCurrent ? '在此地' : isLocked ? `Lv.${m.minLv}` : '傳送'}
@@ -892,11 +1383,14 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
     document.getElementById('save-panel-user').textContent = username;
 
     if (isNewAccount) {
-        renderWeaponButtons(); updateSkillSelect(); updateUI(); saveGame(false);
-        addLog(`🎉 歡迎【${username}】踏入江湖！`, 'text-amber-300 font-bold');
+        player.currentMapId = 'lanzhou';
+        renderWeaponButtons(); updateSkillSelect(); renderEquipmentPanel(); updateUI(); saveGame(false);
+        addLog(`🎉 歡迎【${username}】踏入蘭州安全區！已贈送 2 件新手裝備於背包中。`, 'text-amber-300 font-bold');
     } else {
-        applyLoadedData(saveData, false); saveGame(false);
-        addLog(`📂 歡迎歸來，【${username}】！`, 'text-cyan-300 font-bold');
+        applyLoadedData(saveData, false);
+        switchMap('lanzhou', false);
+        saveGame(false);
+        addLog(`📂 歡迎歸來，【${username}】！您已安全返回蘭州主城。`, 'text-cyan-300 font-bold');
     }
     fetchGlobalChats();
     syncPlayerPresence();
@@ -912,11 +1406,12 @@ function logoutAccount() {
 
 function serializePlayer() {
     return {
-        version: 10, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 12, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
         hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
         currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
         skillLevels: { ...player.skillLevels }, skillExp: { ...player.skillExp },
+        equipment: player.equipment, bag: player.bag,
         currentMapId: player.currentMapId, lastSaveTimestamp: Date.now()
     };
 }
@@ -946,15 +1441,20 @@ function applyLoadedData(data, isImported = false) {
     player.weaponPlus = data.weaponPlus ?? 0;
     if (data.skillLevels) { Object.keys(data.skillLevels).forEach(k => { player.skillLevels[k] = data.skillLevels[k]; }); }
     if (data.skillExp) { Object.keys(data.skillExp).forEach(k => { player.skillExp[k] = data.skillExp[k]; }); }
-    player.currentMapId = data.currentMapId && MAPS[data.currentMapId] ? data.currentMapId : 'lanzhou';
+    if (data.equipment) {
+        player.equipment = { ...player.equipment, ...data.equipment };
+        Object.values(player.equipment).forEach(it => { if (it && typeof it.plus !== 'number') it.plus = 0; });
+    }
+    if (Array.isArray(data.bag)) {
+        player.bag = data.bag;
+        player.bag.forEach(it => { if (it && typeof it.plus !== 'number') it.plus = 0; });
+    }
+
     MoxiangFormula.recalcDerivedStats(player);
     player.hp = Math.min(player.maxHp, data.hp ?? player.maxHp);
     player.shield = Math.min(player.maxShield, data.shield ?? player.maxShield);
     player.mp = Math.min(player.maxMp, data.mp ?? player.maxMp);
-    initMonstersForCurrentMap();
-    document.getElementById('ui-map-name').textContent = MAPS[player.currentMapId].name;
-    document.getElementById('current-map-label').textContent = MAPS[player.currentMapId].name;
-    renderTeleportMenu(); renderWeaponButtons(); updateSkillSelect(); updateUI();
+    renderTeleportMenu(); renderWeaponButtons(); updateSkillSelect(); renderEquipmentPanel(); updateUI();
     return true;
 }
 
@@ -989,7 +1489,7 @@ function resetSaveData() {
     const fresh = getDefaultPlayerState();
     Object.assign(player, fresh);
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons(); updateSkillSelect(); updateUI(); saveGame(true);
+    renderWeaponButtons(); updateSkillSelect(); renderEquipmentPanel(); updateUI(); saveGame(true);
     addLog(`🔄 角色已重置。`, 'text-amber-400');
 }
 
@@ -1070,8 +1570,8 @@ function enhanceWeapon() {
     player.gold -= cost;
     if (Math.random() <= (player.weaponPlus < 3 ? 1.0 : 0.45)) {
         player.weaponPlus++; MoxiangFormula.recalcDerivedStats(player);
-        addLog(`【成功】兵器強化 +${player.weaponPlus}`, 'text-amber-300');
-    } else { addLog(`【失敗】兵器維持 +${player.weaponPlus}`, 'text-gray-400'); }
+        addLog(`【成功】兵器共鳴強化 +${player.weaponPlus}`, 'text-amber-300');
+    } else { addLog(`【失敗】兵器共鳴維持 +${player.weaponPlus}`, 'text-gray-400'); }
     updateUI(); saveGame(false); syncPlayerPresence();
 }
 
@@ -1100,11 +1600,12 @@ function toggleBot(forceState) {
     if (player.autoBot) {
         badge.textContent = '掛機中'; badge.className = 'text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded animate-pulse';
         btn.textContent = '停止掛機 [F]'; btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        addLog(`【Auto-Bot】自動打怪與撿寶中。`, 'text-emerald-400');
+        addLog(`【Auto-Bot】開始自動索敵與撿寶。`, 'text-emerald-400');
     } else {
         badge.textContent = '休息中'; badge.className = 'text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded';
         btn.textContent = '啟動掛機 [F]'; btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        player.targetMonster = null; addLog(`【Auto-Bot】已停止。`, 'text-gray-400');
+        player.targetMonster = null; player.targetPlayer = null;
+        addLog(`【Auto-Bot】已停止。`, 'text-gray-400');
     }
 }
 
@@ -1112,6 +1613,7 @@ window.addEventListener('keydown', (e) => {
     if (!currentAccount) { if (e.key === 'Enter') handleLoginOrRegister(); return; }
     if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
     if (e.key.toLowerCase() === 'f') toggleBot();
+    if (e.key.toLowerCase() === 'b') togglePanel('panel-equip');
 });
 
 canvas.addEventListener('mousedown', (e) => {
@@ -1131,18 +1633,31 @@ canvas.addEventListener('mousedown', (e) => {
         return;
     }
 
+    if (mapInfo.pvp) {
+        for (const [uname, op] of Object.entries(onlinePlayersMap)) {
+            if (Math.hypot(op.x - clickX, op.y - clickY) <= 26) {
+                player.targetPlayer = uname;
+                player.targetMonster = null;
+                addLog(`⚔️ [PVP鎖定] 目標鎖定少俠【${uname}】！`, 'text-red-400 font-bold');
+                return;
+            }
+        }
+    }
+
     let clickedMob = null;
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
-            if (Math.hypot(m.x - clickX, m.y - clickY) <= m.radius + 10) { clickedMob = m; break; }
+            if (Math.hypot(m.x - clickX, m.y - clickY) <= m.radius + 12) { clickedMob = m; break; }
         }
     }
 
     if (clickedMob) {
         player.targetMonster = clickedMob;
+        player.targetPlayer = null;
     } else {
         if (player.autoBot) toggleBot(false);
         player.targetMonster = null;
+        player.targetPlayer = null;
         player.targetX = clickX; player.targetY = clickY;
     }
 });
@@ -1152,11 +1667,15 @@ function lootItem(item) {
         player.gold += item.amount;
         spawnFloatingText(item.x, item.y - 15, `💰 +${item.amount} 銀兩`, '#facc15', 14);
         addLog(`💰 拾取戰利品：獲得銀兩 +${item.amount}`, 'text-amber-300 font-bold');
-    } else if (item.type === 'weapon') {
-        player.weaponPlus = Math.min(9, player.weaponPlus + 1);
-        MoxiangFormula.recalcDerivedStats(player);
-        spawnFloatingText(item.x, item.y - 15, `⚔️ 獲得 ${item.name} (+強化)`, '#38bdf8', 15);
-        addLog(`🎉 恭喜打怪掉落【${item.name}】！兵器威力大增！`, 'text-cyan-300 font-bold');
+    } else if (item.type === 'equip') {
+        if (player.bag.length < 20) {
+            player.bag.push(item.equipData);
+            renderEquipmentPanel();
+            spawnFloatingText(item.x, item.y - 15, `${item.equipData.icon} 獲得 ${item.equipData.name}`, item.equipData.color, 15);
+            addLog(`🎉 拾取裝備：【${item.equipData.name}】(${item.equipData.slotLabel}) 已放入背包 [B]！`, 'text-purple-300 font-bold');
+        } else {
+            addLog(`⚠️ 背包已滿 (20/20)，無法拾取【${item.equipData.name}】！`, 'text-red-400');
+        }
     }
     updateUI(); saveGame(false);
 }
@@ -1243,34 +1762,101 @@ function updateGame(now) {
     if (player.autoBot && document.getElementById('bot-auto-loot').checked && droppedItems.length > 0) {
         for (let i = droppedItems.length - 1; i >= 0; i--) {
             const item = droppedItems[i];
-            if (Math.hypot(player.x - item.x, player.y - item.y) < 120) {
+            if (Math.hypot(player.x - item.x, player.y - item.y) < 135) {
                 droppedItems.splice(i, 1); lootItem(item); break;
             }
         }
     }
 
+    // 🌟 世界王巨靈神頂部血條與每 10 秒全螢幕紅圈大招邏輯
+    const bossMob = monsters.find(m => m.isBoss && m.hp > 0);
+    const bossHud = document.getElementById('boss-hud');
+    const aoeWarnEl = document.getElementById('boss-aoe-warning');
+    if (bossMob && !mapInfo.safeZone) {
+        bossHud.classList.remove('hidden');
+        document.getElementById('boss-hud-name').textContent = `👑 【大秦龍脈守護神】${bossMob.name} (Lv.${bossMob.lv})`;
+        document.getElementById('boss-hud-hp-text').textContent = `${Math.max(0, Math.floor(bossMob.hp))} / ${bossMob.maxHp}`;
+        document.getElementById('boss-hud-bar').style.width = `${Math.max(0, (bossMob.hp / bossMob.maxHp) * 100)}%`;
+
+        // 每 10 秒施放一次全螢幕紅圈預警大招
+        if (!lastBossAoeCastTime) lastBossAoeCastTime = now;
+        if (now - lastBossAoeCastTime >= 10000 && bossAoeZones.length === 0) {
+            lastBossAoeCastTime = now;
+            triggerBossFullScreenAoe(bossMob, now);
+        }
+    } else {
+        bossHud.classList.add('hidden');
+        bossAoeZones.length = 0;
+    }
+
+    if (bossAoeZones.length > 0) {
+        aoeWarnEl.classList.remove('hidden');
+    } else {
+        aoeWarnEl.classList.add('hidden');
+    }
+
+    // 🌟 檢查巨靈神紅圈倒數是否引爆
+    for (let i = bossAoeZones.length - 1; i >= 0; i--) {
+        const z = bossAoeZones[i];
+        if (now - z.startTime >= z.duration) {
+            // 引爆特效與強烈震動
+            screenShakeTimer = 22;
+            screenShakeIntensity = 14;
+            slashEffects.push({ x: z.x, y: z.y, radius: 15, maxRadius: z.radius, color: '#ef4444', alpha: 1.0, width: 8 });
+            for (let k = 0; k < 28; k++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 3 + Math.random() * 8;
+                critParticles.push({
+                    x: z.x, y: z.y,
+                    vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+                    color: Math.random() > 0.4 ? '#ef4444' : '#facc15',
+                    radius: 3 + Math.random() * 3.5,
+                    life: 25 + Math.random() * 15
+                });
+            }
+
+            // 判定玩家是否站在紅圈內
+            if (currentAccount && Math.hypot(player.x - z.x, player.y - z.y) <= z.radius) {
+                const aoeDmg = Math.max(180, Math.floor(player.maxHp * 0.55));
+                player.hp = Math.max(1, player.hp - aoeDmg);
+                player.shield = Math.max(0, player.shield - Math.floor(player.maxShield * 0.5));
+                spawnFloatingText(player.x, player.y - 30, `🌋 震天滅地錘 -${aoeDmg}!`, '#ef4444', 18);
+                addLog(`💥 您未能及時閃避巨靈神的【震天滅地錘】紅圈，受到 ${aoeDmg} 點毀滅重創！`, 'text-red-400 font-bold');
+                updateUI();
+                if (player.hp <= 1) {
+                    bossAoeZones.length = 0;
+                    handlePlayerDeath('巨靈神·震天滅地錘');
+                    return;
+                }
+            }
+            bossAoeZones.splice(i, 1);
+        }
+    }
+
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
-            // 平滑插值至雲端同步座標
             if (typeof m.targetX === 'number' && typeof m.targetY === 'number') {
                 m.x += (m.targetX - m.x) * 0.25;
                 m.y += (m.targetY - m.y) * 0.25;
             }
 
+            const aggroRange = m.isBoss ? 280 : 160;
+            const hitRange = m.radius + 24;
             const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
-            if (distToPlayer < 160) {
+            if (distToPlayer < aggroRange) {
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
-                m.x += Math.cos(angle) * 1.1; m.y += Math.sin(angle) * 1.1;
+                const spd = m.isBoss ? 0.95 : 1.1;
+                m.x += Math.cos(angle) * spd; m.y += Math.sin(angle) * spd;
                 m.targetX = m.x; m.targetY = m.y;
 
-                if (distToPlayer <= 42 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
+                if (distToPlayer <= hitRange && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
                     m.lastAttackTime = now;
                     const taken = MoxiangFormula.applyDamageToPlayer(player, m.atk);
                     spawnFloatingText(player.x, player.y - 15, `-${taken.hpLost} (${m.name})`, '#f87171', 13);
                     updateUI();
                     if (player.hp <= 1) {
-                        switchMap('lanzhou'); player.hp = player.maxHp;
-                        addLog(`⚠️ 遭到【${m.name}】擊敗，送回蘭州安全區！`, 'text-red-400 font-bold');
+                        handlePlayerDeath(m.name);
+                        return;
                     }
                 }
             }
@@ -1285,7 +1871,12 @@ function updateGame(now) {
             player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.45));
             spawnFloatingText(player.x, player.y - 20, '+金創藥', '#f87171', 12);
         }
-        if (!player.targetMonster || !monsters.includes(player.targetMonster)) {
+        if (mapInfo.pvp) {
+            if (!player.targetPlayer || !onlinePlayersMap[player.targetPlayer]) {
+                const pNames = Object.keys(onlinePlayersMap);
+                player.targetPlayer = pNames.length > 0 ? pNames[0] : null;
+            }
+        } else if (!player.targetMonster || !monsters.includes(player.targetMonster)) {
             let nearest = null, minDist = Infinity;
             for (const m of monsters) {
                 const d = Math.hypot(m.x - player.x, m.y - player.y);
@@ -1296,10 +1887,20 @@ function updateGame(now) {
     }
 
     const skill = getCurrentSkill(player);
-    if (player.targetMonster && monsters.includes(player.targetMonster) && !mapInfo.safeZone) {
+
+    if (mapInfo.pvp && player.targetPlayer && onlinePlayersMap[player.targetPlayer]) {
+        const targetOp = onlinePlayersMap[player.targetPlayer];
+        const dist = Math.hypot(targetOp.x - player.x, targetOp.y - player.y);
+        if (dist > skill.range) {
+            const angle = Math.atan2(targetOp.y - player.y, targetOp.x - player.x);
+            player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
+        } else if (now - player.lastAttackTime >= skill.cooldown) {
+            performPvpAttack(targetOp, now);
+        }
+    } else if (player.targetMonster && monsters.includes(player.targetMonster) && !mapInfo.safeZone) {
         const m = player.targetMonster;
         const dist = Math.hypot(m.x - player.x, m.y - player.y);
-        if (dist > skill.range) {
+        if (dist > skill.range + (m.isBoss ? 25 : 0)) {
             const angle = Math.atan2(m.y - player.y, m.x - player.x);
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
         } else if (now - player.lastAttackTime >= skill.cooldown) {
@@ -1331,6 +1932,41 @@ function updateGame(now) {
     }
 }
 
+async function performPvpAttack(targetOp, now) {
+    player.lastAttackTime = now;
+    const skill = getCurrentSkill(player);
+    const w = WEAPONS[player.currentWeapon];
+    player.mp = Math.max(0, player.mp - 5);
+
+    if (skill.range > 120) {
+        const angle = Math.atan2(targetOp.y - player.y, targetOp.x - player.x);
+        projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 14, vy: Math.sin(angle) * 14, color: w.color, radius: 8, life: 25, glow: true });
+    } else {
+        slashEffects.push({ x: targetOp.x, y: targetOp.y, radius: 12, maxRadius: 45, color: w.color, alpha: 1.0, width: 5 });
+    }
+
+    const res = MoxiangFormula.calculateAttackDamage(player, 15);
+    const pvpDmg = Math.max(8, Math.floor(res.damage * 0.65));
+
+    if (res.isCrit) {
+        screenShakeTimer = 12; screenShakeIntensity = 7;
+    }
+    spawnFloatingText(targetOp.x, targetOp.y - 28, res.isCrit ? `💥PVP暴擊 -${pvpDmg}` : `⚔️-${pvpDmg}`, '#facc15', 15);
+
+    try {
+        await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?username=eq.${encodeURIComponent(targetOp.username)}`, {
+            method: 'PATCH',
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pvp_hit_dmg: pvpDmg,
+                pvp_hit_ts: Date.now(),
+                pvp_attacker: currentAccount
+            })
+        });
+    } catch (e) {}
+    updateUI();
+}
+
 function performAttack(monster, now) {
     player.lastAttackTime = now;
     const skill = getCurrentSkill(player);
@@ -1353,7 +1989,7 @@ function performAttack(monster, now) {
         });
     }
 
-    const res = MoxiangFormula.calculateAttackDamage(player, monster);
+    const res = MoxiangFormula.calculateAttackDamage(player, monster.def);
     monster.hp -= res.damage;
 
     if (res.isCrit) {
@@ -1372,7 +2008,7 @@ function performAttack(monster, now) {
         }
     }
 
-    spawnFloatingText(monster.x, monster.y - 25, res.isCrit ? `💥暴擊 ${skill.name} -${res.damage}` : `${skill.name} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
+    spawnFloatingText(monster.x, monster.y - (monster.isBoss ? 65 : 25), res.isCrit ? `💥暴擊 ${skill.name} -${res.damage}` : `${skill.name} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
 
     const sId = skill.id;
     if (!player.skillLevels[sId]) player.skillLevels[sId] = 1;
@@ -1389,15 +2025,21 @@ function performAttack(monster, now) {
 
     if (monster.hp <= 0) {
         player.exp += monster.exp; player.sp += monster.sp;
-        droppedItems.push({ type: 'gold', amount: monster.gold, x: monster.x - 12, y: monster.y });
-        if (Math.random() < 0.30) {
-            droppedItems.push({ type: 'weapon', name: '玄鐵精鋼劍', x: monster.x + 15, y: monster.y });
-        }
-        addLog(`擊敗【${monster.name}】掉落戰利品！`, 'text-amber-300 font-bold');
+        droppedItems.push({ type: 'gold', amount: monster.gold, x: monster.x - 16, y: monster.y });
 
-        // 怪物死亡後自動重生於固定巡邏點並寫回雲端
-        const slotIdx = parseInt(monster.id.split('_').pop() || '0', 10) % FIXED_SLOTS.length;
-        const slot = FIXED_SLOTS[slotIdx];
+        if (monster.isBoss) {
+            bossAoeZones.length = 0;
+            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 20, y: monster.y - 10 });
+            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 5, y: monster.y + 22 });
+            addLog(`👑 【全服捷報】大秦龍脈世界王【${monster.name}】被討伐成功！地上爆出大量龍脈神裝！`, 'text-amber-300 font-bold');
+        } else if (Math.random() < 0.40) {
+            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, false), x: monster.x + 16, y: monster.y });
+            addLog(`擊敗【${monster.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
+        }
+
+        const slotsToUse = MAPS[player.currentMapId].bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
+        const slotIdx = parseInt(monster.id.split('_').pop() || '0', 10) % slotsToUse.length;
+        const slot = slotsToUse[slotIdx];
         monster.hp = monster.maxHp;
         monster.x = Math.round(slot.rx * canvas.width);
         monster.y = Math.round(slot.ry * canvas.height);
@@ -1407,13 +2049,12 @@ function performAttack(monster, now) {
         pushMonsterStateToCloud(monster);
         checkLevelUp();
     } else {
-        // 同步扣血後的怪物血量至雲端，讓朋友即時看到血條減少
         pushMonsterStateToCloud(monster);
     }
     updateUI();
 }
 
-function renderGame() {
+function renderGame(now = performance.now()) {
     ctx.save();
     if (screenShakeTimer > 0) {
         const offsetX = (Math.random() - 0.5) * screenShakeIntensity;
@@ -1426,7 +2067,7 @@ function renderGame() {
     grad.addColorStop(0, mapInfo.bgGradient[0]); grad.addColorStop(1, mapInfo.bgGradient[1]);
     ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = 'rgba(217, 119, 6, 0.07)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = mapInfo.pvp ? 'rgba(239, 68, 68, 0.12)' : 'rgba(217, 119, 6, 0.07)'; ctx.lineWidth = 1;
     for (let x = 0; x < canvas.width; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
     for (let y = 0; y < canvas.height; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
 
@@ -1434,35 +2075,87 @@ function renderGame() {
         ctx.font = 'bold 28px "Noto Serif TC"'; ctx.fillStyle = 'rgba(52, 211, 153, 0.25)'; ctx.textAlign = 'center';
         ctx.fillText('🛡️ 蘭州安全區域 · 禁止刀兵相見 🛡️', canvas.width / 2, canvas.height / 2 - 40);
         ctx.font = '14px "Noto Sans TC"'; ctx.fillStyle = 'rgba(156, 163, 175, 0.8)';
-        ctx.fillText('請點擊下方導覽列的【🐎 傳送】前往野外地圖與朋友共鬥', canvas.width / 2, canvas.height / 2);
-    } else {
+        ctx.fillText('請點擊下方導覽列的【🐎 驛站傳送】前往修羅演武場(PVP)或大秦龍脈(巨靈神)', canvas.width / 2, canvas.height / 2);
+    } else if (mapInfo.pvp) {
+        ctx.font = 'bold 30px "Noto Serif TC"'; ctx.fillStyle = 'rgba(239, 68, 68, 0.22)'; ctx.textAlign = 'center';
+        ctx.fillText('🩸 修羅演武場 · 點擊其他玩家即可揮刀對決 🩸', canvas.width / 2, canvas.height / 2 - 35);
+        ctx.font = '13px "Noto Sans TC"'; ctx.fillStyle = 'rgba(252, 165, 165, 0.65)';
+        ctx.fillText('注意：在演武場內被擊敗將損失 10% 經驗值並送回蘭州', canvas.width / 2, canvas.height / 2);
+    }
+
+    // 🌟 渲染巨靈神全螢幕紅圈預警範圍 (Boss AOE Telegraph Zones)
+    for (const z of bossAoeZones) {
+        const progress = Math.min(1, Math.max(0, (now - z.startTime) / z.duration));
+        const remainSec = Math.max(0, ((z.duration - (now - z.startTime)) / 1000)).toFixed(1);
+        ctx.save();
+
+        // 外圍紅色警戒框
+        ctx.beginPath();
+        ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.16)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 內部隨時間擴張填滿的深紅蓄力圈
+        ctx.beginPath();
+        ctx.arc(z.x, z.y, z.radius * progress, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.38)';
+        ctx.fill();
+
+        // 紅圈中央警告文字與倒數秒數
+        ctx.font = 'bold 13px "Noto Sans TC"';
+        ctx.fillStyle = '#fef08a';
+        ctx.textAlign = 'center';
+        ctx.fillText(`⚠️ 滅世紅圈 ${remainSec}s`, z.x, z.y + 4);
+        ctx.restore();
+    }
+
+    if (!mapInfo.safeZone) {
         const pulse = Math.sin(Date.now() / 200) * 3;
         for (const item of droppedItems) {
             ctx.beginPath(); ctx.arc(item.x, item.y, 12 + pulse, 0, Math.PI * 2);
-            ctx.fillStyle = item.type === 'gold' ? 'rgba(250, 204, 21, 0.35)' : 'rgba(56, 189, 248, 0.35)';
+            ctx.fillStyle = item.type === 'gold' ? 'rgba(250, 204, 21, 0.35)' : 'rgba(192, 132, 252, 0.4)';
             ctx.fill();
             ctx.beginPath(); ctx.arc(item.x, item.y, 7, 0, Math.PI * 2);
-            ctx.fillStyle = item.type === 'gold' ? '#facc15' : '#38bdf8';
+            ctx.fillStyle = item.type === 'gold' ? '#facc15' : (item.equipData?.color || '#c084fc');
             ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
-            ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = item.type === 'gold' ? '#fde047' : '#7dd3fc'; ctx.textAlign = 'center';
-            ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `⚔️ ${item.name}`, item.x, item.y - 14);
+            ctx.font = 'bold 11px "Noto Sans TC"';
+            ctx.fillStyle = item.type === 'gold' ? '#fde047' : (item.equipData?.color || '#e9d5ff');
+            ctx.textAlign = 'center';
+            ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `${item.equipData.icon} ${item.equipData.name}`, item.x, item.y - 14);
         }
 
-        // 🌟 渲染全服共享怪物 (若朋友正在攻擊該怪，顯示青色共鬥光圈)
+        // 渲染怪物與大秦龍脈巨型 BOSS「巨靈神」
         for (const m of monsters) {
             const friendAttackers = Object.entries(onlinePlayersMap)
                 .filter(([_, op]) => op.attackTargetId === m.id)
                 .map(([uname]) => uname);
 
+            if (m.isBoss) {
+                ctx.save();
+                const bossPulse = Math.sin(Date.now() / 150) * 6;
+                const bossGrad = ctx.createRadialGradient(m.x, m.y, 10, m.x, m.y, m.radius + 32 + bossPulse);
+                bossGrad.addColorStop(0, 'rgba(220, 38, 38, 0.75)');
+                bossGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.45)');
+                bossGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 32 + bossPulse, 0, Math.PI * 2);
+                ctx.fillStyle = bossGrad; ctx.fill();
+                ctx.restore();
+            }
+
             if (player.targetMonster === m) {
-                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 7, 0, Math.PI * 2);
-                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.stroke();
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 8, 0, Math.PI * 2);
+                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
             }
             if (friendAttackers.length > 0) {
-                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 11, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius + 13, 0, Math.PI * 2);
                 ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
                 ctx.font = 'bold 10px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
-                ctx.fillText(`⚔️ ${friendAttackers.join(', ')} 交戰中`, m.x, m.y - m.radius - 24);
+                ctx.fillText(`⚔️ ${friendAttackers.join(', ')} 交戰中`, m.x, m.y - m.radius - 26);
             }
 
             const imgObj = loadedMonsterImages[m.name] || loadedMonsterImages['default'];
@@ -1472,20 +2165,24 @@ function renderGame() {
                 ctx.drawImage(imgObj, m.x - m.radius, m.y - m.radius, m.radius * 2, m.radius * 2);
                 ctx.restore();
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = m.isBoss ? '#facc15' : '#ef4444'; ctx.lineWidth = m.isBoss ? 4 : 2; ctx.stroke();
             } else {
                 ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
                 ctx.fillStyle = m.color; ctx.fill(); ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.stroke();
             }
 
-            ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#f3f4f6'; ctx.textAlign = 'center';
-            ctx.fillText(`Lv.${m.lv} ${m.name}`, m.x, m.y - m.radius - 12);
-            ctx.fillStyle = '#1f2937'; ctx.fillRect(m.x - 23, m.y - m.radius - 8, 46, 5);
-            ctx.fillStyle = '#ef4444'; ctx.fillRect(m.x - 23, m.y - m.radius - 8, 46 * Math.max(0, m.hp / m.maxHp), 5);
+            ctx.font = m.isBoss ? 'bold 15px "Noto Serif TC"' : 'bold 11px "Noto Sans TC"';
+            ctx.fillStyle = m.isBoss ? '#fde047' : '#f3f4f6'; ctx.textAlign = 'center';
+            ctx.fillText(m.isBoss ? `👑 【龍脈巨獸】${m.name} Lv.${m.lv}` : `Lv.${m.lv} ${m.name}`, m.x, m.y - m.radius - 14);
+
+            const barW = m.isBoss ? 110 : 46;
+            ctx.fillStyle = '#1f2937'; ctx.fillRect(m.x - barW/2, m.y - m.radius - 9, barW, m.isBoss ? 7 : 5);
+            ctx.fillStyle = m.isBoss ? '#f59e0b' : '#ef4444';
+            ctx.fillRect(m.x - barW/2, m.y - m.radius - 9, barW * Math.max(0, m.hp / m.maxHp), m.isBoss ? 7 : 5);
         }
     }
 
-    // 渲染線上其他玩家 (支援高強化腳底光環與強化數值顯示)
+    // 渲染線上其他玩家
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
         if ((op.weaponPlus || 0) >= 3) {
             ctx.save();
@@ -1500,11 +2197,19 @@ function renderGame() {
             ctx.restore();
         }
 
+        if (player.targetPlayer === username) {
+            ctx.beginPath(); ctx.arc(op.x, op.y, 24, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.stroke();
+        }
+
         const wColor = WEAPONS[op.weaponId || 'sword']?.color || '#38bdf8';
         ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
-        ctx.fillStyle = wColor; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
-        ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
-        ctx.fillText(`【${username}】(+${op.weaponPlus || 0})`, op.x, op.y - 26);
+        ctx.fillStyle = wColor; ctx.fill(); ctx.strokeStyle = mapInfo.pvp ? '#ef4444' : '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = mapInfo.pvp ? '#fca5a5' : '#38bdf8'; ctx.textAlign = 'center';
+        ctx.fillText(`【${username}】(+${op.weaponPlus || 0})`, op.x, op.y - 30);
+
+        ctx.fillStyle = '#1f2937'; ctx.fillRect(op.x - 22, op.y - 24, 44, 4);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(op.x - 22, op.y - 24, 44 * Math.max(0, (op.hp || 500) / (op.maxHp || 500)), 4);
     });
 
     for (const p of projectiles) {
@@ -1530,10 +2235,11 @@ function renderGame() {
         ctx.restore();
     }
 
-    if (player.weaponPlus >= 3) {
+    const selfAuraLv = Math.max(player.weaponPlus || 0, player.equipment?.weapon?.plus || 0);
+    if (selfAuraLv >= 3) {
         ctx.save();
-        let auraColor = player.weaponPlus >= 9 ? '#facc15' : player.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
-        let glowColor = player.weaponPlus >= 9 ? '#d97706' : player.weaponPlus >= 6 ? '#9333ea' : '#0284c7';
+        let auraColor = selfAuraLv >= 9 ? '#facc15' : selfAuraLv >= 6 ? '#c084fc' : '#38bdf8';
+        let glowColor = selfAuraLv >= 9 ? '#d97706' : selfAuraLv >= 6 ? '#9333ea' : '#0284c7';
         const pulse = Math.sin(Date.now() / 180) * 4;
         const radius = 32 + pulse;
         const auraGrad = ctx.createRadialGradient(player.x, player.y, 5, player.x, player.y, radius);
@@ -1554,7 +2260,7 @@ function renderGame() {
     ctx.beginPath(); ctx.arc(player.x, player.y, 17, 0, Math.PI * 2);
     ctx.fillStyle = w.color; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.font = 'bold 12px "Noto Sans TC"'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
-    ctx.fillText(`[${w.name}:${skill.name}] ${currentAccount || '未登入'} (+${player.weaponPlus})`, player.x, player.y - 32);
+    ctx.fillText(`[${w.name}:${skill.name}] ${currentAccount || '未登入'} (+${selfAuraLv})`, player.x, player.y - 32);
 
     for (const ft of floatingTexts) {
         ctx.globalAlpha = Math.max(0, ft.alpha);
@@ -1565,7 +2271,7 @@ function renderGame() {
     ctx.restore();
 }
 
-function gameLoop(now) { updateGame(now); renderGame(); requestAnimationFrame(gameLoop); }
+function gameLoop(now) { updateGame(now); renderGame(now); requestAnimationFrame(gameLoop); }
 
 let dragTarget = null, dragOffsetX = 0, dragOffsetY = 0;
 function startDrag(e, panelId) {
@@ -1585,6 +2291,7 @@ function togglePanel(id) { document.getElementById(id).classList.toggle('hidden'
 MoxiangFormula.recalcDerivedStats(player);
 renderWeaponButtons();
 updateSkillSelect();
+renderEquipmentPanel();
 initAuthSession();
 renderTeleportMenu();
 updateUI();
