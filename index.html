@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨香 Online - 蘭州安全區與多地圖傳送版</title>
+    <title>墨香 Online - 聯機同屏與野外怪物反擊版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -54,8 +54,8 @@
         <div class="hud-panel w-[400px] border-2 border-amber-500/80 p-6 space-y-5 shadow-2xl">
             <div class="text-center space-y-1 border-b border-amber-600/30 pb-4">
                 <div class="text-xs tracking-[0.25em] text-amber-400 font-bold">MOXIANG ONLINE</div>
-                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 江湖雲端錄</h1>
-                <p class="text-xs text-gray-400">所有少俠登入皆出現在蘭州安全區</p>
+                <h1 class="text-3xl font-wuxia font-black text-amber-300 drop-shadow">墨香 · 全服同屏版</h1>
+                <p class="text-xs text-gray-400">支援野外怪物主動攻擊與線上玩家同屏</p>
             </div>
 
             <div class="space-y-3 text-xs">
@@ -79,13 +79,13 @@
             </div>
 
             <button onclick="handleLoginOrRegister()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-wuxia font-black text-base py-2.5 rounded shadow-lg transition transform active:scale-95">
-                ☁️ 連線雲端踏入蘭州 (登入)
+                ☁️ 進入江湖見證線上少俠
             </button>
 
             <div class="pt-3 border-t border-gray-800 space-y-1.5">
                 <div class="text-[11px] text-gray-400 flex justify-between">
                     <span>本機曾登入的名號：</span>
-                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 安全區傳送系統就緒</span>
+                    <span id="cloud-status-tag" class="text-emerald-400 font-mono">● 線上多人同步已啟用</span>
                 </div>
                 <div id="saved-accounts-list" class="flex flex-wrap gap-1.5"></div>
             </div>
@@ -101,7 +101,7 @@
         <div class="text-2xl font-wuxia font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             <span id="ui-map-name">蘭州 (安全區)</span> <span class="text-sm bg-amber-600/80 px-1.5 py-0.5 rounded text-amber-100 font-sans">分流 01</span>
         </div>
-        <div class="text-xs text-gray-300 mt-1">安全區內無法打怪 · 請點擊【驛站傳送】前往野外</div>
+        <div class="text-xs text-gray-300 mt-1">野外怪物會主動攻擊玩家 · 請小心防範</div>
         <div id="save-indicator" class="text-[11px] text-amber-300 mt-0.5 opacity-90 transition-opacity duration-300">🔒 請先登入以啟用雲端存檔</div>
     </div>
 
@@ -262,7 +262,7 @@
         </div>
     </section>
 
-    <!-- 4. 右下：內建自動練功系統 -->
+    <!-- 4. 右下：內建自動掛機系統 -->
     <section id="panel-bot" class="hud-panel absolute bottom-16 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-bot')">
             <span>內建自動練功 (Auto-Bot)</span>
@@ -303,7 +303,7 @@
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
         </div>
         <div id="battle-log" class="p-2.5 h-32 overflow-y-auto space-y-1 text-[11px] font-mono">
-            <div class="text-amber-300">[系統] 歡迎來到蘭州安全區！點擊下方導覽列的【驛站傳送】前往野外打怪。</div>
+            <div class="text-amber-300">[系統] 歡迎來到全服同屏版！線上玩家會即時顯示在畫面上。</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
             <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音與全服玩家對話..." 
@@ -316,7 +316,7 @@
         </div>
     </section>
 
-    <!-- 6. 新增：地圖驛站傳送視窗 (預設隱藏) -->
+    <!-- 6. 地圖驛站傳送視窗 -->
     <section id="panel-teleport" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-teleport')">
             <span>驛站車夫 · 江湖地圖傳送</span>
@@ -324,15 +324,13 @@
         </div>
         <div class="p-4 space-y-2.5 text-xs">
             <div class="text-gray-300 text-[11px] pb-1 border-b border-gray-700">
-                目前所在地：<b id="current-map-label" class="text-amber-400">蘭州 (安全區)</b>。野外地圖可自由打怪修練，切回蘭州即可避難。
+                目前所在地：<b id="current-map-label" class="text-amber-400">蘭州 (安全區)</b>。野外可遇見怪物與其他少俠。
             </div>
-            <div id="map-list" class="space-y-2">
-                <!-- 由 JS 動態生成地圖按鈕 -->
-            </div>
+            <div id="map-list" class="space-y-2"></div>
         </div>
     </section>
 
-    <!-- 7. 中央彈窗：帳號存檔管理與引繼碼 -->
+    <!-- 7. 雲端存檔管理視窗 -->
     <section id="panel-save" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] z-40 border-2 border-amber-500/80">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-save')">
             <span>💾 雲端帳號管理 (Supabase 綁定中)</span>
@@ -361,7 +359,7 @@
                         📋 產生並複製存檔碼
                     </button>
                 </div>
-                <textarea id="save-code-input" rows="4" placeholder="可在此匯出當前備份，或貼上引繼碼進行覆蓋..." class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-[11px] font-mono text-amber-200 focus:outline-none focus:border-amber-500"></textarea>
+                <textarea id="save-code-input" rows="4" placeholder="可在此匯出當前備份..." class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-[11px] font-mono text-amber-200 focus:outline-none focus:border-amber-500"></textarea>
             </div>
 
             <div class="flex gap-2">
@@ -389,7 +387,7 @@
 <script>
 /**
  * ============================================================================
- * 【區塊 0：Supabase 與 多地圖系統設定】
+ * 【區塊 0：Supabase 與 多地圖/在線玩家同步設定】
  * ============================================================================
  */
 const CLOUD_CONFIG = {
@@ -397,118 +395,88 @@ const CLOUD_CONFIG = {
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxaGp4YW1mdnJkZ2RpcHpxdXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTk5NDMsImV4cCI6MjEwNzk5NTk0M30.x1PAG9XF7gKKcQi0dd1kdh4EL7gyQnjq2oucLygB6as'
 };
 
-// 地圖資料庫設定
 const MAPS = {
-    lanzhou: {
-        id: 'lanzhou',
-        name: '蘭州 (安全區)',
-        minLv: 1,
-        safeZone: true,
-        bgGradient: ['#292524', '#1c1917'],
-        monsters: [] // 安全區沒有怪物
-    },
-    dunhuang: {
-        id: 'dunhuang',
-        name: '敦煌野外',
-        minLv: 1,
-        safeZone: false,
-        bgGradient: ['#451a03', '#1f1308'],
-        monsters: [
-            { name: '敦煌沙盜', lv: 3, hp: 280, atk: 24, def: 8, exp: 65, sp: 32, gold: 85, color: '#ef4444', radius: 20 },
-            { name: '沙漠毒蠍', lv: 5, hp: 400, atk: 30, def: 10, exp: 100, sp: 50, gold: 120, color: '#f59e0b', radius: 21 }
-        ]
-    },
-    huanghe: {
-        id: 'huanghe',
-        name: '黃河河畔',
-        minLv: 6,
-        safeZone: false,
-        bgGradient: ['#0f172a', '#020617'],
-        monsters: [
-            { name: '黃河水鬼', lv: 6, hp: 550, atk: 38, def: 15, exp: 150, sp: 75, gold: 180, color: '#38bdf8', radius: 22 },
-            { name: '河妖頭目', lv: 9, hp: 850, atk: 50, def: 22, exp: 260, sp: 130, gold: 320, color: '#6366f1', radius: 25 }
-        ]
-    },
-    qinling: {
-        id: 'qinling',
-        name: '秦始皇陵地宮',
-        minLv: 12,
-        safeZone: false,
-        bgGradient: ['#311042', '#12051c'],
-        monsters: [
-            { name: '皇陵禁衛軍', lv: 12, hp: 1200, atk: 68, def: 32, exp: 450, sp: 220, gold: 580, color: '#a855f7', radius: 26 },
-            { name: '千年秦俑將軍', lv: 15, hp: 2200, atk: 95, def: 45, exp: 850, sp: 400, gold: 1100, color: '#eab308', radius: 30 }
-        ]
-    }
+    lanzhou: { id: 'lanzhou', name: '蘭州 (安全區)', minLv: 1, safeZone: true, bgGradient: ['#292524', '#1c1917'], monsters: [] },
+    dunhuang: { id: 'dunhuang', name: '敦煌野外', minLv: 1, safeZone: false, bgGradient: ['#451a03', '#1f1308'], monsters: [
+        { name: '敦煌沙盜', lv: 3, hp: 280, atk: 24, def: 8, exp: 65, sp: 32, gold: 85, color: '#ef4444', radius: 20 },
+        { name: '沙漠毒蠍', lv: 5, hp: 400, atk: 30, def: 10, exp: 100, sp: 50, gold: 120, color: '#f59e0b', radius: 21 }
+    ]},
+    huanghe: { id: 'huanghe', name: '黃河河畔', minLv: 6, safeZone: false, bgGradient: ['#0f172a', '#020617'], monsters: [
+        { name: '黃河水鬼', lv: 6, hp: 550, atk: 38, def: 15, exp: 150, sp: 75, gold: 180, color: '#38bdf8', radius: 22 },
+        { name: '河妖頭目', lv: 9, hp: 850, atk: 50, def: 22, exp: 260, sp: 130, gold: 320, color: '#6366f1', radius: 25 }
+    ]},
+    qinling: { id: 'qinling', name: '秦始皇陵地宮', minLv: 12, safeZone: false, bgGradient: ['#311042', '#12051c'], monsters: [
+        { name: '皇陵禁衛軍', lv: 12, hp: 1200, atk: 68, def: 32, exp: 450, sp: 220, gold: 580, color: '#a855f7', radius: 26 },
+        { name: '千年秦俑將軍', lv: 15, hp: 2200, atk: 95, def: 45, exp: 850, sp: 400, gold: 1100, color: '#eab308', radius: 30 }
+    ]}
 };
 
 /**
  * ============================================================================
- * 【區塊 1：全服千里傳音即時聊天系統】
+ * 【區塊 1：全服千里傳音與在線玩家位置廣播 (Presence)】
  * ============================================================================
  */
-async function sendGlobalChat(messageText) {
-    if (!currentAccount) {
-        addLog(`⚠️ 請先登入大俠名號才能使用千里傳音！`, 'text-red-400');
-        return;
-    }
-    if (!messageText || messageText.trim() === '') return;
+let onlinePlayers = []; // 儲存其他線上少俠的座標與狀態
 
+async function sendGlobalChat(messageText) {
+    if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
+    if (!messageText || messageText.trim() === '') return;
     try {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats`, {
             method: 'POST',
-            headers: {
-                'apikey': CLOUD_CONFIG.supabaseAnonKey,
-                'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({
-                username: currentAccount,
-                message: messageText.trim(),
-                created_at: new Date().toISOString()
-            })
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ username: currentAccount, message: messageText.trim(), created_at: new Date().toISOString() })
         });
         fetchGlobalChats();
-    } catch (e) {
-        console.error('發送聊天失敗', e);
-        addLog(`❌ 千里傳音發送失敗。`, 'text-red-400');
-    }
+    } catch (e) { console.error('發送聊天失敗', e); }
 }
 
 async function fetchGlobalChats() {
     if (!CLOUD_CONFIG.supabaseUrl) return;
     try {
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats?select=*&order=created_at.asc&limit=30`, {
-            headers: {
-                'apikey': CLOUD_CONFIG.supabaseAnonKey,
-                'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`
-            }
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
         if (rows && Array.isArray(rows)) {
             const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] 歡迎來到蘭州安全區！點擊下方導覽列【驛站傳送】前往野外。</div>`;
+            let chatHtml = `<div class="text-amber-300">[系統] 歡迎來到全服同屏版！線上玩家會即時顯示在畫面上。</div>`;
             rows.forEach(r => {
                 const isSelf = (r.username === currentAccount);
                 const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
                 const msgColor = isSelf ? 'text-amber-100' : 'text-cyan-100';
                 chatHtml += `<div><span class="opacity-60 text-gray-400">[傳音]</span> <span class="${nameColor}">【${r.username}】</span>：<span class="${msgColor}">${escapeHtml(r.message)}</span></div>`;
             });
-            if (box.innerHTML !== chatHtml) {
-                box.innerHTML = chatHtml;
-                box.scrollTop = box.scrollHeight;
-            }
+            if (box.innerHTML !== chatHtml) { box.innerHTML = chatHtml; box.scrollTop = box.scrollHeight; }
         }
-    } catch (e) {
-        console.warn('同步聊天紀錄失敗', e);
-    }
+    } catch (e) { console.warn('同步聊天失敗', e); }
 }
 
-function escapeHtml(text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// 每秒同步玩家座標至 Supabase，並抓取同地圖的其他線上玩家
+async function syncPlayerPresence() {
+    if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
+    try {
+        // 1. 上傳自己目前的座標與地圖
+        await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences`, {
+            method: 'POST',
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+            body: JSON.stringify({ username: currentAccount, map_id: player.currentMapId, x: Math.round(player.x), y: Math.round(player.y), updated_at: new Date().toISOString() })
+        });
+
+        // 2. 抓取同地圖的其他玩家 (排除自己，且 10 秒內有活動的)
+        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?map_id=eq.${player.currentMapId}&username=neq.${encodeURIComponent(currentAccount)}`, {
+            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
+        });
+        const rows = await res.json();
+        if (rows && Array.isArray(rows)) {
+            onlinePlayers = rows;
+        }
+    } catch (e) { console.warn('玩家同屏同步失敗', e); }
 }
+
+function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 setInterval(fetchGlobalChats, 3000);
+setInterval(syncPlayerPresence, 1500); // 每 1.5 秒同步一次座標
 
 /**
  * ============================================================================
@@ -528,23 +496,18 @@ const MoxiangFormula = {
         player.derived.def = Math.floor(player.stats.con * 0.8 + player.level * 1.5);
         player.derived.critRate = Math.min(65, (player.stats.dex * 0.4 + w.critBonus)).toFixed(1);
     },
-
     calculateAttackDamage(player, monster) {
         const w = WEAPONS[player.currentWeapon];
         const skillLv = player.skillLevels[player.currentWeapon];
         const skillMultiplier = 1.0 + (skillLv - 1) * 0.18 + (skillLv >= 12 ? 0.5 : 0);
         const innerMultiplier = 1.0 + (player.derived.innerBonusPct / 100);
         const buffMultiplier = player.buffTimer > 0 ? 1.25 : 1.0;
-
         let rawDmg = (player.derived.atk * w.dmgRatio * skillMultiplier * innerMultiplier * buffMultiplier) - monster.def;
         rawDmg = Math.max(5, rawDmg * (0.92 + Math.random() * 0.16));
-
         const isCrit = (Math.random() * 100) < parseFloat(player.derived.critRate);
         if (isCrit) rawDmg *= 1.75;
-
         return { damage: Math.floor(rawDmg), isCrit };
     },
-
     applyDamageToPlayer(player, rawEnemyAtk) {
         const actualDmg = Math.max(1, rawEnemyAtk - player.derived.def);
         if (player.shield > 0) {
@@ -561,52 +524,36 @@ const MoxiangFormula = {
 };
 
 const WEAPONS = {
-    sword: { id: 'sword', name: '劍', skill: '破魂擊', range: 70, cooldown: 900, baseAtk: 18, dmgRatio: 1.25, critBonus: 3, scaling: 'STR', color: '#38bdf8', desc: '【近戰均衡】凝聚劍氣斬擊目標，攻速與威力兼具（主看力量）。' },
-    blade: { id: 'blade', name: '刀', skill: '狂風斬', range: 75, cooldown: 1150, baseAtk: 26, dmgRatio: 1.55, critBonus: 1, scaling: 'STR', color: '#f87171', desc: '【近戰重劈】剛猛霸道的刀法，單發傷害極高（主看力量）。' },
-    spear: { id: 'spear', name: '槍', skill: '橫掃千軍', range: 105, cooldown: 1100, baseAtk: 22, dmgRatio: 1.35, critBonus: 2, scaling: 'STR', color: '#fbbf24', desc: '【中距穿刺】一寸長一寸強，可同時震傷周圍敵人（主看力量）。' },
-    fist: { id: 'fist', name: '拳', skill: '如來神掌', range: 60, cooldown: 650, baseAtk: 14, dmgRatio: 0.95, critBonus: 8, scaling: 'STR', color: '#a78bfa', desc: '【極速連擊】出拳如風，高暴擊且內功心脈加成極高（主看力量/心脈）。' },
-    bow: { id: 'bow', name: '弓', skill: '萬箭齊發', range: 240, cooldown: 1000, baseAtk: 19, dmgRatio: 1.20, critBonus: 6, scaling: 'DEX', color: '#34d399', desc: '【遠程狙擊】百步穿楊，無須貼身即可安全練功（主看敏捷）。' },
-    hidden: { id: 'hidden', name: '暗器', skill: '漫天花雨', range: 200, cooldown: 720, baseAtk: 15, dmgRatio: 1.00, critBonus: 12, scaling: 'DEX', color: '#f472b6', desc: '【遠程高速】淬毒飛鏢連發，極高暴擊率（主看敏捷）。' }
+    sword: { id: 'sword', name: '劍', skill: '破魂擊', range: 70, cooldown: 900, baseAtk: 18, dmgRatio: 1.25, critBonus: 3, scaling: 'STR', color: '#38bdf8', desc: '近戰均衡' },
+    blade: { id: 'blade', name: '刀', skill: '狂風斬', range: 75, cooldown: 1150, baseAtk: 26, dmgRatio: 1.55, critBonus: 1, scaling: 'STR', color: '#f87171', desc: '近戰重劈' },
+    spear: { id: 'spear', name: '槍', skill: '橫掃千軍', range: 105, cooldown: 1100, baseAtk: 22, dmgRatio: 1.35, critBonus: 2, scaling: 'STR', color: '#fbbf24', desc: '中距穿刺' },
+    fist: { id: 'fist', name: '拳', skill: '如來神掌', range: 60, cooldown: 650, baseAtk: 14, dmgRatio: 0.95, critBonus: 8, scaling: 'STR', color: '#a78bfa', desc: '極速連擊' },
+    bow: { id: 'bow', name: '弓', skill: '萬箭齊發', range: 240, cooldown: 1000, baseAtk: 19, dmgRatio: 1.20, critBonus: 6, scaling: 'DEX', color: '#34d399', desc: '遠程狙擊' },
+    hidden: { id: 'hidden', name: '暗器', skill: '漫天花雨', range: 200, cooldown: 720, baseAtk: 15, dmgRatio: 1.00, critBonus: 12, scaling: 'DEX', color: '#f472b6', desc: '遠程高速' }
 };
 
 /**
  * ============================================================================
- * 【區塊 C：Supabase 雲端登入與地圖存檔系統】
+ * 【區塊 C：雲端登入與地圖存檔系統】
  * ============================================================================
  */
 const ACCOUNT_DB_KEY = 'MOXIANG_ACCOUNTS_DB_V1';
 const SESSION_USER_KEY = 'MOXIANG_CURRENT_SESSION';
-
 let currentAccount = null;
 
 function getDefaultPlayerState() {
     return {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-        targetX: window.innerWidth / 2,
-        targetY: window.innerHeight / 2,
-        speed: 3.4,
-        level: 1,
-        exp: 0,
-        maxExp: 100,
-        gold: 1500,
-        sp: 120,
-        statPoints: 10,
+        x: window.innerWidth / 2, y: window.innerHeight / 2,
+        targetX: window.innerWidth / 2, targetY: window.innerHeight / 2,
+        speed: 3.4, level: 1, exp: 0, maxExp: 100, gold: 1500, sp: 120, statPoints: 10,
         stats: { str: 15, dex: 12, con: 15, int: 15 },
         derived: { atk: 45, innerBonusPct: 22, def: 12, critRate: '8.5' },
-        hp: 525, maxHp: 525,
-        shield: 330, maxShield: 330,
-        mp: 220, maxMp: 220,
-        currentWeapon: 'sword',
-        weaponPlus: 0,
+        hp: 525, maxHp: 525, shield: 330, maxShield: 330, mp: 220, maxMp: 220,
+        currentWeapon: 'sword', weaponPlus: 0,
         skillLevels: { sword: 1, blade: 1, spear: 1, fist: 1, bow: 1, hidden: 1 },
         skillExp: { sword: 0, blade: 0, spear: 0, fist: 0, bow: 0, hidden: 0 },
-        buffTimer: 0,
-        autoBot: false,
-        targetMonster: null,
-        lastAttackTime: 0,
-        currentMapId: 'lanzhou', // 預設所有登入者皆在蘭州安全區
-        lastSaveTimestamp: Date.now()
+        buffTimer: 0, autoBot: false, targetMonster: null, lastAttackTime: 0,
+        currentMapId: 'lanzhou', lastSaveTimestamp: Date.now()
     };
 }
 
@@ -619,21 +566,18 @@ const slashEffects = [];
 function switchMap(mapId) {
     if (!MAPS[mapId]) return;
     if (player.level < MAPS[mapId].minLv) {
-        addLog(`⚠️ 您的境界 Lv.${player.level} 不足，無法前往【${MAPS[mapId].name}】（需 Lv.${MAPS[mapId].minLv}）！`, 'text-red-400');
+        addLog(`⚠️ 您的境界 Lv.${player.level} 不足，無法前往【${MAPS[mapId].name}】！`, 'text-red-400');
         return;
     }
-
     player.currentMapId = mapId;
-    toggleBot(false); // 傳送時強制中斷掛機
+    toggleBot(false);
     player.targetMonster = null;
     initMonstersForCurrentMap();
-
     document.getElementById('ui-map-name').textContent = MAPS[mapId].name;
     document.getElementById('current-map-label').textContent = MAPS[mapId].name;
     renderTeleportMenu();
     togglePanel('panel-teleport');
-
-    addLog(`🐎 [驛站] 您已搭乘馬車順利抵達【${MAPS[mapId].name}】！`, mapId === 'lanzhou' ? 'text-emerald-300 font-bold' : 'text-amber-300 font-bold');
+    addLog(`🐎 抵達【${MAPS[mapId].name}】！`, 'text-amber-300 font-bold');
     saveGame(false);
 }
 
@@ -641,10 +585,7 @@ function initMonstersForCurrentMap() {
     monsters.length = 0;
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone || mapInfo.monsters.length === 0) return;
-
-    for (let i = 0; i < 10; i++) {
-        spawnSpecificMonster();
-    }
+    for (let i = 0; i < 10; i++) spawnSpecificMonster();
 }
 
 function spawnSpecificMonster() {
@@ -653,13 +594,10 @@ function spawnSpecificMonster() {
     const tpl = mapInfo.monsters[Math.floor(Math.random() * mapInfo.monsters.length)];
     const margin = 120;
     monsters.push({
-        ...tpl,
-        id: Math.random().toString(36).slice(2),
-        maxHp: tpl.hp,
+        ...tpl, id: Math.random().toString(36).slice(2), maxHp: tpl.hp,
         x: margin + Math.random() * (window.innerWidth - margin * 2),
         y: margin + Math.random() * (window.innerHeight - margin * 2),
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
+        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
         lastHitTime: 0
     });
 }
@@ -671,17 +609,13 @@ function renderTeleportMenu() {
         const isCurrent = (player.currentMapId === m.id);
         const isLocked = player.level < m.minLv;
         const div = document.createElement('div');
-        div.className = `flex justify-between items-center p-2.5 rounded border ${
-            isCurrent ? 'bg-amber-950/60 border-amber-500' : 'bg-gray-900 border-gray-700'
-        }`;
+        div.className = `flex justify-between items-center p-2.5 rounded border ${isCurrent ? 'bg-amber-950/60 border-amber-500' : 'bg-gray-900 border-gray-700'}`;
         div.innerHTML = `
             <div>
                 <div class="font-bold text-white">${m.name} ${isCurrent ? '<span class="text-amber-400 text-[10px]">(當前)</span>' : ''}</div>
-                <div class="text-[10px] text-gray-400">${m.safeZone ? '🟢 安全區 (無怪物)' : `⚔️ 建議等級：Lv.${m.minLv} 以上`}</div>
+                <div class="text-[10px] text-gray-400">${m.safeZone ? '🟢 安全區' : `⚔️ 建議 Lv.${m.minLv}+`}</div>
             </div>
-            <button onclick="switchMap('${m.id}')" ${isCurrent || isLocked ? 'disabled' : ''} class="px-3 py-1 rounded text-xs font-bold ${
-                isCurrent ? 'bg-gray-700 text-gray-400 cursor-default' : isLocked ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-500 text-black shadow'
-            }">
+            <button onclick="switchMap('${m.id}')" ${isCurrent || isLocked ? 'disabled' : ''} class="px-3 py-1 rounded text-xs font-bold ${isCurrent ? 'bg-gray-700 text-gray-400 cursor-default' : isLocked ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-500 text-black shadow'}">
                 ${isCurrent ? '在此地' : isLocked ? `Lv.${m.minLv} 解鎖` : '傳送'}
             </button>
         `;
@@ -689,12 +623,7 @@ function renderTeleportMenu() {
     });
 }
 
-function getAccountsDB() {
-    try {
-        const raw = localStorage.getItem(ACCOUNT_DB_KEY);
-        return raw ? JSON.parse(raw) : {};
-    } catch { return {}; }
-}
+function getAccountsDB() { try { return JSON.parse(localStorage.getItem(ACCOUNT_DB_KEY) || '{}'); } catch { return {}; } }
 function saveAccountsDB(db) { localStorage.setItem(ACCOUNT_DB_KEY, JSON.stringify(db)); }
 function hashPwd(pwd) { return btoa(encodeURIComponent('MX_SALT_' + pwd)); }
 
@@ -703,19 +632,13 @@ function renderSavedAccountsList() {
     const listEl = document.getElementById('saved-accounts-list');
     listEl.innerHTML = '';
     const usernames = Object.keys(db);
-    if (usernames.length === 0) {
-        listEl.innerHTML = '<span class="text-[11px] text-gray-500">尚無本機紀錄，輸入名號即可連線雲端！</span>';
-        return;
-    }
+    if (usernames.length === 0) { listEl.innerHTML = '<span class="text-[11px] text-gray-500">尚無紀錄</span>'; return; }
     usernames.forEach(u => {
         const lv = db[u].saveData?.level || 1;
         const btn = document.createElement('button');
-        btn.className = 'bg-gray-800 hover:bg-amber-700/80 text-amber-200 border border-amber-500/30 px-2 py-1 rounded text-[11px] transition';
+        btn.className = 'bg-gray-800 hover:bg-amber-700/80 text-amber-200 border border-amber-500/30 px-2 py-1 rounded text-[11px]';
         btn.textContent = `${u} (Lv.${lv})`;
-        btn.onclick = () => {
-            document.getElementById('auth-username').value = u;
-            document.getElementById('auth-password').focus();
-        };
+        btn.onclick = () => { document.getElementById('auth-username').value = u; document.getElementById('auth-password').focus(); };
         listEl.appendChild(btn);
     });
 }
@@ -726,32 +649,32 @@ async function handleLoginOrRegister() {
     const remember = document.getElementById('auth-remember').checked;
     const errEl = document.getElementById('auth-error');
 
-    if (userIn.length < 2) { errEl.textContent = '⚠️ 大俠名號至少需要 2 個字元！'; return; }
-    if (pwdIn.length < 3) { errEl.textContent = '⚠️ 通關密語至少需要 3 個字元！'; return; }
+    if (userIn.length < 2) { errEl.textContent = '⚠️ 名號至少 2 字'; return; }
+    if (pwdIn.length < 3) { errEl.textContent = '⚠️ 密碼至少 3 字'; return; }
 
     const pwdHash = hashPwd(pwdIn);
-    errEl.textContent = '⏳ 正在連線 Supabase 雲端伺服器驗證...';
+    errEl.textContent = '⏳ 連線雲端驗證中...';
 
     let cloudData = null;
-    if (CLOUD_CONFIG.supabaseUrl && CLOUD_CONFIG.supabaseAnonKey) {
+    if (CLOUD_CONFIG.supabaseUrl) {
         try {
             const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}game_saves?username=eq.${encodeURIComponent(userIn)}`, {
                 headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
             });
             const rows = await res.json();
             if (rows && rows.length > 0) cloudData = rows[0];
-        } catch (e) { console.warn('雲端連線失敗', e); }
+        } catch (e) { console.warn('雲端驗證失敗', e); }
     }
 
     const db = getAccountsDB();
     if (cloudData) {
-        if (cloudData.password_hash !== pwdHash) { errEl.textContent = '❌ 通關密語（密碼）錯誤！'; return; }
+        if (cloudData.password_hash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
         errEl.textContent = '';
         db[userIn] = { passwordHash: pwdHash, saveData: cloudData.save_data };
         saveAccountsDB(db);
         completeLoginSession(userIn, cloudData.save_data, false, remember);
     } else if (db[userIn]) {
-        if (db[userIn].passwordHash !== pwdHash) { errEl.textContent = '❌ 通關密語（密碼）錯誤！'; return; }
+        if (db[userIn].passwordHash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
         errEl.textContent = '';
         completeLoginSession(userIn, db[userIn].saveData, false, remember);
         syncToCloud(userIn, pwdHash, db[userIn].saveData);
@@ -769,7 +692,7 @@ async function handleLoginOrRegister() {
 }
 
 async function syncToCloud(username, pwdHash, saveData) {
-    if (!CLOUD_CONFIG.supabaseUrl || !CLOUD_CONFIG.supabaseAnonKey) return;
+    if (!CLOUD_CONFIG.supabaseUrl) return;
     try {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}game_saves`, {
             method: 'POST',
@@ -789,49 +712,30 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
     document.getElementById('save-panel-user').textContent = username;
 
     if (isNewAccount) {
-        renderWeaponButtons();
-        updateUI();
-        saveGame(false);
-        addLog(`🎉 [雲端創角] 歡迎【${username}】抵達蘭州安全區！`, 'text-amber-300 font-bold');
+        renderWeaponButtons(); updateUI(); saveGame(false);
+        addLog(`🎉 歡迎【${username}】踏入江湖！`, 'text-amber-300 font-bold');
     } else {
-        applyLoadedData(saveData, false);
-        saveGame(false);
-        addLog(`📂 [雲端讀檔] 歡迎歸來，【${username}】（Lv.${player.level}）！`, 'text-cyan-300 font-bold');
+        applyLoadedData(saveData, false); saveGame(false);
+        addLog(`📂 歡迎歸來，【${username}】！`, 'text-cyan-300 font-bold');
     }
     fetchGlobalChats();
 }
 
 function logoutAccount() {
     if (currentAccount) saveGame(true);
-    toggleBot(false);
-    currentAccount = null;
+    toggleBot(false); currentAccount = null;
     localStorage.removeItem(SESSION_USER_KEY);
     document.getElementById('auth-password').value = '';
-    document.getElementById('save-indicator').textContent = '🔒 請先登入以啟用雲端存檔';
-    renderSavedAccountsList();
     document.getElementById('login-overlay').classList.remove('hidden');
 }
 
 function serializePlayer() {
     return {
-        version: 4,
-        account: currentAccount,
-        level: player.level,
-        exp: player.exp,
-        maxExp: player.maxExp,
-        gold: player.gold,
-        sp: player.sp,
-        statPoints: player.statPoints,
-        stats: { ...player.stats },
-        hp: player.hp,
-        shield: player.shield,
-        mp: player.mp,
-        currentWeapon: player.currentWeapon,
-        weaponPlus: player.weaponPlus,
-        skillLevels: { ...player.skillLevels },
-        skillExp: { ...player.skillExp },
-        currentMapId: player.currentMapId, // 保存當前所在分流地圖
-        lastSaveTimestamp: Date.now()
+        version: 5, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
+        hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
+        weaponPlus: player.weaponPlus, skillLevels: { ...player.skillLevels }, skillExp: { ...player.skillExp },
+        currentMapId: player.currentMapId, lastSaveTimestamp: Date.now()
     };
 }
 
@@ -841,52 +745,33 @@ function saveGame(manual = false) {
         const data = serializePlayer();
         const db = getAccountsDB();
         let pwdHash = hashPwd('1234');
-        if (db[currentAccount]) {
-            pwdHash = db[currentAccount].passwordHash;
-            db[currentAccount].saveData = data;
-            saveAccountsDB(db);
-        }
+        if (db[currentAccount]) { pwdHash = db[currentAccount].passwordHash; db[currentAccount].saveData = data; saveAccountsDB(db); }
         syncToCloud(currentAccount, pwdHash, data);
         const timeStr = new Date().toLocaleTimeString('zh-HK', { hour12: false });
-        document.getElementById('last-save-time').textContent = `上次雲端同步：${timeStr}`;
-        document.getElementById('save-indicator').textContent = `☁️ [${currentAccount}] 雲端自動同步 (${timeStr})`;
-        if (manual) addLog(`☁️ [雲端] 帳號【${currentAccount}】已同步。`, 'text-emerald-300');
-    } catch (err) { console.error('Save failed:', err); }
+        document.getElementById('last-save-time').textContent = `上次同步：${timeStr}`;
+        document.getElementById('save-indicator').textContent = `☁️ [${currentAccount}] 雲端自動同步`;
+        if (manual) addLog(`☁️ 存檔同步成功。`, 'text-emerald-300');
+    } catch (err) { console.error('存檔失敗', err); }
 }
 
 function applyLoadedData(data, isImported = false) {
     if (!data || typeof data.level !== 'number') return false;
-    player.level = data.level ?? 1;
-    player.exp = data.exp ?? 0;
-    player.maxExp = data.maxExp ?? 100;
-    player.gold = data.gold ?? 1500;
-    player.sp = data.sp ?? 120;
-    player.statPoints = data.statPoints ?? 10;
-    if (data.stats) {
-        player.stats.str = data.stats.str ?? 15;
-        player.stats.dex = data.stats.dex ?? 12;
-        player.stats.con = data.stats.con ?? 15;
-        player.stats.int = data.stats.int ?? 15;
-    }
+    player.level = data.level ?? 1; player.exp = data.exp ?? 0; player.maxExp = data.maxExp ?? 100;
+    player.gold = data.gold ?? 1500; player.sp = data.sp ?? 120; player.statPoints = data.statPoints ?? 10;
+    if (data.stats) { player.stats.str = data.stats.str ?? 15; player.stats.dex = data.stats.dex ?? 12; player.stats.con = data.stats.con ?? 15; player.stats.int = data.stats.int ?? 15; }
     if (data.currentWeapon && WEAPONS[data.currentWeapon]) player.currentWeapon = data.currentWeapon;
     player.weaponPlus = data.weaponPlus ?? 0;
     if (data.skillLevels) Object.keys(WEAPONS).forEach(k => player.skillLevels[k] = data.skillLevels[k] ?? 1);
     if (data.skillExp) Object.keys(WEAPONS).forEach(k => player.skillExp[k] = data.skillExp[k] ?? 0);
-
-    // 每次登入時安全機制：若上次在野外，為了安全可維持；或依需求也可強制返回蘭州。此處根據存檔恢復所在世界
     player.currentMapId = data.currentMapId && MAPS[data.currentMapId] ? data.currentMapId : 'lanzhou';
-
     MoxiangFormula.recalcDerivedStats(player);
     player.hp = Math.min(player.maxHp, data.hp ?? player.maxHp);
     player.shield = Math.min(player.maxShield, data.shield ?? player.maxShield);
     player.mp = Math.min(player.maxMp, data.mp ?? player.maxMp);
-
     initMonstersForCurrentMap();
     document.getElementById('ui-map-name').textContent = MAPS[player.currentMapId].name;
     document.getElementById('current-map-label').textContent = MAPS[player.currentMapId].name;
-    renderTeleportMenu();
-    renderWeaponButtons();
-    updateUI();
+    renderTeleportMenu(); renderWeaponButtons(); updateUI();
     return true;
 }
 
@@ -901,11 +786,8 @@ function exportSaveCode() {
     if (!currentAccount) return;
     saveGame(false);
     const code = btoa(encodeURIComponent(JSON.stringify(serializePlayer())));
-    const inputEl = document.getElementById('save-code-input');
-    inputEl.value = code;
-    inputEl.select();
-    if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
-    addLog(`📋 存檔引繼碼已複製！`, 'text-amber-300');
+    document.getElementById('save-code-input').value = code;
+    addLog(`📋 引繼碼已複製！`, 'text-amber-300');
 }
 
 function importSaveCode() {
@@ -914,30 +796,23 @@ function importSaveCode() {
     if (!code) return;
     try {
         const data = JSON.parse(decodeURIComponent(atob(code)));
-        if (applyLoadedData(data, true)) {
-            saveGame(true);
-            addLog(`🎉 存檔碼讀取成功！`, 'text-emerald-300 font-bold');
-            togglePanel('panel-save');
-        }
-    } catch { addLog(`❌ 存檔碼解析失敗！`, 'text-red-400'); }
+        if (applyLoadedData(data, true)) { saveGame(true); addLog(`🎉 讀檔成功！`, 'text-emerald-300 font-bold'); togglePanel('panel-save'); }
+    } catch { addLog(`❌ 存檔碼錯誤！`, 'text-red-400'); }
 }
 
 function resetSaveData() {
     if (!currentAccount) return;
-    if (!confirm(`確定重置【${currentAccount}】回 Lv.1 嗎？`)) return;
+    if (!confirm(`確定重置？`)) return;
     const fresh = getDefaultPlayerState();
     Object.assign(player, fresh);
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons();
-    updateUI();
-    saveGame(true);
+    renderWeaponButtons(); updateUI(); saveGame(true);
     addLog(`🔄 角色已重置。`, 'text-amber-400');
 }
 
 setInterval(() => { if (currentAccount) saveGame(false); }, 5000);
-window.addEventListener('beforeunload', () => { if (currentAccount) saveGame(false); });
 
-// Canvas 渲染與遊戲迴圈
+// Canvas 繪製與遊戲迴圈
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -950,8 +825,8 @@ function renderWeaponButtons() {
     Object.values(WEAPONS).forEach(w => {
         const active = player.currentWeapon === w.id;
         const btn = document.createElement('button');
-        btn.className = `py-1.5 px-2 rounded font-bold border transition ${active ? 'bg-amber-600 text-black border-amber-300 shadow' : 'bg-gray-800/80 text-gray-300 border-gray-700 hover:bg-gray-700'}`;
-        btn.innerHTML = `${w.name} <span class="text-[10px] opacity-80">Lv.${player.skillLevels[w.id]}</span>`;
+        btn.className = `py-1.5 px-2 rounded font-bold border transition ${active ? 'bg-amber-600 text-black border-amber-300 shadow' : 'bg-gray-800/80 text-gray-300 border-gray-700'}`;
+        btn.innerHTML = `${w.name} (Lv.${player.skillLevels[w.id]})`;
         btn.onclick = () => switchWeapon(w.id);
         container.appendChild(btn);
     });
@@ -961,56 +836,42 @@ function switchWeapon(weaponId) {
     if (!currentAccount) return;
     player.currentWeapon = weaponId;
     MoxiangFormula.recalcDerivedStats(player);
-    renderWeaponButtons();
-    updateUI();
-    saveGame(false);
-    addLog(`切換兵器為【${WEAPONS[weaponId].name}】`, 'text-cyan-300');
+    renderWeaponButtons(); updateUI(); saveGame(false);
+    addLog(`切換兵器：${WEAPONS[weaponId].name}`, 'text-cyan-300');
 }
 
 function addStat(statKey) {
     if (!currentAccount || player.statPoints <= 0) return;
-    player.stats[statKey]++;
-    player.statPoints--;
-    MoxiangFormula.recalcDerivedStats(player);
-    updateUI();
-    saveGame(false);
+    player.stats[statKey]++; player.statPoints--;
+    MoxiangFormula.recalcDerivedStats(player); updateUI(); saveGame(false);
 }
 
 function upgradeSkill() {
     if (!currentAccount) return;
     const wId = player.currentWeapon;
     if (player.skillLevels[wId] >= 12 || player.sp < 50) return;
-    player.sp -= 50;
-    player.skillLevels[wId]++;
-    player.skillExp[wId] = 0;
-    renderWeaponButtons();
-    updateUI();
-    saveGame(false);
-    addLog(`《${WEAPONS[wId].skill}》突破至第 ${player.skillLevels[wId]} 層！`, 'text-amber-300');
+    player.sp -= 50; player.skillLevels[wId]++; player.skillExp[wId] = 0;
+    renderWeaponButtons(); updateUI(); saveGame(false);
+    addLog(`武功提升至第 ${player.skillLevels[wId]} 層！`, 'text-amber-300');
 }
 
 function enhanceWeapon() {
     if (!currentAccount || player.weaponPlus >= 9) return;
     const cost = (player.weaponPlus + 1) * 300;
-    if (player.gold < cost) { addLog(`銀兩不足！`, 'text-red-400'); return; }
+    if (player.gold < cost) { addLog(`銀兩不足`, 'text-red-400'); return; }
     player.gold -= cost;
     if (Math.random() <= (player.weaponPlus < 3 ? 1.0 : 0.45)) {
-        player.weaponPlus++;
-        MoxiangFormula.recalcDerivedStats(player);
-        addLog(`【組合成功】兵器強化至 +${player.weaponPlus}！`, 'text-amber-300');
-    } else { addLog(`【組合失敗】兵器維持 +${player.weaponPlus}`, 'text-gray-400'); }
-    updateUI();
-    saveGame(false);
+        player.weaponPlus++; MoxiangFormula.recalcDerivedStats(player);
+        addLog(`【成功】兵器強化 +${player.weaponPlus}`, 'text-amber-300');
+    } else { addLog(`【失敗】兵器維持 +${player.weaponPlus}`, 'text-gray-400'); }
+    updateUI(); saveGame(false);
 }
 
 function castBuff() {
     if (!currentAccount || player.mp < 30) return;
-    player.mp -= 30;
-    player.buffTimer = 600;
-    player.shield = player.maxShield;
-    spawnFloatingText(player.x, player.y - 35, '🔥 護體罡氣全滿!', '#f87171', 15);
-    addLog(`運轉金鐘罩，護體全滿！`, 'text-amber-300');
-    updateUI();
+    player.mp -= 30; player.buffTimer = 600; player.shield = player.maxShield;
+    spawnFloatingText(player.x, player.y - 35, '🔥 金鐘罩啟動!', '#f87171', 15);
+    addLog(`護體全滿！`, 'text-amber-300'); updateUI();
 }
 
 function usePotionManual() {
@@ -1018,29 +879,24 @@ function usePotionManual() {
     player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.5));
     player.mp = Math.min(player.maxMp, player.mp + Math.floor(player.maxMp * 0.5));
     player.shield = Math.min(player.maxShield, player.shield + Math.floor(player.maxShield * 0.6));
-    spawnFloatingText(player.x, player.y - 25, '+金創藥調息', '#34d399', 13);
+    spawnFloatingText(player.x, player.y - 25, '+金創藥', '#34d399', 13);
     updateUI();
 }
 
 function toggleBot(forceState) {
     if (!currentAccount) return;
-    const mapInfo = MAPS[player.currentMapId];
-    if (mapInfo.safeZone) {
-        addLog(`⚠️ 蘭州為安全區，無法在此進行自動掛機打怪！請先透過【驛站傳送】前往野外。`, 'text-red-400');
-        return;
-    }
+    if (MAPS[player.currentMapId].safeZone) { addLog(`⚠️ 蘭州安全區無法掛機！`, 'text-red-400'); return; }
     player.autoBot = typeof forceState === 'boolean' ? forceState : !player.autoBot;
     const badge = document.getElementById('bot-status-badge');
     const btn = document.getElementById('btn-toggle-bot');
     if (player.autoBot) {
-        badge.textContent = '自動掛機中'; badge.className = 'text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded animate-pulse';
+        badge.textContent = '掛機中'; badge.className = 'text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded animate-pulse';
         btn.textContent = '停止掛機 [F]'; btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        addLog(`【Auto-Bot】啟動野外自動練功。`, 'text-emerald-400');
+        addLog(`【Auto-Bot】開始自動打怪。`, 'text-emerald-400');
     } else {
         badge.textContent = '休息中'; badge.className = 'text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded';
         btn.textContent = '啟動掛機 [F]'; btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        player.targetMonster = null;
-        addLog(`【Auto-Bot】已停止掛機。`, 'text-gray-400');
+        player.targetMonster = null; addLog(`【Auto-Bot】已停止。`, 'text-gray-400');
     }
 }
 
@@ -1075,7 +931,6 @@ canvas.addEventListener('mousedown', (e) => {
 function spawnFloatingText(x, y, text, color = '#ffffff', size = 14) {
     floatingTexts.push({ x, y, text, color, size, alpha: 1.0, vy: -1.2 });
 }
-
 function addLog(msg, colorClass = 'text-gray-200') {
     const box = document.getElementById('battle-log');
     const div = document.createElement('div');
@@ -1084,30 +939,26 @@ function addLog(msg, colorClass = 'text-gray-200') {
     while (box.children.length > 40) box.removeChild(box.firstChild);
     box.scrollTop = box.scrollHeight;
 }
-
 function clearLogs() { document.getElementById('battle-log').innerHTML = ''; }
 
 function checkLevelUp() {
     let leveled = false;
     while (player.exp >= player.maxExp) {
         player.exp -= player.maxExp; player.level++;
-        player.maxExp = Math.floor(player.maxExp * 1.35); player.statPoints += 5;
-        leveled = true;
+        player.maxExp = Math.floor(player.maxExp * 1.35); player.statPoints += 5; leveled = true;
     }
     if (leveled) {
         MoxiangFormula.recalcDerivedStats(player);
         player.hp = player.maxHp; player.shield = player.maxShield; player.mp = player.maxMp;
-        spawnFloatingText(player.x, player.y - 45, `🎉 境界突破 Lv.${player.level}!`, '#fde047', 17);
-        addLog(`🎉 恭喜突破至 Lv.${player.level}！解鎖更高階地圖！`, 'text-amber-300 font-bold');
-        renderTeleportMenu();
-        saveGame(false);
+        spawnFloatingText(player.x, player.y - 45, `🎉 突破 Lv.${player.level}!`, '#fde047', 17);
+        addLog(`🎉 境界突破至 Lv.${player.level}！`, 'text-amber-300 font-bold');
+        renderTeleportMenu(); saveGame(false);
     }
 }
 
 function updateUI() {
     const w = WEAPONS[player.currentWeapon];
-    const sLv = player.skillLevels[player.currentWeapon];
-    document.getElementById('ui-weapon-label').textContent = `主修兵器：${w.name} (Lv.${sLv})`;
+    document.getElementById('ui-weapon-label').textContent = `主修：${w.name}`;
     document.getElementById('ui-gold').textContent = player.gold.toLocaleString();
     document.getElementById('ui-sp').textContent = player.sp.toLocaleString();
     document.getElementById('ui-hp-text').textContent = `${Math.floor(player.hp)} / ${player.maxHp}`;
@@ -1132,15 +983,35 @@ function updateUI() {
 
 function updateGame(now) {
     const mapInfo = MAPS[player.currentMapId];
-
-    // 安全區內自動停用掛機
     if (mapInfo.safeZone && player.autoBot) toggleBot(false);
 
     if (!mapInfo.safeZone) {
         for (const m of monsters) {
-            m.x += m.vx; m.y += m.vy;
-            if (m.x < 80 || m.x > canvas.width - 80) m.vx *= -1;
-            if (m.y < 80 || m.y > canvas.height - 80) m.vy *= -1;
+            // 怪物 AI：若玩家距離怪物小於 180 像素，怪物會主動走向玩家並攻擊！
+            const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
+            if (distToPlayer < 180) {
+                const angle = Math.atan2(player.y - m.y, player.x - m.x);
+                m.x += Math.cos(angle) * 1.2;
+                m.y += Math.sin(angle) * 1.2;
+
+                // 怪物靠近攻擊距離 (40px) 且攻擊冷刻到期，主動攻擊玩家！
+                if (distToPlayer <= 40 && (!m.lastAttackTime || now - m.lastAttackTime >= 1500)) {
+                    m.lastAttackTime = now;
+                    const taken = MoxiangFormula.applyDamageToPlayer(player, m.atk);
+                    spawnFloatingText(player.x, player.y - 15, `-${taken.hpLost} (${m.name})`, '#f87171', 13);
+                    updateUI();
+                    if (player.hp <= 1) {
+                        switchMap('lanzhou');
+                        player.hp = player.maxHp;
+                        addLog(`⚠️ 遭到【${m.name}】擊敗，緊急送回蘭州安全區！`, 'text-red-400 font-bold');
+                    }
+                }
+            } else {
+                // 否則在野外隨機漫遊
+                m.x += m.vx; m.y += m.vy;
+                if (m.x < 80 || m.x > canvas.width - 80) m.vx *= -1;
+                if (m.y < 80 || m.y > canvas.height - 80) m.vy *= -1;
+            }
         }
     }
 
@@ -1202,31 +1073,19 @@ function performAttack(monster, now) {
     player.lastAttackTime = now;
     const w = WEAPONS[player.currentWeapon];
     player.mp = Math.max(0, player.mp - 4);
-
     if (w.range > 120) {
         const angle = Math.atan2(monster.y - player.y, monster.x - player.x);
         projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 11, vy: Math.sin(angle) * 11, color: w.color, life: 22 });
     } else {
         slashEffects.push({ x: monster.x, y: monster.y, radius: monster.radius + 18, color: w.color, alpha: 1.0 });
     }
-
     const res = MoxiangFormula.calculateAttackDamage(player, monster);
     monster.hp -= res.damage;
+    spawnFloatingText(monster.x, monster.y - 25, res.isCrit ? `💥暴擊 -${res.damage}` : `-${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
 
-    spawnFloatingText(monster.x + (Math.random() - 0.5) * 20, monster.y - 25, res.isCrit ? `💥暴擊 -${res.damage}` : `-${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
-
-    if (monster.hp > 0) {
-        const taken = MoxiangFormula.applyDamageToPlayer(player, monster.atk);
-        spawnFloatingText(player.x, player.y - 15, `-${taken.hpLost}`, '#f87171', 12);
-        if (player.hp <= 1) {
-            // 瀕死自動傳送回安全區避難
-            switchMap('lanzhou');
-            player.hp = player.maxHp;
-            addLog(`⚠️ 您在野外不敵落敗，已被緊急送回【蘭州安全區】休養！`, 'text-red-400 font-bold');
-        }
-    } else {
+    if (monster.hp <= 0) {
         player.exp += monster.exp; player.sp += monster.sp; player.gold += monster.gold;
-        addLog(`擊敗【${monster.name}】獲得 EXP +${monster.exp}、銀兩 +${monster.gold}`, 'text-gray-300');
+        addLog(`擊敗【${monster.name}】獲 EXP +${monster.exp}`, 'text-gray-300');
         const idx = monsters.indexOf(monster);
         if (idx !== -1) monsters.splice(idx, 1);
         player.targetMonster = null;
@@ -1247,7 +1106,6 @@ function renderGame() {
     for (let y = 0; y < canvas.height; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
 
     if (mapInfo.safeZone) {
-        // 繪製安全區標示
         ctx.font = 'bold 28px "Noto Serif TC"'; ctx.fillStyle = 'rgba(52, 211, 153, 0.25)'; ctx.textAlign = 'center';
         ctx.fillText('🛡️ 蘭州安全區域 · 禁止刀兵相見 🛡️', canvas.width / 2, canvas.height / 2 - 40);
         ctx.font = '14px "Noto Sans TC"'; ctx.fillStyle = 'rgba(156, 163, 175, 0.8)';
@@ -1260,12 +1118,19 @@ function renderGame() {
             }
             ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
             ctx.fillStyle = m.color; ctx.fill(); ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.stroke();
-
             ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#f3f4f6'; ctx.textAlign = 'center';
             ctx.fillText(`Lv.${m.lv} ${m.name}`, m.x, m.y - m.radius - 12);
             ctx.fillStyle = '#1f2937'; ctx.fillRect(m.x - 23, m.y - m.radius - 8, 46, 5);
             ctx.fillStyle = '#ef4444'; ctx.fillRect(m.x - 23, m.y - m.radius - 8, 46 * Math.max(0, m.hp / m.maxHp), 5);
         }
+    }
+
+    // 渲染同地圖的其他線上玩家
+    for (const op of onlinePlayers) {
+        ctx.beginPath(); ctx.arc(op.x, op.y, 16, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
+        ctx.fillText(`【${op.username}】`, op.x, op.y - 24);
     }
 
     for (const p of projectiles) { ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); }
@@ -1283,7 +1148,6 @@ function renderGame() {
     const w = WEAPONS[player.currentWeapon];
     ctx.beginPath(); ctx.arc(player.x, player.y, 17, 0, Math.PI * 2);
     ctx.fillStyle = w.color; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
-
     ctx.font = 'bold 12px "Noto Sans TC"'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
     ctx.fillText(`[${w.name}] ${currentAccount || '未登入'} (+${player.weaponPlus})`, player.x, player.y - 32);
 
