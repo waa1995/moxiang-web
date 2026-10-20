@@ -15,6 +15,12 @@
             background-color: #111827;
             cursor: url('assets/mouse/default.cur'), auto;
         }
+        input, textarea {
+            user-select: text;
+            -webkit-user-select: text;
+            color: #f8fafc;
+            caret-color: #fbbf24;
+        }
         /* 遊戲自訂游標（newui/Mouse） */
         #gameCanvas {
             cursor: url('assets/mouse/default.cur'), auto;
@@ -367,7 +373,7 @@
     </div>
 
     <!-- 1. 左上角：基礎狀態面板 -->
-    <section id="panel-basic" class="hud-panel framed absolute top-4 left-4 w-72 z-20">
+    <section id="panel-basic" class="hud-panel framed absolute top-4 left-4 w-72 z-20 max-h-[calc(100vh-16rem)] overflow-y-auto">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-basic')">
             <span>江湖基礎資訊</span>
             <button onclick="logoutAccount()" class="text-[10px] bg-amber-800/90 hover:bg-amber-700 text-amber-100 px-2 py-0.5 rounded border border-amber-500/40 cursor-pointer">
@@ -428,16 +434,8 @@
             <div class="w-full h-1.5 bg-gray-900 rounded overflow-hidden">
                 <div id="ui-exp-bar" class="h-full bg-amber-500 bar-transition" style="width: 0%"></div>
             </div>
-        </div>
-    </section>
-
-    <!-- 2. 左中：屬性配點 -->
-    <section id="panel-status" class="hud-panel framed absolute top-72 left-4 w-72 z-20">
-        <div class="hud-header" onmousedown="startDrag(event, 'panel-status')">
-            <span>人物屬性</span>
-            <button onclick="togglePanel('panel-status')" class="text-gray-400 hover:text-white">✕</button>
-        </div>
-        <div class="p-3 space-y-2 text-xs">
+            <div id="panel-status" class="pt-2 border-t border-amber-700/40 space-y-2 text-xs">
+            <div class="text-[11px] text-amber-200 font-bold">人物屬性</div>
             <div class="flex justify-between items-center bg-amber-950/40 border border-amber-600/30 px-2.5 py-1.5 rounded">
                 <span class="text-amber-200">剩餘屬性點</span>
                 <b id="ui-stat-points" class="text-base font-mono text-amber-400">10</b>
@@ -491,6 +489,7 @@
                 <span id="skill-exp-text">0%</span><div id="skill-exp-bar"></div>
                 <span id="weapon-plus">+0</span>
             </div>
+            </div>
         </div>
     </section>
 
@@ -520,7 +519,7 @@
     </section>
 
     <!-- 5. 左下：聊天紀錄 -->
-    <section id="panel-log" class="hud-panel framed absolute bottom-16 left-4 w-96 z-20">
+    <section id="panel-log" class="hud-panel framed absolute bottom-16 left-4 w-96 z-40">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-log')">
             <span>千里傳音 · 江湖戰報</span>
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
@@ -529,9 +528,10 @@
             <div class="text-amber-300">[系統] PVP 殘血不朽與傳送隱身 Bug 已完美修復！</div>
         </div>
         <div class="p-2 border-t border-gray-700/80 flex gap-1 bg-gray-950/60 rounded-b">
-            <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..." 
-                class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-[11px] text-white focus:outline-none focus:border-amber-500"
-                onkeydown="if(event.key==='Enter'){ sendGlobalChat(this.value); this.value=''; }">
+            <input id="chat-input" type="text" maxlength="80" placeholder="輸入千里傳音..."
+                class="w-full bg-gray-950 border border-amber-700/50 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                style="color:#f8fafc;caret-color:#fbbf24;-webkit-text-fill-color:#f8fafc;"
+                onkeydown="event.stopPropagation(); if(event.key==='Enter'){ sendGlobalChat(this.value); this.value=''; }">
             <button onclick="const inp=document.getElementById('chat-input'); sendGlobalChat(inp.value); inp.value='';" 
                 class="bg-amber-700 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-[11px] font-bold">
                 發送
@@ -623,6 +623,32 @@
         </div>
     </section>
 
+    <section id="panel-party" class="hud-panel framed hidden absolute top-36 right-4 w-64 z-30">
+        <div class="hud-header" onmousedown="startDrag(event, 'panel-party')">
+            <span>組隊</span>
+            <button onclick="togglePanel('panel-party')" class="text-gray-400 hover:text-white">✕</button>
+        </div>
+        <div class="p-2.5 space-y-2 text-xs">
+            <div id="party-list" class="space-y-1 text-[11px] text-gray-200 min-h-[1.5rem]">尚未組隊</div>
+            <div class="flex gap-1">
+                <input id="party-target" type="text" maxlength="16" placeholder="隊友名號"
+                    class="w-full bg-gray-950 border border-amber-700/50 rounded px-2 py-1 text-sm text-white"
+                    style="color:#f8fafc;caret-color:#fbbf24;-webkit-text-fill-color:#f8fafc;"
+                    onkeydown="event.stopPropagation(); if(event.key==='Enter'){ sendPartyInvite(this.value); }">
+                <button onclick="sendPartyInvite(document.getElementById('party-target').value)" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-1 rounded font-bold">邀請</button>
+            </div>
+            <div id="party-invite" class="hidden bg-amber-950/50 border border-amber-600/40 rounded p-2 space-y-1">
+                <div id="party-invite-text" class="text-amber-100"></div>
+                <div class="flex gap-1">
+                    <button onclick="acceptPartyInvite()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white py-1 rounded">接受</button>
+                    <button onclick="declinePartyInvite()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-1 rounded">拒絕</button>
+                </div>
+            </div>
+            <button onclick="leaveParty()" class="w-full bg-red-900/70 hover:bg-red-800 text-red-100 py-1 rounded">離開隊伍</button>
+            <p class="text-[10px] text-gray-400">點同地圖的其他玩家，名號會填進這裡。同隊不會互相攻擊。</p>
+        </div>
+    </section>
+
     <!-- 快捷列：補血、普通攻擊、四格可換武功 -->
     <div id="hotbar" class="fixed bottom-[3.6rem] left-1/2 -translate-x-1/2 z-30 flex gap-1.5 items-end px-2 py-1.5 hud-panel">
         <button type="button" id="hot-heal" class="hotbar-slot" onclick="usePotionManual()" title="金創藥">
@@ -641,7 +667,8 @@
     <!-- 底部導覽列 -->
     <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 hud-panel px-4 py-1.5 flex gap-2 z-30 text-xs font-bold whitespace-nowrap">
         <button onclick="togglePanel('panel-basic')" class="hover:text-amber-400 px-2 py-1">☯️ 狀態</button>
-        <button onclick="togglePanel('panel-status')" class="hover:text-amber-400 px-2 py-1">📊 配點</button>
+        <button onclick="document.getElementById('panel-basic').classList.remove('hidden'); document.getElementById('panel-status').scrollIntoView({block:'nearest'});" class="hover:text-amber-400 px-2 py-1">📊 配點</button>
+        <button onclick="togglePanel('panel-party')" class="hover:text-amber-400 px-2 py-1">👥 組隊</button>
         <button onclick="togglePanel('panel-equip')" class="bg-purple-900/80 hover:bg-purple-800 text-purple-100 px-2.5 py-1 rounded border border-purple-400/50">🎒 裝備強化 [B]</button>
         <button onclick="togglePanel('panel-bot')" class="hover:text-amber-400 px-2 py-1">🤖 掛機 [F]</button>
         <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded">🐎 驛站傳送</button>
@@ -937,6 +964,10 @@ function migrateSkillKey(id) { return OLD_SKILL_IDS[id] || id; }
 })();
 
 let onlinePlayersMap = {};
+let partyState = { id: '', inviteFrom: '' };
+let presenceBusy = false;
+let seenChatKeys = new Set();
+let chatBooted = false;
 let droppedItems = [];
 let screenShakeTimer = 0;
 let screenShakeIntensity = 0;
@@ -1486,41 +1517,185 @@ function handlePlayerDeath(killerName) {
     saveGame(true);
 }
 
+function escapeHtml(text) {
+    return String(text == null ? '' : text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 async function sendGlobalChat(messageText) {
     if (!currentAccount) { addLog(`⚠️ 請先登入！`, 'text-red-400'); return; }
-    if (!messageText || messageText.trim() === '') return;
+    const message = String(messageText || '').trim();
+    if (!message) return;
+    addLog(`<span class="opacity-60 text-gray-400">[傳音]</span> <span class="text-amber-400 font-bold">【${escapeHtml(currentAccount)}】</span>：<span class="text-amber-100">${escapeHtml(message)}</span>`);
     try {
         await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats`, {
             method: 'POST',
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ username: currentAccount, message: messageText.trim(), created_at: new Date().toISOString() })
+            body: JSON.stringify({ username: currentAccount, message, created_at: new Date().toISOString() })
         });
         fetchGlobalChats();
-    } catch (e) {}
+    } catch (e) {
+        addLog('傳音沒有送出，請再試一次。', 'text-red-400');
+    }
+}
+
+function postPartyWire(body) {
+    if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
+    fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats`, {
+        method: 'POST',
+        headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ username: currentAccount, message: `@@PT|${body}`, created_at: new Date().toISOString() })
+    }).catch(() => {});
+}
+
+function sameParty(name) {
+    return !!(partyState.id && name && (name === currentAccount || (onlinePlayersMap[name] && onlinePlayersMap[name].partyId === partyState.id)));
+}
+
+function renderParty() {
+    const list = document.getElementById('party-list');
+    const invite = document.getElementById('party-invite');
+    const inviteText = document.getElementById('party-invite-text');
+    if (invite && inviteText) {
+        if (partyState.inviteFrom) {
+            invite.classList.remove('hidden');
+            inviteText.textContent = `【${partyState.inviteFrom}】邀請你組隊`;
+        } else {
+            invite.classList.add('hidden');
+        }
+    }
+    if (!list) return;
+    if (!partyState.id) {
+        list.textContent = '尚未組隊';
+        return;
+    }
+    const names = [currentAccount];
+    Object.values(onlinePlayersMap).forEach((op) => {
+        if (op.partyId === partyState.id && op.username !== currentAccount) names.push(op.username);
+    });
+    list.innerHTML = names.map((name) => `<div class="text-emerald-200">${name === partyState.id ? '隊長' : '隊員'} 【${escapeHtml(name)}】${name === currentAccount ? '（我）' : ''}</div>`).join('');
+}
+
+function sendPartyInvite(name) {
+    const target = String(name || '').trim();
+    if (!currentAccount) { addLog('請先登入。', 'text-red-400'); return; }
+    if (!target || target === currentAccount) { addLog('請填寫其他玩家的名號。', 'text-amber-200'); return; }
+    if (!partyState.id) partyState.id = currentAccount;
+    postPartyWire(`invite|${currentAccount}|${target}`);
+    addLog(`已邀請【${escapeHtml(target)}】組隊。`, 'text-emerald-300');
+    renderParty();
+}
+
+function acceptPartyInvite() {
+    const leader = partyState.inviteFrom;
+    if (!leader) return;
+    partyState.id = leader;
+    partyState.inviteFrom = '';
+    postPartyWire(`accept|${currentAccount}|${leader}`);
+    addLog(`已加入【${escapeHtml(leader)}】的隊伍。`, 'text-emerald-300');
+    renderParty();
+}
+
+function declinePartyInvite() {
+    const leader = partyState.inviteFrom;
+    partyState.inviteFrom = '';
+    if (leader) postPartyWire(`reject|${currentAccount}|${leader}`);
+    renderParty();
+}
+
+function leaveParty() {
+    if (!partyState.id) { renderParty(); return; }
+    const id = partyState.id;
+    partyState.id = '';
+    postPartyWire(`leave|${currentAccount}|${id}`);
+    addLog('已離開隊伍。', 'text-gray-300');
+    renderParty();
+}
+
+function handlePartyWire(message) {
+    const parts = String(message || '').split('|');
+    const cmd = parts[1];
+    const a = parts[2];
+    const b = parts[3];
+    if (cmd === 'invite' && b === currentAccount && a && a !== currentAccount) {
+        partyState.inviteFrom = a;
+        const panel = document.getElementById('panel-party');
+        if (panel) panel.classList.remove('hidden');
+        addLog(`【${escapeHtml(a)}】邀請你組隊。`, 'text-amber-200');
+        renderParty();
+    } else if (cmd === 'accept' && b === currentAccount) {
+        if (!partyState.id) partyState.id = currentAccount;
+        addLog(`【${escapeHtml(a)}】加入了隊伍。`, 'text-emerald-300');
+        renderParty();
+    } else if (cmd === 'leave' && partyState.id && (a === partyState.id || b === partyState.id)) {
+        if (a === partyState.id) {
+            partyState.id = '';
+            addLog('隊長解散了隊伍。', 'text-amber-200');
+        }
+        renderParty();
+    } else if (cmd === 'reject' && b === currentAccount) {
+        addLog(`【${escapeHtml(a)}】拒絕了組隊。`, 'text-gray-300');
+    }
 }
 
 async function fetchGlobalChats() {
     if (!CLOUD_CONFIG.supabaseUrl) return;
     try {
-        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats?select=*&order=created_at.asc&limit=30`, {
+        const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}global_chats?select=*&order=created_at.asc&limit=40`, {
             headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}` }
         });
         const rows = await res.json();
-        if (rows && Array.isArray(rows)) {
-            const box = document.getElementById('battle-log');
-            let chatHtml = `<div class="text-amber-300">[系統] PVP 殘血不朽與傳送隱身 Bug 已完美修復！</div>`;
-            rows.forEach(r => {
-                const isSelf = (r.username === currentAccount);
-                const nameColor = isSelf ? 'text-amber-400 font-bold' : 'text-sky-300 font-bold';
-                const msgColor = isSelf ? 'text-amber-100' : 'text-cyan-100';
-                chatHtml += `<div><span class="opacity-60 text-gray-400">[傳音]</span> <span class="${nameColor}">【${r.username}】</span>：<span class="${msgColor}">${escapeHtml(r.message)}</span></div>`;
-            });
-            if (box.innerHTML !== chatHtml) { box.innerHTML = chatHtml; box.scrollTop = box.scrollHeight; }
-        }
+        if (!Array.isArray(rows)) return;
+        rows.forEach((r) => {
+            const key = `${r.created_at}|${r.username}|${r.message}`;
+            if (seenChatKeys.has(key)) return;
+            seenChatKeys.add(key);
+            const message = String(r.message || '');
+            if (message.startsWith('@@PT|')) {
+                const age = Date.now() - new Date(r.created_at).getTime();
+                if (age >= 0 && age < 20000) handlePartyWire(message);
+                return;
+            }
+            if (!chatBooted) return;
+            if (r.username === currentAccount) return;
+            const nameColor = 'text-sky-300 font-bold';
+            addLog(`<span class="opacity-60 text-gray-400">[傳音]</span> <span class="${nameColor}">【${escapeHtml(r.username)}】</span>：<span class="text-cyan-100">${escapeHtml(message)}</span>`);
+        });
+        chatBooted = true;
     } catch (e) {}
 }
 
-const PRESENCE_STALE_MS = 4000;
+const PRESENCE_STALE_MS = 10000;
+
+function presenceToken() {
+    const target = player.targetMonster ? player.targetMonster.id : (player.targetPlayer ? `pvp_${player.targetPlayer}` : '-');
+    const skill = player.syncSkillId || '-';
+    const gender = player.gender === 'female' ? 'f' : 'm';
+    const partyId = partyState.id || '-';
+    return `${target}|${skill}|${gender}|${partyId}`;
+}
+
+function parsePresenceToken(raw) {
+    const text = String(raw || '');
+    if (!text.includes('|')) return { target: text || null, skill: '', gender: 'male', party: '' };
+    const parts = text.split('|');
+    return {
+        target: !parts[0] || parts[0] === '-' ? null : parts[0],
+        skill: !parts[1] || parts[1] === '-' ? '' : parts[1],
+        gender: parts[2] === 'f' ? 'female' : 'male',
+        party: !parts[3] || parts[3] === '-' ? '' : parts[3]
+    };
+}
+
+function findSkillById(id) {
+    if (!id) return null;
+    for (const w of Object.values(WEAPONS)) {
+        const pools = [...(w.combo || []), ...(w.skills || [])];
+        const hit = pools.find((s) => s.id === id);
+        if (hit) return hit;
+    }
+    return null;
+}
 const MONSTER_RESPAWN_MS = 4000;
 const BOSS_RESPAWN_MS = 10 * 60 * 1000;       // 地圖王怪：10 分鐘
 const WORLD_BOSS_RESPAWN_MS = 60 * 60 * 1000; // 巨靈神／蚩牛：1 小時
@@ -1648,7 +1823,6 @@ function isMonsterAlive(m) {
 async function syncPlayerPresenceNow() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
-        const currentTargetId = player.targetMonster ? player.targetMonster.id : (player.targetPlayer ? `pvp_${player.targetPlayer}` : null);
         const auraPlus = fullSetAuraLevel(player.equipment);
         const payload = {
             username: currentAccount,
@@ -1661,7 +1835,7 @@ async function syncPlayerPresenceNow() {
             max_shield: Math.round(player.maxShield),
             weapon_plus: auraPlus,
             weapon_id: player.currentWeapon,
-            attack_target_id: currentTargetId,
+            attack_target_id: presenceToken(),
             last_attack_ts: player.lastAttackTime || 0,
             updated_at: new Date().toISOString()
         };
@@ -1675,7 +1849,8 @@ async function syncPlayerPresenceNow() {
 }
 
 async function syncPlayerPresence() {
-    if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
+    if (!currentAccount || !CLOUD_CONFIG.supabaseUrl || presenceBusy) return;
+    presenceBusy = true;
     try {
         await syncPlayerPresenceNow();
 
@@ -1700,19 +1875,28 @@ async function syncPlayerPresence() {
             const otherRows = rows.filter(r => r.username !== currentAccount && isPresenceFresh(r));
             otherRows.forEach(r => {
                 const prev = onlinePlayersMap[r.username];
-                const wColor = WEAPONS[r.weapon_id || 'sword']?.color || '#38bdf8';
+                const token = parsePresenceToken(r.attack_target_id);
+                const nx = Number(r.x);
+                const ny = Number(r.y);
+                const hasPos = Number.isFinite(nx) && Number.isFinite(ny);
 
-                if (prev && r.last_attack_ts && r.last_attack_ts !== prev.lastAttackTs && r.attack_target_id) {
+                if (prev && r.last_attack_ts && r.last_attack_ts !== prev.lastAttackTs) {
                     let tx = null, ty = null;
-                    if (r.attack_target_id.startsWith('pvp_')) {
-                        const tName = r.attack_target_id.replace('pvp_', '');
+                    const targetId = token.target;
+                    if (targetId && targetId.startsWith('pvp_')) {
+                        const tName = targetId.replace('pvp_', '');
                         if (tName === currentAccount) { tx = player.x; ty = player.y; }
                         else if (onlinePlayersMap[tName]) { tx = onlinePlayersMap[tName].x; ty = onlinePlayersMap[tName].y; }
-                    } else {
-                        const targetMob = monsters.find(m => m.id === r.attack_target_id);
+                    } else if (targetId) {
+                        const targetMob = monsters.find(m => m.id === targetId);
                         if (targetMob) { tx = targetMob.x; ty = targetMob.y; }
                     }
-                    if (tx !== null && ty !== null) {
+                    const skill = findSkillById(token.skill);
+                    if (skill) {
+                        const ax = prev.x, ay = prev.y;
+                        spawnOfficialSkillFx(skill, ax, ay, tx == null ? ax + 48 : tx, ty == null ? ay : ty, r.username);
+                    } else if (tx !== null && ty !== null) {
+                        const wColor = WEAPONS[r.weapon_id || 'sword']?.color || '#38bdf8';
                         const dist = Math.hypot(tx - prev.x, ty - prev.y);
                         if (dist > 110) {
                             const angle = Math.atan2(ty - prev.y, tx - prev.x);
@@ -1726,35 +1910,47 @@ async function syncPlayerPresence() {
                 if (!prev) {
                     onlinePlayersMap[r.username] = {
                         username: r.username,
-                        x: r.x, y: r.y, targetX: r.x, targetY: r.y,
+                        x: hasPos ? nx : 0, y: hasPos ? ny : 0,
+                        targetX: hasPos ? nx : 0, targetY: hasPos ? ny : 0,
                         hp: r.hp ?? 500, maxHp: r.max_hp ?? 500,
                         shield: r.shield ?? 300, maxShield: r.max_shield ?? 300,
                         weaponPlus: r.weapon_plus ?? 0,
                         weaponId: r.weapon_id || 'sword',
-                        attackTargetId: r.attack_target_id || null,
+                        gender: token.gender,
+                        partyId: token.party,
+                        attackTargetId: token.target,
                         lastAttackTs: r.last_attack_ts || 0,
-                        lastSeen: Date.now()
+                        lastSeen: Date.now(),
+                        miss: 0
                     };
                 } else {
-                    prev.targetX = r.x; prev.targetY = r.y;
+                    if (hasPos) { prev.targetX = nx; prev.targetY = ny; }
                     prev.hp = r.hp ?? prev.hp; prev.maxHp = r.max_hp ?? prev.maxHp;
                     prev.shield = r.shield ?? prev.shield; prev.maxShield = r.max_shield ?? prev.maxShield;
                     prev.weaponPlus = r.weapon_plus ?? 0;
                     prev.weaponId = r.weapon_id || 'sword';
-                    prev.attackTargetId = r.attack_target_id || null;
+                    prev.gender = token.gender;
+                    prev.partyId = token.party;
+                    prev.attackTargetId = token.target;
                     prev.lastAttackTs = r.last_attack_ts || 0;
                     prev.lastSeen = Date.now();
+                    prev.miss = 0;
                 }
             });
-            const activeNames = otherRows.map(r => r.username);
+            const activeNames = new Set(otherRows.map(r => r.username));
             Object.keys(onlinePlayersMap).forEach(name => {
-                if (!activeNames.includes(name)) {
+                if (activeNames.has(name)) return;
+                const op = onlinePlayersMap[name];
+                op.miss = (op.miss || 0) + 1;
+                if (op.miss >= 8 || Date.now() - (op.lastSeen || 0) > 15000) {
                     if (player.targetPlayer === name) player.targetPlayer = null;
                     delete onlinePlayersMap[name];
                 }
             });
+            renderParty();
         }
     } catch (e) {}
+    finally { presenceBusy = false; }
 }
 
 async function syncWorldMonsters() {
@@ -2048,6 +2244,7 @@ function collectSkillPlayers(skill, primary) {
     const r = skill.range || 90;
     const list = [];
     Object.values(onlinePlayersMap).forEach((op) => {
+        if (op.partyId && partyState.id && op.partyId === partyState.id) return;
         if (Math.hypot(op.x - player.x, op.y - player.y) <= r) list.push(op);
     });
     if (primary && list.indexOf(primary) < 0) list.push(primary);
@@ -2133,7 +2330,18 @@ function stepEnemyKnockback(target) {
     return true;
 }
 
-function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
+function castOrigin(fx) {
+    if (fx.follow) {
+        if (fx.owner && onlinePlayersMap[fx.owner]) {
+            const op = onlinePlayersMap[fx.owner];
+            return { x: op.x, y: op.y };
+        }
+        return { x: player.x, y: player.y };
+    }
+    return { x: fx.ox, y: fx.oy };
+}
+
+function spawnOfficialSkillFx(skill, ax, ay, tx, ty, remoteOwner) {
     const trueSkill = isTrueSkill(skill);
     const style = (skill && skill.fxStyle) || 'slash';
     const color = FX_TINT[style] || (WEAPONS[player.currentWeapon] && WEAPONS[player.currentWeapon].color) || '#facc15';
@@ -2151,6 +2359,8 @@ function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
             });
         }
     }
+    if (!remoteOwner) {
+    player.syncSkillId = (skill && (skill.srcSkillId || skill.id)) || '-';
     player.swing = null;
     if (tx < ax - 4) player.face = -1;
     else if (tx > ax + 4) player.face = 1;
@@ -2171,12 +2381,14 @@ function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
         player.pierce = null;
         player.backstep = null;
     }
+    }
     skillFx.push({
         type: 'cast', style, x: tx, y: ty, ox: ax, oy: ay, color,
-        life, maxLife: life, trueSkill, rings, radius, drops, follow: rings > 0
+        life, maxLife: life, trueSkill, rings, radius, drops,
+        follow: rings > 0, owner: remoteOwner || ''
     });
     if (trueSkill) {
-        skillFx.push({ type: 'jinwind', follow: true, life: 46, maxLife: 46, radius: 54 });
+        skillFx.push({ type: 'jinwind', follow: true, owner: remoteOwner || '', life: 46, maxLife: 46, radius: 54 });
     }
 }
 
@@ -2222,8 +2434,9 @@ function drawHitSpark(x, y, color, alpha) {
 function drawCastFx(fx) {
     const p = 1 - fx.life / fx.maxLife;
     const alpha = Math.max(0.15, 1 - p * 0.2);
-    const cx = fx.follow ? player.x : fx.ox;
-    const cy = fx.follow ? player.y : fx.oy;
+    const origin = castOrigin(fx);
+    const cx = origin.x;
+    const cy = origin.y;
     const tx = fx.x;
     const ty = fx.y;
     ctx.save();
@@ -2373,8 +2586,9 @@ function drawCastFx(fx) {
 
 function drawJinWind(fx) {
     const p = 1 - fx.life / fx.maxLife;
+    const wind = (fx.owner && onlinePlayersMap[fx.owner]) ? onlinePlayersMap[fx.owner] : player;
     ctx.save();
-    ctx.translate(player.x, player.y);
+    ctx.translate(wind.x, wind.y);
     ctx.rotate(p * Math.PI * 4);
     for (let i = 0; i < 8; i++) {
         const a = i * (Math.PI * 2 / 8);
@@ -2437,6 +2651,7 @@ function makeBasicSkill(p) {
     }
     return {
         id: 'basic', basic: true, name: '普通攻擊', comboName: hit.name, comboStep: step + 1,
+        srcSkillId: hit.id,
         range: hit.range, area: hit.area || 0, cooldown: hit.cooldown, baseAtk: 18, restrict: 1,
         phySung: hit.phySung, mpSung: [0], critSung: hit.critSung || [0], stunSung: hit.stunSung || [0], vampSung: [0],
         fxUse: hit.fxUse, fxStyle: hit.fxStyle || 'slash', premier: false, img: `assets/ui/wicon_${w.id}.png`,
@@ -3192,6 +3407,7 @@ function logoutAccount() {
     if (leaving) saveGame(true);
     toggleBot(false);
     currentAccount = null;
+    partyState = { id: '', inviteFrom: '' };
     onlinePlayersMap = {};
     player.targetMonster = null;
     player.targetPlayer = null;
@@ -3666,9 +3882,25 @@ canvas.addEventListener('mousedown', (e) => {
     if (mapInfo.pvp) {
         for (const [uname, op] of Object.entries(onlinePlayersMap)) {
             if (Math.hypot(op.x - clickX, op.y - clickY) <= 26) {
+                const partyBox = document.getElementById('party-target');
+                if (partyBox) partyBox.value = uname;
+                if (partyState.id && op.partyId === partyState.id) {
+                    addLog(`【${uname}】是隊友。`, 'text-emerald-300');
+                    return;
+                }
                 player.targetPlayer = uname;
                 player.targetMonster = null;
                 addLog(`⚔️ [PVP鎖定] 目標鎖定少俠【${uname}】！`, 'text-red-400 font-bold');
+                return;
+            }
+        }
+    } else {
+        for (const [uname, op] of Object.entries(onlinePlayersMap)) {
+            if (Math.hypot(op.x - clickX, op.y - clickY) <= 28) {
+                const partyBox = document.getElementById('party-target');
+                if (partyBox) partyBox.value = uname;
+                document.getElementById('panel-party').classList.remove('hidden');
+                addLog(`已選取【${uname}】，可按組隊邀請。`, 'text-emerald-300');
                 return;
             }
         }
@@ -3911,9 +4143,9 @@ function updateGame(now) {
             usePotionManual();
         }
         if (mapInfo.pvp) {
-            if (!player.targetPlayer || !onlinePlayersMap[player.targetPlayer]) {
-                const pNames = Object.keys(onlinePlayersMap);
-                player.targetPlayer = pNames.length > 0 ? pNames[0] : null;
+            const hostile = Object.keys(onlinePlayersMap).filter((name) => !(partyState.id && onlinePlayersMap[name].partyId === partyState.id));
+            if (!player.targetPlayer || !onlinePlayersMap[player.targetPlayer] || (partyState.id && onlinePlayersMap[player.targetPlayer].partyId === partyState.id)) {
+                player.targetPlayer = hostile.length > 0 ? hostile[0] : null;
             }
         } else if (!player.targetMonster || !monsters.includes(player.targetMonster) || !isMonsterAlive(player.targetMonster) || player.targetMonster.isBoss) {
             // 掛機優先打小怪，不主動鎖定王怪（避免誤觸發王怪反擊）
@@ -4040,6 +4272,10 @@ function updateGame(now) {
 }
 
 async function performPvpAttack(targetOp, now, skill) {
+    if (targetOp && partyState.id && targetOp.partyId === partyState.id) {
+        player.targetPlayer = null;
+        return;
+    }
     skill = skill || getCurrentSkill(player);
     const w = WEAPONS[player.currentWeapon];
     const sLv = skill.basic ? 1 : (player.skillLevels[skill.id] || 1);
@@ -4320,7 +4556,7 @@ function renderGame(now = performance.now()) {
 
     // 🌟 僅渲染同地圖的其他線上玩家 (防禦機制：自動過濾已死亡或血量 <= 1 的殘影)
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
-        if ((op.hp || 500) <= 1) return; // 略過死亡殘影
+        if (op.hp != null && op.hp <= 0) return;
 
         const opTier = (op.weaponPlus >= 9) ? 9 : (op.weaponPlus >= 6) ? 6 : (op.weaponPlus >= 3) ? 3 : 0;
         if (player.targetPlayer === username) {
@@ -4334,8 +4570,9 @@ function renderGame(now = performance.now()) {
         const opMoving = Math.hypot((op.targetX || op.x) - op.x, (op.targetY || op.y) - op.y) > 6;
         drawMapleActor(opImg, op.x, op.y, opBox.w, opBox.h, opTier, null, WEAPONS[op.weaponId || 'sword']?.color || '#38bdf8', opFace, opMoving);
         const opTop = op.y - opBox.h * 0.5;
-        ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = mapInfo.pvp ? '#fca5a5' : '#38bdf8'; ctx.textAlign = 'center';
-        ctx.fillText(opTier ? `【${username}】全身+${opTier}` : `【${username}】`, op.x, opTop - 12);
+        const ally = partyState.id && op.partyId === partyState.id;
+        ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = ally ? '#86efac' : (mapInfo.pvp ? '#fca5a5' : '#38bdf8'); ctx.textAlign = 'center';
+        ctx.fillText(`${ally ? '隊友 ' : ''}${opTier ? `【${username}】全身+${opTier}` : `【${username}】`}`, op.x, opTop - 12);
 
         ctx.fillStyle = '#1f2937'; ctx.fillRect(op.x - 22, opTop - 8, 44, 4);
         ctx.fillStyle = '#22c55e'; ctx.fillRect(op.x - 22, opTop - 8, 44 * Math.max(0, (op.hp || 500) / (op.maxHp || 500)), 4);
