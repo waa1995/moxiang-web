@@ -2063,6 +2063,76 @@ const FX_TINT = {
     spring: '#93c5fd', slash: '#f8fafc', twin: '#c4b5fd'
 };
 
+function isBackstepSkill(skill) {
+    const name = skill && skill.name;
+    return name === '銀鞍照白馬' || name === '真銀鞍照白馬';
+}
+
+function isPierceSkill(skill) {
+    const name = skill && skill.name;
+    return name === '三燕投林' || name === '真三燕投林' || name === '風馳電掣' || name === '真風馳電掣';
+}
+
+function beginPierce(ax, ay, tx, ty) {
+    let dx = tx - ax;
+    let dy = ty - ay;
+    let len = Math.hypot(dx, dy);
+    if (len < 1) {
+        dx = (player.face || 1) < 0 ? -1 : 1;
+        dy = 0;
+        len = 1;
+    }
+    dx /= len;
+    dy /= len;
+    let gap = 46;
+    for (const m of monsters) {
+        if (Math.hypot(m.x - tx, m.y - ty) < 12) {
+            gap = (m.radius || 22) + 26;
+            break;
+        }
+    }
+    const dest = clampWorld(tx + dx * gap, ty + dy * gap, 24);
+    player.pierce = {
+        sx: ax, sy: ay, ex: dest.x, ey: dest.y,
+        at: Date.now(), until: Date.now() + 170
+    };
+    player.backstep = null;
+    player.face = dx < 0 ? -1 : 1;
+}
+
+function pushEnemyBack(target) {
+    if (!target) return;
+    let dx = target.x - player.x;
+    let dy = target.y - player.y;
+    const len = Math.hypot(dx, dy);
+    if (len < 1) {
+        dx = (player.face || 1) < 0 ? -1 : 1;
+        dy = 0;
+    } else {
+        dx /= len;
+        dy /= len;
+    }
+    target.knockback = {
+        ux: dx, uy: dy, dist: 36, moved: 0,
+        at: Date.now(), until: Date.now() + 170
+    };
+}
+
+function stepEnemyKnockback(target) {
+    const kb = target && target.knockback;
+    if (!kb || kb.done) return false;
+    const span = Math.max(1, kb.until - kb.at);
+    const t = Math.min(1, (Date.now() - kb.at) / span);
+    const want = kb.dist * t;
+    const delta = want - (kb.moved || 0);
+    kb.moved = want;
+    const pos = clampWorld(target.x + kb.ux * delta, target.y + kb.uy * delta, 20);
+    target.x = pos.x;
+    target.y = pos.y;
+    if (t >= 1) kb.done = true;
+    return true;
+}
+
 function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
     const trueSkill = isTrueSkill(skill);
     const style = (skill && skill.fxStyle) || 'slash';
@@ -2081,9 +2151,26 @@ function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
             });
         }
     }
-    player.swing = { until: Date.now() + 320, x: tx, y: ty };
+    player.swing = null;
     if (tx < ax - 4) player.face = -1;
     else if (tx > ax + 4) player.face = 1;
+    if (isPierceSkill(skill)) {
+        beginPierce(ax, ay, tx, ty);
+    } else if (isBackstepSkill(skill)) {
+        player.pierce = null;
+        const castMs = life * 16;
+        const delay = Math.round(castMs * 0.72);
+        player.backstep = {
+            at: Date.now() + delay,
+            until: Date.now() + delay + 240,
+            face: player.face || 1,
+            dist: 72,
+            moved: 0
+        };
+    } else {
+        player.pierce = null;
+        player.backstep = null;
+    }
     skillFx.push({
         type: 'cast', style, x: tx, y: ty, ox: ax, oy: ay, color,
         life, maxLife: life, trueSkill, rings, radius, drops, follow: rings > 0
@@ -2705,7 +2792,9 @@ function monsterEnterPersuit(m, now) {
 function updateMonsterSourceAi(m) {
     const now = Date.now();
     if (!m.aiTimer || m.aiTimer > now + 20000) m.aiTimer = now + 400;
-    if (!isMonsterAlive(m) || (m.stunUntil && now < m.stunUntil)) return false;
+    if (!isMonsterAlive(m)) return false;
+    if (stepEnemyKnockback(m)) return false;
+    if (m.stunUntil && now < m.stunUntil) return false;
     // 王怪永不主動索敵；需被打到（combatAggro）才會反擊
     if (m.isBoss) m.foreAttack = false;
     const dist = currentAccount ? Math.hypot(player.x - m.x, player.y - m.y) : 9999;
@@ -3841,7 +3930,13 @@ function updateGame(now) {
     const skill = getCurrentSkill(player);
 
     player.moving = false;
+    const back = player.backstep;
+    const backstepping = back && Date.now() >= back.at && Date.now() < back.until;
+    const pierce = player.pierce;
+    const piercing = pierce && !pierce.done;
     if (walkHeld()) {
+        player.backstep = null;
+        player.pierce = null;
         let mx = 0, my = 0;
         if (walkKeys.KeyW || walkKeys.ArrowUp) my -= 1;
         if (walkKeys.KeyS || walkKeys.ArrowDown) my += 1;
@@ -3855,6 +3950,29 @@ function updateGame(now) {
         player.moving = true;
         if (mx < 0) player.face = -1;
         else if (mx > 0) player.face = 1;
+    } else if (piercing) {
+        const span = Math.max(1, pierce.until - pierce.at);
+        const t = Math.min(1, (Date.now() - pierce.at) / span);
+        const pos = clampWorld(
+            pierce.sx + (pierce.ex - pierce.sx) * t,
+            pierce.sy + (pierce.ey - pierce.sy) * t
+        );
+        player.x = t >= 1 ? pierce.ex : pos.x;
+        player.y = t >= 1 ? pierce.ey : pos.y;
+        if (t >= 1) pierce.done = true;
+        player.targetX = player.x;
+        player.targetY = player.y;
+        player.moving = true;
+    } else if (backstepping) {
+        const span = Math.max(1, back.until - back.at);
+        const want = back.dist * Math.min(1, (Date.now() - back.at) / span);
+        const delta = want - (back.moved || 0);
+        back.moved = want;
+        const face = back.face || 1;
+        player.x -= face * delta;
+        player.targetX = player.x;
+        player.targetY = player.y;
+        player.face = face;
     } else if (mapInfo.pvp && player.targetPlayer && onlinePlayersMap[player.targetPlayer]) {
         const targetOp = onlinePlayersMap[player.targetPlayer];
         const dist = Math.hypot(targetOp.x - player.x, targetOp.y - player.y);
@@ -3895,6 +4013,11 @@ function updateGame(now) {
     player.y = bounded.y;
 
     Object.values(onlinePlayersMap).forEach(op => {
+        if (stepEnemyKnockback(op)) {
+            op.targetX = op.x;
+            op.targetY = op.y;
+            return;
+        }
         op.x += (op.targetX - op.x) * 0.22; op.y += (op.targetY - op.y) * 0.22;
     });
 
@@ -3934,6 +4057,7 @@ async function performPvpAttack(targetOp, now, skill) {
         if (res.isCrit) {
             screenShakeTimer = 12; screenShakeIntensity = 7;
         }
+        if (player.currentWeapon === 'fist') pushEnemyBack(op);
         spawnFloatingText(op.x, op.y - 28, res.isCrit ? `💥PVP暴擊 -${pvpDmg}` : `⚔️-${pvpDmg}`, '#facc15', 15);
         try {
             await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?username=eq.${encodeURIComponent(op.username)}`, {
@@ -3972,6 +4096,7 @@ function performAttack(monster, now, skill) {
         if (m === monster) primaryRes = res;
         m.hp -= res.damage;
         m.combatAggro = true;
+        if (player.currentWeapon === 'fist' && m.hp > 0) pushEnemyBack(m);
         const stunRate = (skill.stunSung && skill.stunSung[sLv - 1]) || 0;
         if (stunRate > 0 && Math.random() < stunRate) {
             m.stunUntil = Date.now() + 900;
