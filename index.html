@@ -13,6 +13,22 @@
             overflow: hidden;
             user-select: none;
             background-color: #111827;
+            cursor: url('assets/mouse/default.cur'), auto;
+        }
+        /* 遊戲自訂游標（newui/Mouse） */
+        #gameCanvas {
+            cursor: url('assets/mouse/default.cur'), auto;
+        }
+        #gameCanvas.cursor-attack { cursor: url('assets/mouse/attack.cur'), crosshair; }
+        #gameCanvas.cursor-hunt { cursor: url('assets/mouse/hunt.cur'), crosshair; }
+        #gameCanvas.cursor-dealer { cursor: url('assets/mouse/dealer.cur'), pointer; }
+        #gameCanvas.cursor-item { cursor: url('assets/mouse/itemsel.cur'), pointer; }
+        #gameCanvas.cursor-repair { cursor: url('assets/mouse/repair.cur'), pointer; }
+        #gameCanvas.cursor-mine { cursor: url('assets/mouse/mining.cur'), pointer; }
+        #gameCanvas.cursor-collect { cursor: url('assets/mouse/collection.cur'), pointer; }
+        #gameCanvas.cursor-block { cursor: url('assets/mouse/cantmove.cur'), not-allowed; }
+        button, .cursor-pointer, a, label, .hotbar-slot, .equip-slot, .gender-card {
+            cursor: url('assets/mouse/default.cur'), pointer;
         }
         .font-wuxia {
             font-family: 'Noto Serif TC', serif;
@@ -20,12 +36,28 @@
         .hud-panel {
             background:
                 linear-gradient(180deg, rgba(62, 32, 14, 0.62) 0%, rgba(22, 12, 8, 0.78) 100%),
-                url('assets/ui/panel.png') center / cover no-repeat;
+                url('assets/ui/panel.png') center / 100% 100% no-repeat;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(217, 119, 6, 0.45);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), inset 0 0 12px rgba(217, 119, 6, 0.1);
             border-radius: 8px;
             color: #f3f4f6;
+        }
+        /* 四個主面板：套用 newui 新框 */
+        .hud-panel.framed {
+            background: url('assets/ui/panel.png') center / 100% 100% no-repeat;
+            border: none;
+            border-radius: 2px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7);
+            backdrop-filter: none;
+        }
+        .hud-panel.framed .hud-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 0;
+            padding: 10px 14px 8px 28px;
+            color: #e2e8f0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.85);
         }
         .hud-header {
             background:
@@ -43,6 +75,26 @@
             letter-spacing: 0.05em;
             color: #fcd34d;
         }
+        .gender-card {
+            flex: 1;
+            border: 1px solid rgba(217, 119, 6, 0.45);
+            background: rgba(17, 24, 39, 0.85);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .gender-card:hover, .gender-card.active {
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+        }
+        .gender-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            background: #0b0f16;
+            border-radius: 6px;
+        }
         .bar-transition {
             transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -57,6 +109,111 @@
         .equip-slot:hover {
             border-color: #fbbf24;
             background: rgba(30, 41, 59, 0.95);
+        }
+        /* 原作裝備窗（newui/2.tif） */
+        #panel-equip.equip-classic {
+            width: 440px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+        #panel-equip.equip-classic .hud-header {
+            background: rgba(10, 16, 28, 0.92);
+            border: 1px solid rgba(100, 140, 180, 0.35);
+            border-radius: 4px 4px 0 0;
+        }
+        .equip-classic-body {
+            position: relative;
+            width: 420px;
+            height: 380px;
+            margin: 0 auto;
+            background: url('assets/ui/equip_frame.png') center / 100% 100% no-repeat;
+            image-rendering: auto;
+        }
+        .equip-classic-slot {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            background: transparent;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .equip-classic-slot:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.55);
+        }
+        .equip-classic-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        .equip-classic-slot .plus-tag {
+            position: absolute; right: 0; bottom: 0;
+            font-size: 9px; line-height: 1; padding: 1px 2px;
+            background: rgba(0,0,0,0.75); color: #fde68a; font-weight: 700;
+        }
+        .equip-classic-char {
+            position: absolute;
+            left: 78px; top: 42px;
+            width: 72px; height: 110px;
+            display: flex; align-items: flex-end; justify-content: center;
+            pointer-events: none;
+        }
+        .equip-classic-char img {
+            max-width: 100%; max-height: 100%; object-fit: contain;
+        }
+        .equip-classic-bag {
+            position: absolute;
+            left: 18px; top: 198px;
+            width: 176px; height: 160px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            padding: 2px;
+        }
+        .equip-classic-bag .bag-cell {
+            width: 100%; height: 100%;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            background: transparent;
+        }
+        .equip-classic-bag .bag-cell:hover { border-color: #fbbf24; }
+        .equip-classic-bag .bag-cell img {
+            width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated;
+        }
+        .equip-classic-extra {
+            position: absolute;
+            left: 210px; top: 42px;
+            width: 196px; height: 310px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 3px;
+            padding: 2px;
+        }
+        .equip-classic-extra .bag-cell {
+            border: 1px solid transparent; border-radius: 2px; overflow: hidden; cursor: pointer; position: relative;
+        }
+        .equip-classic-extra .bag-cell:hover { border-color: #38bdf8; }
+        .equip-classic-extra .bag-cell img {
+            width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated;
+        }
+        .equip-classic-meta {
+            padding: 8px 12px 10px;
+            background: rgba(12, 16, 24, 0.92);
+            border: 1px solid rgba(100, 140, 180, 0.3);
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            font-size: 11px;
         }
         .image-pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
         #hotbar { pointer-events: auto; }
@@ -81,7 +238,7 @@
             border-color: #fbbf24;
             box-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
         }
-        .hotbar-slot img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+        .hotbar-slot img { width: 100%; height: 100%; object-fit: contain; }
         .hotbar-key {
             position: absolute; top: 1px; left: 3px;
             font-size: 10px; color: #fde68a; font-weight: 700; text-shadow: 0 1px 2px #000;
@@ -136,6 +293,19 @@
                         <span>記住登入狀態（下次進入蘭州）</span>
                     </label>
                 </div>
+                <div id="auth-gender-box" class="hidden space-y-2 pt-1 border-t border-amber-700/30">
+                    <div class="text-amber-200 font-bold">新角色性別（創角後依裝備兵器切換立繪）</div>
+                    <div class="flex gap-2">
+                        <button type="button" class="gender-card active" data-gender="male" onclick="selectCreateGender('male')">
+                            <img id="preview-gender-male" src="assets/chars/sword_male.png?v=20261020b" alt="男">
+                            <div class="text-center text-amber-200 font-bold mt-1">男</div>
+                        </button>
+                        <button type="button" class="gender-card" data-gender="female" onclick="selectCreateGender('female')">
+                            <img id="preview-gender-female" src="assets/chars/sword_female.png?v=20261020b" alt="女">
+                            <div class="text-center text-amber-200 font-bold mt-1">女</div>
+                        </button>
+                    </div>
+                </div>
                 <div id="auth-error" class="text-red-400 font-bold text-center min-h-[18px]"></div>
             </div>
 
@@ -155,7 +325,7 @@
     </div>
 
     <!-- 遊戲畫布 -->
-    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full"></canvas>
     <audio id="bgm" src="assets/sound/bg_17.mp3" loop preload="auto"></audio>
 
     <!-- 頂部中央：世界王巨靈神專屬血條與大招預警提示 -->
@@ -194,7 +364,7 @@
     </div>
 
     <!-- 1. 左上角：基礎狀態面板 -->
-    <section id="panel-basic" class="hud-panel absolute top-4 left-4 w-72 z-20">
+    <section id="panel-basic" class="hud-panel framed absolute top-4 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-basic')">
             <span>江湖基礎資訊</span>
             <button onclick="logoutAccount()" class="text-[10px] bg-amber-800/90 hover:bg-amber-700 text-amber-100 px-2 py-0.5 rounded border border-amber-500/40 cursor-pointer">
@@ -205,13 +375,11 @@
             <div class="flex items-center gap-3 border-b border-gray-700/80 pb-2.5">
                 <div class="relative">
                     <div class="w-12 h-[4.25rem] rounded overflow-hidden border-2 border-amber-500 avatar-glow bg-amber-950/80 flex items-center justify-center">
-                        <img id="hud-char-img" src="assets/weapons/sword.png" alt="少俠立繪" class="w-full h-full object-contain image-pixelated bg-black">
+                        <img id="hud-char-img" src="assets/chars/sword_male.png?v=20261020b" alt="少俠立繪" class="w-full h-full object-contain bg-black">
                     </div>
-                    <span class="absolute -bottom-1 -right-1 bg-amber-600 text-black font-black text-[9px] px-1 rounded border border-amber-300 shadow">V13</span>
                 </div>
                 <div class="flex-1 overflow-hidden">
-                    <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300 truncate">未登入·少俠</h2>
-                    <small id="ui-weapon-label" class="text-gray-400 block truncate">主修：劍</small>
+                    <h2 id="ui-char-title" class="text-base font-wuxia font-bold text-amber-300 truncate">未登入</h2>
                 </div>
                 <div class="text-right">
                     <div class="text-[10px] text-gray-400">銀兩</div>
@@ -261,9 +429,9 @@
     </section>
 
     <!-- 2. 左中：屬性配點 -->
-    <section id="panel-status" class="hud-panel absolute top-72 left-4 w-72 z-20">
+    <section id="panel-status" class="hud-panel framed absolute top-72 left-4 w-72 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-status')">
-            <span>人物屬性 (含十格強化加成)</span>
+            <span>人物屬性</span>
             <button onclick="togglePanel('panel-status')" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <div class="p-3 space-y-2 text-xs">
@@ -307,65 +475,24 @@
                 <div>護體防禦：<b id="ui-def" class="text-white font-mono">12</b></div>
                 <div>暴擊機率：<b id="ui-crit" class="text-amber-400 font-mono">8.5%</b></div>
             </div>
-        </div>
-    </section>
-
-    <!-- 3. 右側：兵器與 4 大絕學武功 -->
-    <section id="panel-martial" class="hud-panel absolute top-24 right-4 w-80 z-20">
-        <div class="hud-header" onmousedown="startDrag(event, 'panel-martial')">
-            <span>兵器與四招</span>
-            <button onclick="togglePanel('panel-martial')" class="text-gray-400 hover:text-white">✕</button>
-        </div>
-        <div class="p-3 space-y-3 text-xs">
-            <div class="text-[11px] text-gray-400">手上的兵器決定能用哪一門武功。空手用拳。快捷欄只放 4 招，點「換」再從武功一覽挑選。</div>
-            <div id="weapon-buttons" class="grid grid-cols-3 gap-1.5"></div>
-
-            <div class="space-y-1">
-                <label class="text-amber-300 font-bold">當前出手</label>
-                <select id="skill-select" onchange="switchSkill(this.value)" class="w-full bg-gray-950 border border-amber-600/60 rounded p-1.5 text-white font-bold focus:outline-none"></select>
-            </div>
-
-            <div class="bg-gray-900/90 border border-gray-700 p-2.5 rounded space-y-2">
-                <div class="flex gap-2.5 items-start">
-                    <img id="skill-img" src="assets/skills/sword_1.png" alt="技能圖" class="w-14 h-14 rounded object-contain border border-amber-600/50 bg-gray-950 shrink-0 image-pixelated">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center gap-1">
-                            <div class="truncate">
-                                <span class="text-amber-400 font-bold text-sm" id="skill-name">苍松迎客</span>
-                                <span class="ml-1 bg-amber-900/80 text-amber-200 px-1.5 py-0.5 rounded text-[10px]">第 <b id="skill-lv">1</b> 層</span>
-                            </div>
-                            <button onclick="upgradeSkill()" class="bg-cyan-700 hover:bg-cyan-600 text-white px-2 py-1 rounded text-[11px] font-bold shrink-0">
-                                消耗 50 SP 升層
-                            </button>
-                        </div>
-                        <p id="skill-learn-hint" class="text-[11px] text-amber-200/80 mt-1">普通攻擊不耗內力。武功達到限等後可切換施展。</p>
-                        <p id="skill-desc" class="text-[11px] text-gray-400 mt-1">凝聚劍氣斬擊目標。</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-[10px] text-gray-400 mb-0.5">
-                        <span>武功熟練度</span>
-                        <span id="skill-exp-text" class="font-mono">0%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-gray-800 rounded overflow-hidden">
-                        <div id="skill-exp-bar" class="h-full bg-cyan-400 bar-transition" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-1">
-                <button onclick="castBuff()" class="flex-1 bg-red-900/70 hover:bg-red-800 border border-red-500/50 py-1.5 rounded text-red-200 font-bold">
-                    🔥 金鐘罩
-                </button>
-                <button onclick="enhanceWeapon()" class="flex-1 bg-amber-900/70 hover:bg-amber-800 border border-amber-500/50 py-1.5 rounded text-amber-200 font-bold">
-                    ⚒️ 兵器共鳴 (<span id="weapon-plus">+0</span>)
-                </button>
+            <button onclick="castBuff()" class="w-full mt-2 bg-red-900/70 hover:bg-red-800 border border-red-500/50 py-1.5 rounded text-red-200 font-bold">
+                🔥 金鐘罩（耗 30 內力）
+            </button>
+            <!-- 保留隱藏節點供舊程式更新，畫面不再顯示兵器面板 -->
+            <div class="hidden">
+                <div id="weapon-buttons"></div>
+                <select id="skill-select" onchange="switchSkill(this.value)"></select>
+                <img id="skill-img" src="assets/skills/sword_1.png" alt="">
+                <span id="skill-name"></span><b id="skill-lv">1</b>
+                <p id="skill-learn-hint"></p><p id="skill-desc"></p>
+                <span id="skill-exp-text">0%</span><div id="skill-exp-bar"></div>
+                <span id="weapon-plus">+0</span>
             </div>
         </div>
     </section>
 
     <!-- 4. 右下：自動掛機系統 -->
-    <section id="panel-bot" class="hud-panel absolute bottom-16 right-4 w-80 z-20">
+    <section id="panel-bot" class="hud-panel framed absolute bottom-16 right-4 w-80 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-bot')">
             <span>自動掛機系統</span>
             <span id="bot-status-badge" class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded">休息中</span>
@@ -373,7 +500,7 @@
         <div class="p-3 space-y-2.5 text-xs">
             <div class="flex items-center justify-between bg-gray-900/80 p-2 rounded border border-gray-700">
                 <div>
-                    <div class="font-bold text-amber-300">自動打怪/演武與撿寶</div>
+                    <div class="font-bold text-amber-300">自動打怪／演武</div>
                     <div class="text-[10px] text-gray-400">按 [F] 啟動/停止 · 點地面可走位躲紅圈</div>
                 </div>
                 <button id="btn-toggle-bot" onclick="toggleBot()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow">
@@ -382,19 +509,15 @@
             </div>
             <div class="space-y-1.5 text-[11px]">
                 <label class="flex items-center justify-between">
-                    <span>HP 低於 60% 自動吃金創藥</span>
+                    <span>HP 或 MP 低於 60% 自動吃金創藥</span>
                     <input type="checkbox" id="bot-auto-hp" checked class="accent-amber-500">
-                </label>
-                <label class="flex items-center justify-between">
-                    <span>自動撿取地上銀兩與十格裝備</span>
-                    <input type="checkbox" id="bot-auto-loot" checked class="accent-amber-500">
                 </label>
             </div>
         </div>
     </section>
 
     <!-- 5. 左下：聊天紀錄 -->
-    <section id="panel-log" class="hud-panel absolute bottom-16 left-4 w-96 z-20">
+    <section id="panel-log" class="hud-panel framed absolute bottom-16 left-4 w-96 z-20">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-log')">
             <span>千里傳音 · 江湖戰報</span>
             <button onclick="clearLogs()" class="text-[10px] text-gray-400 hover:text-white">清除</button>
@@ -414,45 +537,47 @@
     </section>
 
     <!-- 6. 十格紙娃娃裝備欄與獨立強化視窗 -->
-    <section id="panel-equip" class="hud-panel hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] z-40 border-2 border-amber-500/85">
+    <section id="panel-equip" class="hud-panel equip-classic hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
         <div class="hud-header" onmousedown="startDrag(event, 'panel-equip')">
-            <span>🎒 十格神裝紙娃娃與裝備百煉強化 (+1~+9) [快捷鍵 B]</span>
+            <span>🎒 裝備 · 紙娃娃 [B]</span>
             <button onclick="togglePanel('panel-equip')" class="text-gray-400 hover:text-white">✕</button>
         </div>
-        <div class="p-4 space-y-3 text-xs">
-            <div class="text-[11px] text-amber-200/90 bg-amber-950/40 border border-amber-600/30 px-2.5 py-1 rounded flex justify-between items-center">
-                <span>💡 點擊已穿戴裝備右側【⚒️強化】可升至 +9（每 +1 提升該裝備 15% 屬性）</span>
-                <span class="text-gray-400">點左側名稱可卸下</span>
+        <div class="equip-classic-body" id="equip-classic-body">
+            <!-- 槽位座標對應原作 UI（相對 420×380） -->
+            <div id="eq-slot-helmet" class="equip-classic-slot" style="left:18px;top:42px" title="頭飾"></div>
+            <div id="eq-slot-weapon" class="equip-classic-slot" style="left:18px;top:86px" title="武器"></div>
+            <div id="eq-slot-shoes" class="equip-classic-slot" style="left:18px;top:148px" title="鞋子"></div>
+            <div id="eq-slot-ringR" class="equip-classic-slot" style="left:92px;top:28px" title="右戒指"></div>
+            <div id="eq-slot-ringL" class="equip-classic-slot" style="left:136px;top:28px" title="左戒指"></div>
+            <div id="eq-slot-armor" class="equip-classic-slot" style="left:92px;top:72px" title="衣服"></div>
+            <div id="eq-slot-cape" class="equip-classic-slot" style="left:136px;top:72px" title="披風"></div>
+            <div id="eq-slot-necklace" class="equip-classic-slot" style="left:180px;top:72px" title="項鍊"></div>
+            <div id="eq-slot-gloves" class="equip-classic-slot" style="left:136px;top:116px" title="護手"></div>
+            <div id="eq-slot-belt" class="equip-classic-slot" style="left:180px;top:116px" title="腰帶"></div>
+            <div class="equip-classic-char">
+                <img id="equip-char-img" src="assets/chars/sword_male.png?v=20261020b" alt="角色立繪">
+                <img id="equip-fashion-img" alt="時裝" class="absolute inset-0 w-full h-full object-contain hidden">
             </div>
-
-            <div class="grid grid-cols-12 gap-2.5 items-center bg-gray-950/75 p-3 rounded-lg border border-amber-600/30">
-                <div id="equip-left-col" class="col-span-4 space-y-1.5"></div>
-                <div class="col-span-4 flex flex-col items-center justify-center text-center space-y-2 px-1">
-                    <div class="relative w-24 h-36 rounded border-2 border-amber-400 avatar-glow overflow-hidden bg-gray-900">
-                        <img id="equip-char-img" src="assets/weapons/sword.png" alt="角色立繪" class="w-full h-full object-contain image-pixelated bg-black">
-                        <img id="equip-fashion-img" alt="時裝" class="absolute inset-0 w-full h-full object-cover hidden">
-                    </div>
-                    <div class="font-wuxia font-bold text-amber-300 text-sm" id="equip-char-name">少俠</div>
-                    <div id="equip-bonus-summary" class="w-full bg-gray-900/90 border border-gray-700 rounded p-2 text-[10px] text-left space-y-0.5 text-gray-300">
-                        <div>裝備外功：<b class="text-amber-300">+0</b></div>
-                        <div>裝備防禦：<b class="text-sky-300">+0</b></div>
-                        <div>裝備氣血：<b class="text-red-300">+0</b></div>
-                        <div>裝備護體：<b class="text-cyan-300">+0</b></div>
-                        <div>裝備暴擊：<b class="text-emerald-300">+0%</b></div>
-                    </div>
-                </div>
-                <div id="equip-right-col" class="col-span-4 space-y-2.5"></div>
+            <div id="bag-grid" class="equip-classic-bag"></div>
+            <div id="bag-grid-extra" class="equip-classic-extra"></div>
+        </div>
+        <div class="equip-classic-meta space-y-1.5">
+            <div class="flex justify-between items-center">
+                <span class="text-amber-200 font-bold" id="equip-char-name">少俠</span>
+                <span class="text-gray-400">背包 <span id="bag-count">0</span>/52 · 點擊穿戴／卸下</span>
             </div>
-
-            <div class="space-y-1.5">
-                <div class="flex justify-between items-center">
-                    <span class="text-amber-300 font-bold">行囊背包 (<span id="bag-count">0</span> / 20) · 點擊裝備穿戴：</span>
-                    <button onclick="sellAllBagItems()" class="bg-amber-800/80 hover:bg-amber-700 text-amber-100 px-2 py-0.5 rounded text-[11px] border border-amber-500/40">
-                        💰 一鍵出售閒置裝備
-                    </button>
-                </div>
-                <div id="bag-grid" class="grid grid-cols-5 gap-1.5 max-h-40 overflow-y-auto p-1.5 bg-gray-950/80 rounded border border-gray-800"></div>
+            <div id="equip-bonus-summary" class="grid grid-cols-5 gap-1 text-[10px] text-gray-300">
+                <div>攻 <b class="text-amber-300">+0</b></div>
+                <div>防 <b class="text-sky-300">+0</b></div>
+                <div>血 <b class="text-red-300">+0</b></div>
+                <div>護 <b class="text-cyan-300">+0</b></div>
+                <div>暴 <b class="text-emerald-300">+0%</b></div>
             </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] text-gray-500">右鍵或點已穿戴槽可卸下 · 長按強化請用下方按鈕</span>
+                <button onclick="sellAllBagItems()" class="bg-amber-800/80 hover:bg-amber-700 text-amber-100 px-2 py-0.5 rounded text-[11px] border border-amber-500/40">💰 出售閒置</button>
+            </div>
+            <div id="equip-enhance-bar" class="flex flex-wrap gap-1"></div>
         </div>
     </section>
 
@@ -499,7 +624,7 @@
     <div id="hotbar" class="fixed bottom-[3.6rem] left-1/2 -translate-x-1/2 z-30 flex gap-1.5 items-end px-2 py-1.5 hud-panel">
         <button type="button" id="hot-heal" class="hotbar-slot" onclick="usePotionManual()" title="金創藥">
             <span class="hotbar-key">1</span>
-            <img src="assets/items/item_1.png" alt="補血">
+            <img src="assets/ui/potion.png" alt="金創藥">
             <span class="hotbar-cd" id="hot-heal-cd">2</span>
         </button>
         <div id="hot-skills" class="flex gap-1.5"></div>
@@ -514,7 +639,6 @@
     <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 hud-panel px-4 py-1.5 flex gap-2 z-30 text-xs font-bold whitespace-nowrap">
         <button onclick="togglePanel('panel-basic')" class="hover:text-amber-400 px-2 py-1">☯️ 狀態</button>
         <button onclick="togglePanel('panel-status')" class="hover:text-amber-400 px-2 py-1">📊 配點</button>
-        <button onclick="togglePanel('panel-martial')" class="hover:text-amber-400 px-2 py-1">⚔️ 武功</button>
         <button onclick="togglePanel('panel-equip')" class="bg-purple-900/80 hover:bg-purple-800 text-purple-100 px-2.5 py-1 rounded border border-purple-400/50">🎒 裝備強化 [B]</button>
         <button onclick="togglePanel('panel-bot')" class="hover:text-amber-400 px-2 py-1">🤖 掛機 [F]</button>
         <button onclick="togglePanel('panel-teleport')" class="bg-cyan-900/70 hover:bg-cyan-800 text-cyan-200 px-2.5 py-1 rounded">🐎 驛站傳送</button>
@@ -535,6 +659,9 @@
 
 <script src="assets/world.js"></script>
 <script src="assets/source_skills.js"></script>
+<script src="assets/weapon_catalog.js"></script>
+<script src="assets/item_icons.js"></script>
+<script src="assets/guide_maps.js"></script>
 <script>
 const S2T_MAP = {
     '万':'萬','与':'與','丑':'醜','专':'專','业':'業','丛':'叢','东':'東','丝':'絲','丢':'丟','两':'兩','严':'嚴','丧':'喪','个':'個','临':'臨','丽':'麗','举':'舉','义':'義','乌':'烏','乐':'樂','乔':'喬','习':'習','乡':'鄉','书':'書','买':'買','乱':'亂','争':'爭','于':'於','亏':'虧','云':'雲','亘':'亙','亚':'亞','产':'產','亩':'畝','亲':'親','亿':'億','仅':'僅','从':'從','仑':'侖','仓':'倉','仪':'儀','们':'們','价':'價','众':'眾','优':'優','伙':'夥','会':'會','伟':'偉','传':'傳','伤':'傷','伦':'倫','伪':'偽','伫':'佇','体':'體','余':'餘','侠':'俠','侣':'侶','侦':'偵','侧':'側','侨':'僑','侬':'儂','俭':'儉','债':'債','倾':'傾','偿':'償','储':'儲','儿':'兒','兑':'兌','兖':'兗','党':'黨','兰':'蘭','关':'關','兴':'興','兹':'茲','养':'養','兽':'獸','内':'內','冈':'岡','册':'冊','写':'寫','军':'軍','农':'農','冯':'馮','冲':'衝','决':'決','况':'況','冻':'凍','净':'淨','准':'準','凉':'涼','凌':'淩','减':'減','凑':'湊','凤':'鳳','凭':'憑','凯':'凱','击':'擊','凿':'鑿','刍':'芻','划':'劃','刘':'劉','则':'則','刚':'剛','创':'創','删':'刪','别':'別','刹':'剎','刽':'劊','剂':'劑','剐':'剮','剑':'劍','剥':'剝','剧':'劇','劝':'勸','办':'辦','务':'務','动':'動','助':'助','努':'努','劫':'劫','励':'勵','劲':'勁','劳':'勞','势':'勢','勋':'勛','匀':'勻','匦':'匭','匮':'匱','区':'區','医':'醫','华':'華','协':'協','单':'單','卖':'賣','卜':'蔔','卢':'盧','卤':'鹵','卧':'臥','卫':'衛','却':'卻','卷':'捲','厂':'廠','厅':'廳','历':'歷','厉':'厲','压':'壓','厌':'厭','厕':'廁','厢':'廂','厦':'廈','厨':'廚','厮':'廝','县':'縣','叁':'參','参':'參','发':'發','变':'變','叙':'敘','叠':'疊','只':'隻','叶':'葉','号':'號','叹':'嘆','叽':'嘰','吁':'籲','后':'後','吓':'嚇','吕':'呂','吗':'嗎','吨':'噸','听':'聽','启':'啟','吴':'吳','呒':'嘸','呓':'囈','呕':'嘔','呖':'嚦','呗':'唄','员':'員','呛':'嗆','呜':'嗚','咏':'詠','咙':'嚨','咛':'嚀','咝':'噝','咨':'諮','咸':'鹹','咽':'嚥','哀':'哀','品':'品','哄':'鬨','哇':'哇','哈':'哈','响':'響','哑':'啞','哒':'噠','哓':'嘵','哔':'嗶','哕':'噦','哗':'嘩','哙':'噲','哝':'噥','哟':'喲','唛':'嘜','唠':'嘮','唢':'嗩','唤':'喚','啧':'嘖','啬':'嗇','啭':'囀','啮':'嚙','啰':'囉','啸':'嘯','喷':'噴','喽':'嘍','喾':'嚳','嗫':'囁','嗳':'噯','嘘':'噓','嘤':'嚶','嘱':'囑','噜':'嚕','嚣':'囂','团':'團','园':'園','困':'睏','围':'圍','囵':'圇','国':'國','图':'圖','圆':'圓','圣':'聖','圹':'壙','场':'場','坂':'阪','坏':'壞','块':'塊','坚':'堅','坛':'壇','坜':'壢','坝':'壩','坞':'塢','坟':'墳','坠':'墜','坡':'坡','坤':'坤','坦':'坦','垄':'壟','垅':'壟','垆':'壚','垒':'壘','垦':'墾','垩':'堊','垫':'墊','垭':'埡','垱':'壋','垲':'塏','埘':'塒','埙':'塤','埚':'堝','埝':'墊','堑':'塹','堕':'墮','墙':'牆','壮':'壯','声':'聲','壳':'殼','壶':'壺','处':'處','备':'備','复':'復','够':'夠','头':'頭','夸':'誇','夹':'夾','夺':'奪','奁':'奩','奂':'奐','奋':'奮','奖':'獎','奥':'奧','妆':'妝','妇':'婦','妈':'媽','妩':'嫵','妪':'嫗','妫':'媯','姗':'姍','姜':'薑','娄':'婁','娅':'婭','娆':'嬈','娇':'嬌','娈':'孌','娱':'娛','娲':'媧','娴':'嫻','婴':'嬰','婵':'嬋','婶':'嬸','媪':'媼','嫒':'嬡','嫔':'嬪','嫱':'嬙','嬷':'嬤','孙':'孫','学':'學','孪':'孿','宁':'寧','宝':'寶','实':'實','宠':'寵','审':'審','宪':'憲','宫':'宮','宽':'寬','宾':'賓','寝':'寢','对':'對','寻':'尋','导':'導','寿':'壽','将':'將','尔':'爾','尘':'塵','尝':'嘗','尧':'堯','尸':'屍','尽':'盡','层':'層','屉':'屜','届':'屆','属':'屬','屡':'屢','屦':'屨','屿':'嶼','岁':'歲','岂':'豈','岖':'嶇','岗':'崗','岘':'峴','岚':'嵐','岛':'島','岭':'嶺','岳':'嶽','岽':'崬','岿':'巋','峄':'嶧','峡':'峽','峣':'嶢','峤':'嶠','峥':'崢','峦':'巒','崂':'嶗','崃':'崍','崄':'嶮','崭':'嶄','嵘':'嶸','嵚':'嶔','嵝':'嶁','巅':'巔','巩':'鞏','巯':'巰','币':'幣','帅':'帥','师':'師','帏':'幃','帐':'帳','帘':'簾','帜':'幟','带':'帶','帧':'幀','帮':'幫','帱':'幬','帻':'幘','帼':'幗','幂':'冪','并':'並','广':'廣','庄':'莊','庆':'慶','庐':'廬','庑':'廡','库':'庫','应':'應','庙':'廟','庞':'龐','废':'廢','廪':'廩','开':'開','异':'異','弃':'棄','张':'張','弥':'彌','弯':'彎','弹':'彈','强':'強','归':'歸','当':'當','录':'錄','彦':'彥','彻':'徹','征':'徵','径':'徑','徕':'徠','忆':'憶','忏':'懺','志':'誌','忧':'憂','忾':'愾','怀':'懷','态':'態','怂':'慫','怃':'憮','怄':'慪','怅':'悵','怆':'愴','怜':'憐','总':'總','怼':'懟','怿':'懌','恋':'戀','恒':'恆','恳':'懇','恶':'惡','恸':'慟','恹':'懨','恺':'愷','恻':'惻','恼':'惱','恽':'惲','悦':'悅','悫':'愨','悬':'懸','悭':'慳','悯':'憫','惊':'驚','惧':'懼','惨':'慘','惩':'懲','惫':'憊','惬':'愜','惭':'慚','惮':'憚','惯':'慣','愠':'慍','愤':'憤','愦':'憒','愿':'願','慑':'懾','懒':'懶','懔':'懍','戋':'戔','戏':'戲','戗':'戧','战':'戰','戬':'戩','户':'戶','执':'執','扩':'擴','扪':'捫','扫':'掃','扬':'揚','扰':'擾','抚':'撫','抛':'拋','抟':'摶','抠':'摳','抡':'掄','抢':'搶','护':'護','报':'報','担':'擔','拟':'擬','拢':'攏','拣':'揀','拥':'擁','拦':'攔','拧':'擰','拨':'撥','择':'擇','挂':'掛','挚':'摯','挛':'攣','挜':'掗','挝':'撾','挞':'撻','挟':'挾','挠':'撓','挡':'擋','挢':'撟','挣':'掙','挤':'擠','挥':'揮','挦':'撏','捞':'撈','损':'損','捡':'撿','换':'換','捣':'搗','掳':'擄','掴':'摑','掷':'擲','掸':'撣','掺':'摻','掼':'摜','揽':'攬','揿':'撳','搀':'攙','搁':'擱','搂':'摟','搅':'攪','携':'攜','摄':'攝','摅':'攄','摆':'擺','摇':'搖','摈':'擯','摊':'攤','撄':'攖','撑':'撐','撵':'攆','撷':'擷','撸':'擼','撺':'攛','擞':'擻','攒':'攢','敌':'敵','敛':'斂','数':'數','斋':'齋','斓':'斕','斩':'斬','断':'斷','无':'無','旧':'舊','时':'時','旷':'曠','旸':'暘','昙':'曇','昼':'晝','显':'顯','晋':'晉','晒':'曬','晓':'曉','晔':'曄','晕':'暈','晖':'暉','暂':'暫','暧':'曖','术':'術','机':'機','杀':'殺','杂':'雜','权':'權','杆':'桿','杠':'槓','条':'條','来':'來','杨':'楊','杩':'榪','杰':'傑','极':'極','构':'構','枞':'樅','枢':'樞','枣':'棗','枥':'櫪','枧':'梘','枨':'棖','枪':'槍','枫':'楓','枭':'梟','柜':'櫃','柠':'檸','柽':'檉','栀':'梔','栅':'柵','标':'標','栈':'棧','栉':'櫛','栊':'櫳','栋':'棟','栌':'櫨','栎':'櫟','栏':'欄','树':'樹','栖':'棲','样':'樣','栾':'欒','桊':'棬','桠':'椏','桡':'橈','桢':'楨','档':'檔','桤':'榿','桥':'橋','桦':'樺','桧':'檜','桨':'槳','桩':'樁','梦':'夢','梼':'檮','梾':'棶','检':'檢','棂':'欞','椁':'槨','椟':'櫝','椠':'槧','椤':'欏','椭':'橢','楼':'樓','榄':'欖','榇':'櫬','榈':'櫚','榉':'櫸','槚':'檟','槛':'檻','槟':'檳','槠':'櫧','横':'橫','樯':'檣','樱':'櫻','橥':'櫫','橱':'櫥','橹':'櫓','橼':'櫞','檐':'簷','檩':'檁','欢':'歡','欤':'歟','欧':'歐','歼':'殲','殁':'歿','殇':'殤','残':'殘','殒':'殞','殓':'殮','殚':'殫','殡':'殯','殴':'毆','毁':'毀','毂':'轂','毕':'畢','毙':'斃','毡':'氈','毵':'毿','氇':'氌','气':'氣','氢':'氫','氩':'氬','氲':'氳','汇':'匯','汉':'漢','汊':'汊','汐':'汐','汕':'汕','汗':'汗','汛':'汛','汝':'汝','江':'江','池':'池','污':'汙','汤':'湯','汹':'洶','沟':'溝','没':'沒','沥':'瀝','沦':'淪','沧':'滄','沪':'滬','沫':'沫','沮':'沮','沱':'沱','河':'河','油':'油','治':'治','沼':'沼','沾':'沾','沿':'沿','况':'況','泄':'洩','泉':'泉','泊':'泊','泌':'泌','法':'法','泛':'泛','泞':'濘','波':'波','泣':'泣','泥':'泥','注':'注','泪':'淚','泫':'泫','泮':'泮','泯':'泯','泱':'泱','泳':'泳','泷':'瀧','泸':'瀘','泺':'濼','泻':'瀉','泼':'潑','泽':'澤','泾':'涇','洁':'潔','洄':'洄','洇':'湮','洛':'洛','洞':'洞','津':'津','洪':'洪','洱':'洱','洲':'洲','洵':'洵','活':'活','洼':'窪','洽':'洽','派':'派','流':'流','浃':'浹','浅':'淺','浆':'漿','浇':'澆','浊':'濁','测':'測','济':'濟','浏':'瀏','浑':'渾','浒':'滸','浓':'濃','浔':'潯','浙':'浙','浚':'濬','浜':'濱','浦':'浦','浩':'浩','浪':'浪','浮':'浮','海':'海','浸':'浸','涂':'塗','涅':'涅','消':'消','涉':'涉','涌':'湧','涎':'涎','涕':'涕','涛':'濤','涝':'澇','涞':'淶','涟':'漣','涠':'潿','涡':'渦','涣':'渙','涤':'滌','润':'潤','涧':'澗','涨':'漲','涩':'澀','渊':'淵','渌':'淥','渍':'漬','渎':'瀆','渐':'漸','渑':'澠','渔':'漁','渖':'瀋','渗':'滲','温':'溫','湾':'灣','湿':'濕','溃':'潰','溅':'濺','溆':'漵','溉':'溉','满':'滿','漠':'漠','滢':'瀅','滇':'滇','溥':'溥','溧':'溧','溪':'溪','潆':'瀠','潇':'瀟','潋':'瀲','潍':'濰','潜':'潛','潴':'瀦','澜':'瀾','濑':'瀨','濒':'瀕','灏':'灝','灭':'滅','灯':'燈','灵':'靈','灾':'災','灿':'燦','炀':'煬','炉':'爐','炖':'燉','炜':'煒','炝':'熗','点':'點','炼':'煉','炽':'熾','烁':'爍','烂':'爛','烃':'烴','烛':'燭','烟':'煙','烦':'煩','烧':'燒','烨':'燁','烩':'燴','烫':'燙','烬':'燼','热':'熱','焕':'煥','焖':'燜','焘':'燾','煅':'煆','煳':'糊','熘':'溜','爱':'愛','爷':'爺','牍':'牘','牦':'氂','牵':'牽','牺':'犧','犊':'犢','状':'狀','犷':'獷','犹':'猶','狈':'狽','狞':'獰','狐':'狐','狗':'狗','狙':'狙','狞':'獰','猎':'獵','猡':'玀','猪':'豬','猫':'貓','猬':'蝟','献':'獻','獭':'獺','玑':'璣','玙':'璵','玚':'瑒','玛':'瑪','玮':'瑋','环':'環','现':'現','玲':'玲','玳':'玳','玺':'璽','珉':'珉','玻':'玻','珀':'珀','珂':'珂','珈':'珈','珑':'瓏','珰':'璫','珲':'琿','琏':'璉','琐':'瑣','琼':'瓊','瑶':'瑤','瑷':'璦','璎':'瓔','瓒':'瓚','瓮':'甕','瓯':'甌','瓶':'瓶','瓷':'瓷','甄':'甄','甘':'甘','甚':'甚','甜':'甜','生':'生','产':'產','甥':'甥','用':'用','甩':'甩','甫':'甫','甬':'甬','甭':'甭','田':'田','由':'由','甲':'甲','申':'申','电':'電','男':'男','甸':'甸','画':'畫','畅':'暢','界':'界','畏':'畏','畔':'畔','留':'留','畜':'畜','略':'略','畦':'畦','番':'番','畴':'疇','畸':'畸','畹':'畹','畿':'畿','疃':'疃','疆':'疆','疏':'疏','疑':'疑','疔':'疔','疖':'癤','疗':'療','疟':'瘧','疠':'癘','疡':'瘍','疬':'癧','疮':'瘡','疯':'瘋','疱':'皰','疲':'疲','疴':'痾','疵':'疵','疸':'疸','疹':'疹','疼':'疼','疽':'疽','疾':'疾','痂':'痂','痄':'痄','病':'病','症':'癥','痈':'癰','痉':'痙','痊':'痊','痍':'痍','痒':'癢','痔':'痔','痕':'痕','痖':'瘂','痘':'痘','痛':'痛','痞':'痞','痢':'痢','痣':'痣','痤':'痤','痦':'痦','痧':'痧','痨':'癆','痪':'瘓','痫':'癇','痠':'酸','痴':'癡','痹':'痺','瘅':'癉','瘕':'瘕','瘗':'瘞','瘘':'瘻','瘪':'癟','瘫':'癱','瘾':'癮','瘿':'癭','癞':'癩','癣':'癬','癫':'癲','癸':'癸','登':'登','发':'發','白':'白','百':'百','皂':'皂','的':'的','皆':'皆','皇':'皇','皮':'皮','皱':'皺','盆':'盆','盈':'盈','益':'益','盍':'盍','盎':'盎','盏':'盞','盐':'鹽','监':'監','盒':'盒','盔':'盔','盖':'蓋','盗':'盜','盘':'盤','盛':'盛','盟':'盟','目':'目','盯':'盯','直':'直','相':'相','盹':'盹','盼':'盼','盾':'盾','省':'省','眇':'眇','眈':'眈','眉':'眉','看':'看','县':'縣','眍':'瞘','眙':'眙','眚':'眚','真':'真','眠':'眠','眦':'眥','眨':'眨','眩':'眩','眭':'眭','眯':'瞇','眵':'眵','眶':'眶','眷':'眷','眸':'眸','眺':'眺','眼':'眼','着':'著','睁':'睜','睐':'睞','睑':'瞼','睇':'睇','睚':'睚','睛':'睛','睡':'睡','睢':'睢','督':'督','睥':'睥','睦':'睦','睨':'睨','睫':'睫','睬':'睬','睹':'睹','睽':'睽','睾':'睪','睿':'睿','瞀':'瞀','瞄':'瞄','瞅':'瞅','瞋':'瞋','瞌':'瞌','瞎':'瞎','瞑':'瞑','瞒':'瞞','瞟':'瞟','瞠':'瞠','瞥':'瞥','瞧':'瞧','瞩':'矚','瞪':'瞪','瞬':'瞬','瞭':'瞭','瞰':'瞰','瞳':'瞳','瞵':'瞵','瞻':'瞻','瞽':'瞽','瞿':'瞿','矍':'矍','矗':'矗','矛':'矛','矜':'矜','矢':'矢','矣':'矣','知':'知','矧':'矧','矩':'矩','矫':'矯','短':'短','矮':'矮','石':'石','矶':'磯','矾':'礬','矿':'礦','砀':'碭','码':'碼','砂':'砂','砌':'砌','砍':'砍','砒':'砒','研':'研','砖':'磚','砗':'硨','砘':'碷','砚':'硯','砜':'碸','砝':'砝','砟':'砟','砣':'砣','砥':'砥','砧':'砧','砭':'砭','砰':'砰','破':'破','砷':'砷','砸':'砸','砺':'礪','砻':'礱','砾':'礫','础':'礎','硅':'矽','硕':'碩','硖':'硤','硗':'磽','硙':'磑','硚':'礄','硝':'硝','硷':'鹼','硫':'硫','硬':'硬','硭':'硭','确':'確','硷':'鹼','硼':'硼','碉':'碉','碌':'碌','碍':'礙','碎':'碎','碑':'碑','碓':'碓','碗':'碗','碘':'碘','碚':'碚','碛':'磧','碜':'磣','碟':'碟','碡':'碡','碣':'碣','碧':'碧','硕':'碩','碰':'碰','碱':'鹼','碲':'碲','碳':'碳','碴':'碴','碹':'鏇','碾':'碾','磁':'磁','磅':'磅','磉':'磉','磊':'磊','磋':'磋','磐':'磐','磔':'磔','磕':'磕','磙':'滾','磨':'磨','磬':'磬','磲':'磲','磴':'磴','磷':'磷','磺':'磺','礁':'礁','礅':'礅','礞':'礞','礤':'礤','礴':'礴','示':'示','礼':'禮','社':'社','祀':'祀','祁':'祁','祆':'祆','祈':'祈','祉':'祉','祊':'祊','祎':'禕','祓':'祓','祖':'祖','祗':'祗','祚':'祚','祛':'祛','祜':'祜','祝':'祝','神':'神','祟':'祟','祠':'祠','祢':'禰','祥':'祥','祧':'祧','票':'票','祭':'祭','祯':'禎','祷':'禱','祸':'禍','祺':'祺','禀':'稟','禁':'禁','禄':'祿','禅':'禪','禊':'禊','福':'福','禨':'禨','禧':'禧','禳':'禳','禹':'禹','离':'離','禽':'禽','禾':'禾','秀':'秀','私':'私','秃':'禿','秆':'稈','秉':'秉','秋':'秋','种':'種','科':'科','秒':'秒','秕':'秕','秘':'祕','租':'租','秣':'秣','秤':'秤','秦':'秦','秧':'秧','秩':'秩','秫':'秫','积':'積','称':'稱','秸':'稭','移':'移','秽':'穢','稀':'稀','税':'稅','稆':'穭','程':'程','稍':'稍','稔':'稔','稗':'稗','稚':'稚','稞':'稞','稠':'稠','稣':'穌','稳':'穩','稷':'稷','稻':'稻','稼':'稼','稽':'稽','稿':'稿','穆':'穆','穑':'穡','穗':'穗','穰':'穰','穴':'穴','究':'究','穷':'窮','穹':'穹','空':'空','穿':'穿','突':'突','窃':'竊','窄':'窄','窈':'窈','窑':'窯','窒':'窒','窕':'窕','窖':'窖','窗':'窗','窘':'窘','窜':'竄','窝':'窩','窟':'窟','窠':'窠','窥':'窺','窦':'竇','窨':'窨','窬':'窬','窭':'窶','窳':'窳','立':'立','竖':'豎','站':'站','竞':'競','竟':'竟','章':'章','竣':'竣','童':'童','竦':'竦','竭':'竭','端':'端','竹':'竹','竺':'竺','竽':'竽','竿':'竿','笃':'篤','笄':'笄','笆':'笆','笈':'笈','笊':'笊','笋':'筍','笑':'笑','笔':'筆','笕':'筧','笙':'笙','笛':'笛','笞':'笞','笠':'笠','笤':'笤','笥':'笥','符':'符','笨':'笨','笪':'笪','笫':'笫','第':'第','笮':'笮','笱':'笱','笳':'笳','笺':'箋','笼':'籠','笾':'籩','筀':'筀','筘':'筘','筚':'篳','筛':'篩','筜':'簹','筝':'箏','筠':'筠','筮':'筮','筱':'筱','筲':'筲','筵':'筵','筷':'筷','筹':'籌','筻':'筻','筼':'篔','签':'簽','简':'簡','箅':'箅','箍':'箍','箐':'箐','箓':'籙','箔':'箔','箕':'箕','算':'算','箜':'箜','管':'管','箦':'簀','箧':'篋','箨':'籜','箩':'籮','箪':'簞','箫':'簫','箬':'箬','箭':'箭','箱':'箱','箴':'箴','箸':'箸','篁':'篁','篆':'篆','篇':'篇','篓':'簍','篙':'篙','篚':'篚','篝':'篝','篡':'篡','篥':'篥','篦':'篦','篪':'篪','篮':'籃','篱':'籬','篷':'篷','篼':'篼','篾':'篾','簇':'簇','簋':'簋','簌':'簌','簏':'簏','簖':'籪','簧':'簧','簪':'簪','簸':'簸','簿':'簿','籁':'籟','籍':'籍','米':'米','籴':'糴','类':'類','籼':'秈','籽':'籽','粉':'粉','粑':'粑','粒':'粒','粕':'粕','粗':'粗','粘':'黏','粜':'糶','粝':'糲','粞':'粞','粟':'粟','粤':'粵','粥':'粥','粪':'糞','粮':'糧','粱':'粱','粲':'粲','粳':'粳','粹':'粹','粼':'粼','粽':'糉','精':'精','糁':'糝','糅':'糅','糇':'餱','糈':'糈','糊':'糊','糌':'糌','糍':'餈','糕':'糕','糖':'糖','糗':'糗','糙':'糙','糜':'糜','糟':'糟','糠':'糠','糨':'糨','糯':'糯','系':'係','紊':'紊','素':'素','索':'索','紧':'緊','紫':'紫','累':'累','絮':'絮','絷':'縶','綦':'綦','綮':'綮','縻':'縻','繁':'繁','繇':'繇','纂':'纂','纛':'纛','纠':'糾','纡':'紆','红':'紅','纣':'紂','纤':'纖','纥':'紇','约':'約','级':'級','纨':'紈','纩':'纊','纪':'紀','纫':'紉','纬':'緯','纭':'紜','纯':'純','纰':'紕','纱':'紗','纲':'綱','纳':'納','纴':'紝','纵':'縱','纶':'綸','纷':'紛','纸':'紙','纹':'紋','纺':'紡','纻':'紵','纽':'紐','纾':'紓','线':'線','绀':'紺','绁':'紲','绂':'紱','练':'練','组':'組','绅':'紳','细':'細','织':'織','终':'終','绉':'縐','绊':'絆','绋':'紼','绌':'絀','绍':'紹','绎':'繹','经':'經','绐':'紿','绑':'綁','绒':'絨','结':'結','绔':'絝','绕':'繞','绖':'絰','绗':'絎','绘':'繪','给':'給','绚':'絢','绛':'絳','络':'絡','绝':'絕','绞':'絞','统':'統','绠':'綆','绡':'綃','绢':'絹','绣':'繡','绥':'綏','绦':'絛','继':'繼','绨':'綈','绩':'績','绪':'緒','绫':'綾','续':'續','绮':'綺','绯':'緋','绰':'綽','绱':'緔','绲':'緄','绳':'繩','维':'維','绵':'綿','绶':'綬','绷':'繃','绸':'綢','绹':'綯','绺':'綹','绻':'綣','综':'綜','绽':'綻','绾':'綰','绿':'綠','缀':'綴','缁':'緇','缂':'緙','缃':'緗','缄':'緘','缅':'緬','缆':'纜','缇':'緹','缈':'緲','缉':'緝','缊':'縕','缌':'緦','缎':'緞','缐':'線','缑':'緱','缒':'縋','缓':'緩','缔':'締','缕':'縷','编':'編','缗':'緡','缘':'緣','缙':'縉','缚':'縛','缛':'縟','缜':'縝','缝':'縫','缟':'縞','缠':'纏','缡':'縭','缢':'縊','缣':'縑','缤':'繽','缥':'縹','缦':'縵','缧':'縲','缨':'纓','缩':'縮','缪':'繆','缫':'繅','缬':'纈','缭':'繚','缮':'繕','缯':'繒','缰':'韁','缱':'繾','缲':'繰','缳':'繯','缴':'繳','缵':'纘','缶':'缶','缸':'缸','缺':'缺','钵':'缽','罂':'罌','罄':'罄','罅':'罅','罐':'罐','网':'網','罔':'罔','罕':'罕','罗':'羅','罘':'罘','罚':'罰','罟':'罟','罡':'罡','罢':'罷','罨':'罨','罩':'罩','罪':'罪','置':'置','罱':'罱','署':'署','罴':'羆','罹':'罹','罽':'罽','罾':'罾','羁':'羈','羊':'羊','羌':'羌','美':'美','羔':'羔','羚':'羚','羝':'羝','羞':'羞','羟':'羥','羡':'羨','群':'群','羧':'羧','羯':'羯','羰':'羰','羲':'羲','羸':'羸','羹':'羹','羽':'羽','羿':'羿','翁':'翁','翅':'翅','翊':'翊','翌':'翌','翎':'翎','翔':'翔','翕':'翕','翘':'翹','翟':'翟','翠':'翠','翡':'翡','翦':'翦','翩':'翩','翮':'翮','翰':'翰','翱':'翱','翳':'翳','翻':'翻','翼':'翼','耀':'耀','老':'老','考':'考','者':'者','耆':'耆','耋':'耋','而':'而','耍':'耍','耐':'耐','耒':'耒','耔':'耔','耕':'耕','耖':'耖','耗':'耗','耘':'耘','耙':'耙','耜':'耜','耠':'耠','耢':'耮','耥':'耥','耦':'耦','耧':'耬','耨':'耨','耩':'耩','耪':'耪','耰':'耰','耳':'耳','耶':'耶','耷':'耷','耸':'聳','耻':'恥','耽':'耽','耿':'耿','聂':'聶','聃':'聃','聆':'聆','聊':'聊','聋':'聾','职':'職','聍':'聹','聒':'聒','联':'聯','圣':'聖','聘':'聘','聚':'聚','聩':'聵','聪':'聰','肃':'肅','肄':'肄','肆':'肆','肇':'肇','肉':'肉','肋':'肋','肌':'肌','肓':'肓','肖':'肖','肘':'肘','肚':'肚','肛':'肛','肝':'肝','肟':'肟','肠':'腸','股':'股','肢':'肢','肤':'膚','肥':'肥','肩':'肩','肪':'肪','肫':'肫','肭':'肭','肮':'骯','肯':'肯','肱':'肱','育':'育','肴':'餚','肷':'膁','肺':'肺','肼':'肼','肽':'肽','肾':'腎','肿':'腫','胀':'脹','胁':'脅','胂':'胂','胃':'胃','胄':'胄','胆':'膽','背':'背','胍':'胍','胎':'胎','胖':'胖','胗':'胗','胙':'胙','胚':'胚','胛':'胛','胜':'勝','胝':'胝','胞':'胞','胡':'鬍','胤':'胤','胥':'胥','胧':'朧','胨':'腖','胩':'胿','胪':'臚','胫':'脛','胬':'胬','胭':'胭','胯':'胯','胰':'胰','胱':'胱','胲':'胲','胳':'胳','胴':'胴','胶':'膠','胸':'胸','胺':'胺','能':'能','脂':'脂','脆':'脆','脉':'脈','脊':'脊','脍':'膾','脏':'臟','脐':'臍','脑':'腦','脒':'脒','脓':'膿','脔':'臠','脖':'脖','脘':'脘','脚':'腳','脞':'脞','脬':'脬','脯':'脯','脱':'脫','脲':'脲','脶':'腡','脸':'臉','脾':'脾','腆':'腆','腈':'腈','腊':'臘','腋':'腋','腌':'醃','腐':'腐','腑':'腑','腓':'腓','腔':'腔','腕':'腕','腙':'腙','腚':'腚','腠':'腠','腥':'腥','腧':'腧','腩':'腩','腰':'腰','腱':'腱','腴':'腴','腹':'腹','腺':'腺','腻':'膩','腼':'靦','腽':'膃','腾':'騰','腿':'腿','膀':'膀','膈':'膈','膊':'膊','膏':'膏','膑':'臏','膘':'膘','膛':'膛','膜':'膜','膝':'膝','膨':'膨','腻':'膩','膳':'膳','膺':'膺','膻':'羶','臀':'臀','臂':'臂','臃':'臃','臆':'臆','臊':'臊','臌':'臌','臣':'臣','臧':'臧','自':'自','臬':'臬','臭':'臭','至':'至','致':'緻','臻':'臻','臼':'臼','臾':'臾','舀':'舀','舁':'舁','舂':'舂','舄':'舄','舅':'舅','舆':'輿','舌':'舌','舍':'捨','舐':'舐','舒':'舒','舔':'舔','舛':'舛','舜':'舜','舞':'舞','舟':'舟','舡':'舡','舢':'舢','舣':'艤','舭':'舭','航':'航','舫':'舫','般':'般','舯':'舯','舰':'艦','舱':'艙','舳':'舳','舴':'舴','舵':'舵','舶':'舶','舷':'舷','舸':'舸','船':'船','舻':'艫','舾':'舾','艄':'艄','艇':'艇','艉':'艉','艋':'艋','艏':'艏','艘':'艘','艚':'艚','艟':'艟','艨':'艨','艮':'艮','良':'良','艰':'艱','色':'色','艳':'豔','艴':'艴','艺':'藝','艾':'艾','节':'節','芈':'羋','芊':'芊','芋':'芋','芍':'芍','芎':'芎','芏':'芏','芑':'芑','芒':'芒','芗':'薌','芘':'芘','芙':'芙','芜':'蕪','芝':'芝','芟':'芟','芡':'芡','芤':'芤','芥':'芥','芦':'蘆','芪':'芪','芫':'芫','芬':'芬','芭':'芭','芮':'芮','芯':'芯','芰':'芰','花':'花','芳':'芳','芴':'芴','芷':'芷','芸':'蕓','芹':'芹','芽':'芽','芾':'芾','苁':'蓯','苄':'苄','苇':'葦','苈':'藶','苊':'苊','苋':'莧','苌':'萇','苍':'蒼','苎':'苧','苏':'蘇','苑':'苑','苒':'苒','苓':'苓','苔':'苔','苕':'苕','苗':'苗','苘':'檾','苛':'苛','苜':'苜','苞':'苞','苟':'苟','苠':'苠','苡':'苡','苣':'苣','苤':'苤','若':'若','苦':'苦','苫':'苫','苯':'苯','英':'英','苴':'苴','苷':'苷','苹':'蘋','苻':'苻','茁':'茁','茂':'茂','范':'範','茄':'茄','茅':'茅','茆':'茆','茈':'茈','茉':'茉','茎':'莖','茏':'蘢','茔':'塋','茕':'煢','茗':'茗','茚':'茚','茛':'茛','茜':'茜','茧':'繭','茨':'茨','茫':'茫','茬':'茬','茭':'茭','茯':'茯','茱':'茱','茳':'茳','茴':'茴','茵':'茵','茶':'茶','茸':'茸','茹':'茹','茺':'茺','茼':'茼','荀':'荀','荃':'荃','荆':'荊','荇':'荇','草':'草','荏':'荏','荐':'薦','荑':'荑','荒':'荒','荔':'荔','荚':'莢','荛':'蕘','荜':'蓽','荞':'蕎','荟':'薈','荠':'薺','荡':'蕩','荣':'榮','荤':'葷','荥':'滎','荦':'犖','荧':'熒','荨':'蕁','荩':'藎','荪':'蓀','荫':'蔭','荬':'蕒','荭':'葒','药':'藥','荷':'荷','荸':'荸','荻':'荻','荼':'荼','荽':'荽','莅':'蒞','莆':'莆','莉':'莉','莎':'莎','莒':'莒','莓':'莓','莘':'莘','莛':'莛','莜':'莜','莞':'莞','莠':'莠','莨':'莨','莩':'莩','莪':'莪','莫':'莫','莰':'莰','莱':'萊','莲':'蓮','莳':'蒔','莴':'萵','莶':'薟','获':'獲','莸':'蕕','莹':'瑩','莺':'鶯','莼':'蓴','莽':'莽','菀':'菀','菁':'菁','菅':'菅','菇':'菇','菊':'菊','菌':'菌','菏':'菏','菔':'菔','菖':'菖','菘':'菘','菜':'菜','菝':'菝','菟':'菟','菠':'菠','菡':'菡','菥':'菥','菩':'菩','菪':'菪','菰':'菰','菱':'菱','菲':'菲','菸':'菸','菹':'菹','菽':'菽','萁':'萁','萃':'萃','萄':'萄','萆':'萆','萝':'蘿','萤':'螢','营':'營','萦':'縈','萧':'蕭','萨':'薩','萱':'萱','萸':'萸','萼':'萼','落':'落','葆':'葆','葎':'葎','葑':'葑','著':'著','葚':'葚','葛':'葛','葜':'葜','葡':'葡','董':'董','葩':'葩','葫':'葫','葬':'葬','葭':'葭','葱':'蔥','葳':'葳','葵':'葵','葶':'葶','葸':'葸','葺':'葺','蒂':'蒂','蒇':'蕆','蒈':'蒈','蒉':'蕢','蒋':'蔣','蒌':'蔞','蒎':'蒎','蒗':'蒗','蒙':'蒙','蒜':'蒜','蒟':'蒟','蒡':'蒡','蒯':'蒯','蒲':'蒲','蒴':'蒴','蒸':'蒸','蒹':'蒹','蒺':'蒺','蒽':'蒽','蒿':'蒿','蓁':'蓁','蓄':'蓄','蓉':'蓉','蓊':'蓊','蓍':'蓍','蓐':'蓐','蓑':'蓑','蓓':'蓓','蓖':'蓖','蓝':'藍','蓟':'薊','蓠':'蘺','蓣':'蕷','蓥':'鎣','蓦':'驀','蓬':'蓬','蓰':'蓰','蓼':'蓼','蓿':'蓿','蔑':'蔑','蔓':'蔓','蔗':'蔗','蔚':'蔚','蔟':'蔟','蔡':'蔡','蔫':'蔫','蔬':'蔬','蔷':'薔','蔸':'蔸','蔹':'蘞','蔺':'藺','蔻':'蔻','蔼':'藹','蔽':'蔽','蕃':'蕃','蕈':'蕈','蕉':'蕉','蕊':'蕊','蕖':'蕖','蕙':'蕙','蕞':'蕞','蕤':'蕤','蕨':'蕨','荡':'蕩','蕹':'蕹','蕺':'蕺','蕾':'蕾','薄':'薄','薅':'薅','薇':'薇','薏':'薏','薛':'薛','薜':'薜','薤':'薤','薨':'薨','薪':'薪','薮':'藪','薯':'薯','薰':'薰','薷':'薷','薹':'薹','藁':'藁','藉':'藉','藏':'藏','藐':'藐','藓':'蘚','藕':'藕','藜':'藜','艺':'藝','藤':'藤','藩':'藩','藻':'藻','藿':'藿','蘅':'蘅','蘑':'蘑','蘖':'櫱','蘼':'蘼','虎':'虎','虏':'虜','虐':'虐','虑':'慮','虔':'虔','虚':'虛','虞':'虞','虢':'虢','虫':'蟲','虬':'虯','虮':'蟣','虱':'蝨','虹':'虹','虺':'虺','虻':'虻','虼':'虼','虽':'雖','虾':'蝦','虿':'蠆','蚀':'蝕','蚁':'蟻','蚂':'螞','蚕':'蠶','蚝':'蠔','蚧':'蚧','蚣':'蚣','蚤':'蚤','蚩':'蚩','蚪':'蚪','蚬':'蜆','蚯':'蚯','蚰':'蚰','蚱':'蚱','蚴':'蚴','蚵':'蚵','蚶':'蚶','蚺':'蚺','蛀':'蛀','蛄':'蛄','蛆':'蛆','蛇':'蛇','蛉':'蛉','蛊':'蠱','蛋':'蛋','蛎':'蠣','蛏':'蟶','蛐':'蛐','蛑':'蛑','蛔':'蛔','蛘':'蛘','蛙':'蛙','蛛':'蛛','蛞':'蛞','蛟':'蛟','蛤':'蛤','蛩':'蛩','蛭':'蛭','蛮':'蠻','蛰':'蟄','蛱':'蛺','蛲':'蟯','蛳':'螄','蛴':'蠐','蛔':'蛔','蛘':'蛘','蛙':'蛙','蛛':'蛛','蛞':'蛞','蛟':'蛟','蛤':'蛤','蛩':'蛩','蛭':'蛭','蛮':'蠻','蛰':'蟄','蛱':'蛺','蛲':'蟯','蛳':'螄','蛴':'蠐','蜂':'蜂','蜃':'蜃','蜇':'蜇','蜈':'蜈','蜉':'蜉','蜍':'蜍','蜊':'蜊','蜾':'蜾','蝈':'蟈','蝉':'蟬','蝌':'蝌','蝎':'蠍','蝗':'蝗','蝙':'蝙','蝠':'蝠','蝣':'蝣','蝾':'蠑','螂':'螂','螃':'螃','螅':'螅','螈':'螈','融':'融','螗':'螗','螟':'螟','螨':'蟎','螫':'螫','螬':'螬','螭':'螭','螯':'螯','螳':'螳','螺':'螺','螽':'螽','蟀':'蟀','蟆':'蟆','蟊':'蟊','蟋':'蟋','蟑':'蟑','蟒':'蟒','蟓':'蟓','蟠':'蟠','蟥':'蟥','蟪':'蟪','蟮':'蟺','蟹':'蟹','蟾':'蟾','蠃':'蠃','蝇':'蠅','蠊':'蠊','蠓':'蠓','蠕':'蠕','蠖':'蠖','蠡':'蠡','蠢':'蠢','蠲':'蠲','蠹':'蠹','蠼':'蠼','血':'血','衄':'衄','衅':'釁','行':'行','衍':'衍','衔':'銜','街':'街','衙':'衙','衡':'衡','衢':'衢','衣':'衣','补':'補','表':'表','衩':'衩','衫':'衫','衬':'襯','衮':'袞','衰':'衰','衲':'衲','衷':'衷','衽':'衽','衾':'衾','衿':'衿','袁':'袁','袂':'袂','袄':'襖','袅':'裊','袈':'袈','袋':'袋','袍':'袍','袒':'袒','袖':'袖','袜':'襪','袢':'袢','袤':'袤','被':'被','袭':'襲','袱':'袱','袷':'袷','裁':'裁','裂':'裂','装':'裝','裆':'襠','裉':'裉','裎':'裎','裒':'裒','裔':'裔','裕':'裕','裘':'裘','裙':'裙','裟':'裟','裢':'褳','裣':'襝','裤':'褲','裥':'襇','裨':'裨','裰':'裰','裱':'裱','裳':'裳','裴':'裴','裸':'裸','裹':'裹','裼':'裼','裾':'裾','褂':'褂','褊':'褊','褐':'褐','褒':'褒','褓':'褓','褔':'褔','褙':'褙','褚':'褚','褛':'褸','褡':'褡','褥':'褥','褪':'褪','褫':'褫','褰':'褰','褴':'襤','褶':'褶','襁':'襁','襄':'襄','襞':'襞','襟':'襟','襦':'襦','襻':'襻','西':'西','要':'要','覃':'覃','覆':'覆','见':'見','观':'觀','规':'規','觅':'覓','视':'視','觇':'覘','览':'覽','觉':'覺','觊':'覬','觋':'覡','觌':'覿','觎':'覦','觏':'覯','觐':'覲','觑':'覷','角':'角','觖':'觖','觚':'觚','觜':'觜','觞':'觴','解':'解','觥':'觥','触':'觸','觫':'觫','觯':'觶','言':'言','訇':'訇','誉':'譽','誊':'謄','誓':'誓','謇':'謇','警':'警','譬':'譬','计':'計','订':'訂','讣':'訃','认':'認','讥':'譏','讦':'訐','讧':'訌','讨':'討','让':'讓','讪':'訕','讫':'訖','训':'訓','议':'議','讯':'訊','记':'記','讲':'講','讳':'諱','讴':'謳','讵':'詎','讶':'訝','讷':'訥','许':'許','讹':'訛','论':'論','讼':'訟','讽':'諷','设':'設','访':'訪','诀':'訣','证':'證','诂':'詁','诃':'訶','评':'評','诅':'詛','识':'識','诈':'詐','诉':'訴','诊':'診','诋':'詆','诌':'謅','词':'詞','诎':'詘','诏':'詔','译':'譯','诒':'詒','诓':'誆','诔':'誄','试':'試','诖':'詿','诗':'詩','诘':'詰','诙':'詼','诚':'誠','诛':'誅','诜':'詵','话':'話','诞':'誕','诟':'詬','诠':'詮','诡':'詭','询':'詢','诣':'詣','诤':'諍','该':'該','详':'詳','诧':'詫','诨':'諢','诩':'詡','诫':'誡','诬':'誣','语':'語','诮':'誚','误':'誤','诰':'誥','诱':'誘','诲':'誨','诳':'誑','说':'說','诵':'誦','诶':'誒','请':'請','诸':'諸','诹':'諏','诺':'諾','读':'讀','诼':'諑','诽':'誹','课':'課','诿':'諉','谀':'諛','谁':'誰','谂':'諗','调':'調','谄':'諂','谅':'諒','谆':'諄','谇':'誶','谈':'談','谊':'誼','谋':'謀','谌':'諶','谍':'諜','谎':'謊','谏':'諫','谐':'諧','谑':'謔','谒':'謁','谓':'謂','谔':'諤','谕':'諭','谖':'諼','谗':'讒','咨':'諮','谙':'諳','谚':'諺','谛':'諦','谜':'謎','谝':'諞','谟':'謨','谠':'讜','谡':'謖','谢':'謝','谣':'謠','谤':'謗','谥':'諡','谦':'謙','谧':'謐','谨':'謹','谩':'謾','谪':'謫','谫':'譾','谬':'謬','谭':'譚','谮':'譖','谯':'譙','谰':'讕','谱':'譜','谲':'譎','谳':'讞','谴':'譴','谵':'譫','谶':'讖','谷':'穀','豁':'豁','豆':'豆','豇':'豇','豉':'豉','豌':'豌','豕':'豕','豚':'豚','象':'象','豢':'豢','豪':'豪','豫':'豫','豳':'豳','豸':'豸','豹':'豹','豺':'豺','貂':'貂','貅':'貅','貉':'貉','貊':'貊','貌':'貌','貔':'貔','貘':'貘','贝':'貝','贞':'貞','负':'負','贡':'貢','财':'財','责':'責','贤':'賢','败':'敗','账':'賬','货':'貨','质':'質','贩':'販','贪':'貪','贫':'貧','贬':'貶','购':'購','贮':'貯','贯':'貫','贰':'貳','贱':'賤','贲':'賁','贳':'貰','贴':'貼','贵':'貴','贶':'貺','贷':'貸','贸':'貿','费':'費','贺':'賀','贻':'貽','贼':'賊','贽':'贄','贾':'賈','贿':'賄','赀':'貲','赁':'賃','赂':'賂','赃':'贓','资':'資','赅':'賅','赆':'贐','赇':'賕','赈':'賑','赉':'賚','赊':'賒','赋':'賦','赌':'賭','赍':'齎','赎':'贖','赏':'賞','赐':'賜','赓':'賡','赔':'賠','赕':'賧','赖':'賴','赗':'賵','赘':'贅','赙':'賻','赚':'賺','赛':'賽','赜':'賾','赝':'贗','赞':'贊','赠':'贈','赡':'贍','赢':'贏','赣':'贛','赤':'赤','赦':'赦','赧':'赧','赫':'赫','赭':'赭','走':'走','赳':'赳','赴':'赴','赵':'趙','赶':'趕','起':'起','趁':'趁','趄':'趄','超':'超','越':'越','趋':'趨','趑':'趑','趔':'趔','趟':'趟','趣':'趣','趱':'趲','足':'足','趴':'趴','趵':'趵','趸':'躉','趺':'趺','趼':'趼','趾':'趾','趿':'趿','跃':'躍','跄':'蹌','跆':'跆','跋':'跋','跌':'跌','跎':'跎','跏':'跏','跑':'跑','跖':'跖','跗':'跗','跚':'跚','跛':'跛','距':'距','跞':'躒','跟':'跟','跣':'跣','跤':'跤','跨':'跨','跪':'跪','跫':'跫','跬':'跬','路':'路','跳':'跳','践':'踐','跷':'蹺','跸':'蹕','跹':'躚','跺':'跺','跻':'躋','跽':'跽','踅':'踅','踉':'踉','踊':'踴','踌':'躊','踏':'踏','踔':'踔','踝':'踝','踞':'踞','踟':'踟','踢':'踢','踣':'踣','踩':'踩','踪':'蹤','踬':'躓','踮':'踮','踯':'躑','踱':'踱','踵':'踵','踹':'踹','踺':'踺','踽':'踽','蹂':'蹂','蹄':'蹄','蹇':'蹇','蹈':'蹈','蹉':'蹉','蹊':'蹊','蹋':'蹋','蹑':'躡','蹒':'蹣','蹙':'蹙','蹦':'蹦','蹩':'蹩','蹬':'蹬','蹭':'蹭','蹰':'躕','蹲':'蹲','蹴':'蹴','蹶':'蹶','蹼':'蹼','蹿':'躥','躁':'躁','躅':'躅','躇':'躇','躏':'躪','躐':'躐','躔':'躔','躜':'躦','躞':'躞','身':'身','躬':'躬','躯':'軀','躲':'躲','躺':'躺','车':'車','轧':'軋','轨':'軌','轩':'軒','轫':'軔','转':'轉','轭':'軛','轮':'輪','软':'軟','轰':'轟','轱':'軲','轲':'軻','轳':'轤','轴':'軸','轵':'軹','轶':'軼','轷':'軤','轸':'軫','轹':'轢','轺':'軺','轻':'輕','轼':'軾','载':'載','轾':'輊','轿':'轎','辁':'輇','辂':'輅','较':'較','辄':'輒','辅':'輔','辆':'輛','辇':'輦','辈':'輩','辉':'輝','辊':'輥','辋':'輞','辍':'輟','辎':'輜','辏':'輳','辐':'輻','辑':'輯','输':'輸','辔':'轡','辕':'轅','辖':'轄','辗':'輾','辘':'轆','辙':'轍','辚':'轔','辛':'辛','辜':'辜','辞':'辭','辟':'闢','辣':'辣','辨':'辨','辩':'辯','辫':'辮','辰':'辰','辱':'辱','农':'農','边':'邊','辽':'遼','达':'達','迁':'遷','迂':'迂','迄':'迄','迅':'迅','过':'過','迈':'邁','迎':'迎','运':'運','近':'近','迓':'迓','返':'返','迕':'迕','还':'還','这':'這','进':'進','远':'遠','违':'違','连':'連','迟':'遲','迢':'迢','迤':'迤','迥':'迥','迦':'迦','迨':'迨','迩':'邇','迪':'迪','迫':'迫','迭':'迭','迮':'迮','述':'述','迳':'逕','迷':'迷','迸':'迸','迹':'跡','追':'追','退':'退','送':'送','适':'適','逃':'逃','逄':'逄','逅':'逅','逆':'逆','选':'選','逊':'遜','逋':'逋','逍':'逍','透':'透','逐':'逐','逑':'逑','递':'遞','途':'途','逖':'逖','逗':'逗','通':'通','逛':'逛','逝':'逝','逞':'逞','速':'速','造':'造','逡':'逡','逢':'逢','逦':'邐','逮':'逮','逯':'逯','逵':'逵','逶':'逶','逸':'逸','逻':'邏','逼':'逼','逾':'逾','遁':'遁','遂':'遂','遄':'遄','遇':'遇','遍':'遍','遏':'遏','遐':'遐','遑':'遑','遒':'遒','道':'道','遗':'遺','遘':'遘','遛':'遛','遢':'遢','遣':'遣','遥':'遙','遨':'遨','遭':'遭','遮':'遮','遴':'遴','遵':'遵','遽':'遽','避':'避','邀':'邀','邂':'邂','邃':'邃','邈':'邈','邋':'邋','邑':'邑','邓':'鄧','邕':'邕','邗':'邗','邙':'邙','邛':'邛','邝':'鄺','邡':'邡','邢':'邢','那':'那','邦':'邦','邪':'邪','邬':'鄔','邮':'郵','邯':'邯','邰':'邰','邱':'邱','邳':'邳','邴':'邴','邵':'邵','邶':'邶','邸':'邸','邹':'鄒','邺':'鄴','邻':'鄰','邾':'邾','郁':'鬱','郄':'郤','郅':'郅','郇':'郇','郊':'郊','郎':'郎','郏':'郟','郐':'鄶','郑':'鄭','郓':'鄆','郗':'郗','郚':'郚','郛':'郛','郜':'郜','郝':'郝','郡':'郡','郢':'郢','郦':'酈','郧':'鄖','部':'部','郫':'郫','郭':'郭','郯':'郯','郴':'郴','郸':'鄲','都':'都','郾':'郾','郿':'郿','鄂':'鄂','鄄':'鄄','鄡':'鄡','鄢':'鄢','鄣':'鄣','鄤':'鄤','鄥':'鄥','鄦':'鄦','鄯':'鄯','鄱':'鄱','鄹':'鄹','酃':'酃','酆':'酆','酉':'酉','酊':'酊','酋':'酋','酌':'酌','配':'配','酎':'酎','酏':'酏','酐':'酐','酒':'酒','酗':'酗','酚':'酚','酝':'醞','酞':'酞','酡':'酡','酢':'酢','酣':'酣','酤':'酤','酥':'酥','酩':'酩','酪':'酪','酬':'酬','酮':'酮','酯':'酯','酰':'醯','酱':'醬','酵':'酵','酶':'酶','酷':'酷','酸':'酸','酹':'酹','酽':'釅','酾':'釃','酿':'釀','醁':'醁','醃':'醃','醅':'醅','醇':'醇','醉':'醉','醋':'醋','醌':'醌','醍':'醍','醐':'醐','醑':'醑','醒':'醒','醚':'醚','醛':'醛','醜':'醜','醨':'醨','醪':'醪','医':'醫','酱':'醬','醮':'醮','醯':'醯','醴':'醴','醺':'醺','采':'採','釉':'釉','释':'釋','里':'裡','重':'重','野':'野','量':'量','金':'金','釜':'釜','鉴':'鑒','銎':'銎','銮':'鑾','鋈':'鋈','錾':'鏨','鍪':'鍪','鎏':'鎏','鏊':'鏊','鏖':'鏖','鐾':'鐾','鑫':'鑫','钆':'釓','钇':'釔','针':'針','钉':'釘','钊':'釗','钋':'釙','钌':'釕','钍':'釷','钎':'釺','钏':'釧','钐':'釤','钒':'釩','钓':'釣','钔':'鍆','钕':'釹','钗':'釵','钙':'鈣','钚':'鈈','钛':'鈦','钜':'鉅','钝':'鈍','钞':'鈔','钟':'鍾','钠':'鈉','钡':'鋇','钢':'鋼','钣':'鈑','钤':'鈐','钥':'鑰','钦':'欽','钧':'鈞','钨':'鎢','钩':'鉤','钪':'鈧','钫':'鈁','钬':'鈥','钭':'鈄','钮':'鈕','钯':'鈀','钰':'鈺','钱':'錢','钲':'鉦','钳':'鉗','钴':'鈷','钵':'缽','钶':'鈳','钷':'鉕','钹':'鈸','钺':'鉞','钻':'鑽','钼':'鉬','钽':'鉭','钾':'鉀','钿':'鈿','铀':'鈾','铁':'鐵','铂':'鉑','铃':'鈴','铄':'鑠','铅':'鉛','铆':'鉚','铈':'鈰','铉':'鉉','铊':'鉈','铋':'鉍','铌':'鈮','铍':'鈹','铎':'鐸','铐':'銬','铑':'銠','铒':'鉺','铕':'銪','铖':'鋮','铗':'鋏','铘':'鋣','铙':'鐃','铞':'銱','铛':'鐺','铜':'銅','铝':'鋁','铞':'銱','铟':'銦','铠':'鎧','铡':'鍘','铢':'銖','铣':'銑','铤':'鋌','铥':'銩','铦':'銛','铧':'鏵','铨':'銓','铩':'鎩','铪':'鉿','铫':'銚','铬':'鉻','铭':'銘','铮':'錚','铯':'銫','铰':'鉸','铱':'銥','铲':'鏟','铳':'銃','铴':'鐋','铵':'銨','银':'銀','铷':'銣','铸':'鑄','铹':'鐒','铺':'鋪','铻':'鋙','铼':'錸','铽':'鋱','链':'鏈','铿':'鏗','销':'銷','锁':'鎖','锂':'鋰','锃':'鋥','锄':'鋤','锅':'鍋','锆':'鋯','锇':'鋨','锈':'鏽','锉':'銼','锊':'鋝','锋':'鋒','锌':'鋅','锍':'鋶','锎':'鐦','锏':'鐧','锐':'銳','锑':'銻','锒':'鋃','锓':'鋟','锔':'鋦','锕':'錒','锖':'錆','锗':'鍺','锘':'鍩','错':'錯','锚':'錨','锛':'錛','锝':'鍀','锞':'錁','锟':'錕','锡':'錫','锢':'錮','锣':'鑼','锤':'錘','锥':'錐','锦':'錦','锧':'鑕','锨':'鍁','锩':'錈','锪':'鍃','锫':'錇','锬':'錟','锭':'錠','键':'鍵','锯':'鋸','锰':'錳','锱':'錙','锲':'鍥','锴':'鍇','锵':'鏘','锶':'鍶','锷':'鍔','锸':'鍤','锹':'鍬','锺':'鍾','锻':'鍛','锼':'鎪','锾':'鍰','锿':'鎄','镀':'鍍','镁':'鎂','镂':'鏤','镄':'鐨','镅':'鎇','镆':'鏌','镇':'鎮','镉':'鎘','镊':'鑷','镌':'鐫','镍':'鎳','镎':'鎿','镏':'鎦','镐':'鎬','镑':'鎊','镒':'鎰','镓':'鎵','镔':'鑌','镖':'鏢','镗':'鏜','镘':'鏝','镚':'鏰','镛':'鏞','镜':'鏡','镝':'鏑','镞':'鏃','镠':'鏐','镡':'鐔','镢':'钁','镣':'鐐','镤':'鏷','镥':'鑥','镦':'鐓','镧':'鑭','镨':'鐠','镩':'鑹','镪':'鏹','镫':'鐙','镬':'鑊','镭':'鐳','镯':'鐲','镰':'鐮','镱':'鐿','镲':'鑔','镳':'鑣','镴':'鑞','镶':'鑲','长':'長','门':'門','闩':'閂','闪':'閃','闫':'閆','闭':'閉','问':'問','闯':'闖','闰':'閏','闱':'闈','闲':'閒','闳':'閎','间':'間','闵':'閔','闶':'閌','闷':'悶','闸':'閘','闹':'鬧','闺':'閨','闻':'聞','闼':'闥','闽':'閩','闾':'閭','闿':'闓','阀':'閥','阁':'閣','阂':'閡','阃':'閫','阄':'鬮','阅':'閱','阆':'閬','阇':'闍','阈':'閾','阉':'閹','阊':'閶','阋':'鬩','阌':'閿','阍':'閽','阎':'閻','阏':'閼','阐':'闡','阑':'闌','阒':'闃','阔':'闊','阕':'闋','阖':'闔','阗':'闐','阙':'闕','阚':'闞','阜':'阜','队':'隊','阡':'阡','阢':'阢','阪':'阪','阮':'阮','阱':'阱','防':'防','阳':'陽','阴':'陰','阵':'陣','阶':'階','阻':'阻','阼':'阼','阽':'阽','阿':'阿','陀':'陀','陂':'陂','附':'附','际':'際','陆':'陸','陇':'隴','陈':'陳','陉':'陘','陋':'陋','陌':'陌','降':'降','限':'限','陧':'隉','陕':'陝','陛':'陛','陟':'陟','陡':'陡','院':'院','除':'除','陼':'陼','陨':'隕','险':'險','陪':'陪','陬':'陬','陲':'陲','陴':'陴','陵':'陵','陶':'陶','陷':'陷','隅':'隅','隆':'隆','隈':'隈','隋':'隋','隍':'隍','随':'隨','隐':'隱','隔':'隔','隗':'隗','隘':'隘','隙':'隙','障':'障','隧':'隧','隰':'隰','隳':'隳','隶':'隸','隹':'隹','隼':'隼','隽':'雋','难':'難','雀':'雀','雁':'雁','雄':'雄','雅':'雅','集':'集','雇':'僱','雉':'雉','雌':'雌','雍':'雍','雎':'雎','雏':'雛','雒':'雒','雕':'雕','雠':'讎','雨':'雨','雩':'雩','雪':'雪','雯':'雯','雳':'靂','零':'零','雷':'雷','雹':'雹','雾':'霧','需':'需','霁':'霽','霄':'霄','霆':'霆','震':'震','霈':'霈','霉':'黴','霍':'霍','霎':'霎','霏':'霏','霓':'霓','霖':'霖','霜':'霜','霞':'霞','霣':'霣','霭':'靄','霰':'霰','露':'露','霸':'霸','霹':'霹','霾':'霾','青':'青','靓':'靚','靖':'靖','静':'靜','靛':'靛','非':'非','靠':'靠','靡':'靡','面':'麵','靥':'靨','革':'革','靳':'靳','靴':'靴','靶':'靶','靼':'靼','鞅':'鞅','鞋':'鞋','鞍':'鞍','鞑':'韃','鞘':'鞘','鞠':'鞠','鞣':'鞣','鞭':'鞭','鞯':'韉','鞲':'韝','鞴':'鞴','韦':'韋','韧':'韌','韩':'韓','韪':'韙','韫':'韞','韬':'韜','韭':'韭','音':'音','韵':'韻','韶':'韶','页':'頁','顶':'頂','顷':'頃','项':'項','顺':'順','须':'須','顼':'頊','顽':'頑','顾':'顧','顿':'頓','颀':'頎','颁':'頒','颂':'頌','颃':'頏','预':'預','颅':'顱','领':'領','颇':'頗','颈':'頸','颉':'頡','颊':'頰','颋':'頲','颌':'頜','颍':'潁','颏':'頦','颐':'頤','频':'頻','颓':'頹','颔':'頷','颖':'穎','颗':'顆','题':'題','颚':'顎','颛':'顓','颜':'顏','额':'額','颞':'顳','颟':'顢','颠':'顛','颡':'顙','颢':'顥','颤':'顫','颥':'顬','颦':'顰','颧':'顴','风':'風','飑':'颮','飒':'颯','飓':'颶','飕':'颼','飘':'飄','飙':'飆','飞':'飛','食':'食','飧':'飧','飨':'饗','餍':'饜','餐':'餐','餮':'餮','饕':'饕','饥':'飢','饧':'餳','饨':'飩','饩':'餼','饪':'飪','饫':'飫','饬':'飭','饭':'飯','饮':'飲','饯':'餞','饰':'飾','饱':'飽','饲':'飼','饴':'飴','饵':'餌','饶':'饒','饷':'餉','饺':'餃','饼':'餅','饽':'餑','饿':'餓','馀':'餘','馁':'餒','馄':'餛','馅':'餡','馆':'館','馈':'饋','馊':'餿','馋':'饞','馍':'饃','馏':'餾','馐':'饈','馑':'饉','馒':'饅','馓':'饊','馔':'饌','馕':'饢','首':'首','馗':'馗','馘':'馘','香':'香','馥':'馥','馨':'馨','马':'馬','驭':'馭','驮':'馱','驯':'馴','驰':'馳','驱':'驅','驳':'駁','驴':'驢','驵':'駔','驶':'駛','驷':'駟','驸':'駙','驹':'駒','驺':'騶','驻':'駐','驼':'駝','驽':'駑','驾':'駕','驿':'驛','骀':'駘','骁':'驍','骂':'罵','骄':'驕','骅':'驊','骆':'駱','骇':'駭','骈':'駢','骊':'驪','骋':'騁','验':'驗','骏':'駿','骐':'騏','骑':'騎','骒':'騍','骓':'騅','骖':'驂','骗':'騙','骘':'騭','骚':'騷','骛':'騖','骜':'驁','骝':'騮','骞':'騫','骟':'騸','骠':'驃','骡':'騾','骢':'驄','骣':'驏','骤':'驟','骥':'驥','骧':'驤','骨':'骨','骰':'骰','骶':'骶','骷':'骷','骸':'骸','骺':'骺','骼':'骼','髀':'髀','髁':'髁','髂':'髂','髅':'髏','髋':'髖','髌':'髕','髑':'髑','髓':'髓','高':'高','髡':'髡','髦':'髦','髫':'髫','髭':'髭','髯':'髯','髹':'髹','髻':'髻','鬃':'鬃','鬈':'鬈','鬏':'鬏','鬓':'鬢','鬟':'鬟','鬣':'鬣','鬲':'鬲','鬻':'鬻','鬼':'鬼','魁':'魁','魂':'魂','魃':'魃','魄':'魄','魅':'魅','魇':'魘','魈':'魈','魉':'魎','魋':'魋','魍':'魍','魏':'魏','魑':'魑','魔':'魔','鱼':'魚','鱿':'魷','鲁':'魯','鲂':'魴','鲅':'鮁','鲆':'鮃','鲇':'鯰','鲈':'鱸','鲋':'鮒','鲍':'鮑','鲎':'鱟','鲐':'鮐','鲑':'鮭','鲒':'鮚','鲔':'鮪','鲕':'鮞','鲚':'鱭','鲛':'鮫','鲜':'鮮','鲞':'鯗','鲟':'鱘','鲠':'鯁','鲡':'鱺','鲢':'鰱','鲣':'鰹','鲤':'鯉','鲥':'鰣','鲦':'鰷','鲧':'鯀','鲨':'鯊','鲩':'鯇','鲫':'鯽','鲭':'鯖','鲮':'鯪','鲰':'鯫','鲱':'鯡','鲲':'鯤','鲳':'鯧','鲴':'鯝','鲵':'鯢','鲶':'鯰','鲷':'鯛','鲸':'鯨','鲺':'鯴','鲻':'鯔','鲼':'鱝','鲽':'鰈','鳄':'鱷','鳅':'鰍','鳆':'鰒','鳇':'鰉','鳊':'鯿','鳋':'鰠','鳌':'鰲','鳍':'鰭','鳎':'鰨','鳏':'鰥','鳐':'鰩','鳓':'鰳','鳔':'鰾','鳕':'鱈','鳖':'鱉','鳗':'鰻','鳘':'鰵','鳙':'鱅','鳜':'鱖','鳝':'鱔','鳞':'鱗','鳟':'鱒','鳢':'鱧','鸟':'鳥','鸠':'鳩','鸡':'雞','鸢':'鳶','鸣':'鳴','鸥':'鷗','鸦':'鴉','鸨':'鴇','鸩':'鴆','鸪':'鴣','鸫':'鶇','鸬':'鸕','鸭':'鴨','鸮':'鴞','鸯':'鴦','鸰':'鴒','鸱':'鴟','鸲':'鴝','鸳':'鴛','鸵':'鴕','鸶':'鷥','鸷':'鷙','鸸':'鴯','鸹':'鴰','鸺':'鵂','鸽':'鴿','鸾':'鸞','鸿':'鴻','鹁':'鵓','鹂':'鸝','鹃':'鵑','鹄':'鵠','鹅':'鵝','鹆':'鵒','鹇':'鷳','鹈':'鵜','鹉':'鵡','鹊':'鵲','鹋':'鶓','鹌':'鵪','鹎':'鵯','鹏':'鵬','鹑':'鶉','鹕':'鶘','鹗':'鶚','鹘':'鶻','鹚':'鶿','鹛':'鶥','鹜':'鶩','鹞':'鷂','鹣':'鶼','鹤':'鶴','鹦':'鸚','鹧':'鷓','鹨':'鷚','鹩':'鷯','鹪':'鷦','鹫':'鷲','鹬':'鷸','鹭':'鷺','鹰':'鷹','鹱':'鸌','鹳':'鸛','鹿':'鹿','麂':'麂','麃':'麃','麇':'麇','麈':'麈','麋':'麋','麒':'麒','麓':'麓','麖':'麖','丽':'麗','麝':'麝','麟':'麟','麦':'麥','麸':'麩','麻':'麻','麽':'麼','麾':'麾','黄':'黃','黍':'黍','黎':'黎','黏':'黏','黑':'黑','黔':'黔','默':'默','黛':'黛','黜':'黜','黝':'黝','黟':'黟','黠':'黠','黥':'黥','黯':'黯','黾':'黽','鼋':'黿','鼍':'鼉','鼎':'鼎','鼓':'鼓','鼗':'鞀','鼙':'鼙','鼠':'鼠','鼢':'鼢','鼩':'鼩','鼫':'鼫','鼬':'鼬','鼯':'鼯','鼱':'鼱','鼷':'鼷','鼹':'鼴','鼻':'鼻','鼽':'鼽','鼾':'鼾','齄':'齇','齐':'齊','齑':'齏','齿':'齒','龀':'齔','龁':'齕','龂':'齗','龃':'齟','龄':'齡','龅':'齙','龆':'齠','龇':'齜','龈':'齦','龉':'齬','龊':'齪','龋':'齲','龌':'齷','龙':'龍','龚':'龔','龛':'龕','龟':'龜'
@@ -562,12 +689,33 @@ function toTraditional(input) {
     for (let i = 0; i < input.length; i++) s += S2T_MAP[input[i]] || input[i];
     return s;
 }
+function applyGuideMapNames() {
+    const guide = window.GUIDE_MAPS || {};
+    const byTradName = {};
+    Object.keys(guide).forEach((k) => { byTradName[toTraditional(k)] = guide[k]; });
+    Object.values(MAPS).forEach((m) => {
+        const g = byTradName[toTraditional(m.name)];
+        if (!g || !g.monsters || !g.monsters.length) return;
+        const lvName = {};
+        g.monsters.forEach((gm) => { lvName[gm.lv] = gm.name; });
+        const rename = (mon) => {
+            if (mon && lvName[mon.lv] && !mon.isBoss) mon.name = lvName[mon.lv];
+        };
+        (m.monsters || []).forEach(rename);
+        (m.roster || []).forEach(rename);
+    });
+}
+
 function convertImportedData() {
     Object.values(WEAPONS).forEach((w) => {
         w.name = toTraditional(w.name);
         (w.skills || []).forEach((sk) => {
             sk.name = toTraditional(sk.name);
             sk.desc = toTraditional(sk.desc);
+        });
+        (w.combo || []).forEach((sk) => {
+            sk.name = toTraditional(sk.name);
+            if (sk.desc) sk.desc = toTraditional(sk.desc);
         });
     });
     Object.values(MAPS).forEach((m) => {
@@ -579,6 +727,7 @@ function convertImportedData() {
         (m.roster || []).forEach((mon) => { mon.name = toTraditional(mon.name); });
         if (m.bg) getCachedImage(m.bg);
     });
+    applyGuideMapNames();
     const renamed = {};
     Object.keys(monsterImages).forEach((k) => {
         renamed[toTraditional(k)] = monsterImages[k];
@@ -612,18 +761,65 @@ const EQUIP_SLOTS_RIGHT = [
     { key: 'shoes',    label: '鞋子',   icon: '👢' }
 ];
 
-const EQUIP_ITEM_POOL = [
-    { slot: 'weapon',   names: ['青鋒劍', '百煉寶刀', '破陣霸王槍', '天魔神兵'], baseStat: { atk: 22, crit: 2 }, images: ['assets/items/item_1.png','assets/items/item_2.png','assets/items/item_3.png','assets/items/item_4.png']},
-    { slot: 'helmet',   names: ['紫金冠', '天蠶頭巾', '修羅戰盔', '龍脈帝王冕'], baseStat: { def: 8, hp: 90 }, images: ['assets/items/item_5.png','assets/items/item_6.png','assets/items/item_7.png','assets/items/item_8.png']},
-    { slot: 'armor',    names: ['天蠶寶甲', '玄鐵重鎧', '金絲軟蝟甲', '大秦龍鱗袍'], baseStat: { def: 15, hp: 160 }, images: ['assets/items/item_9.png','assets/items/item_10.png','assets/items/item_11.png','assets/items/item_12.png']},
-    { slot: 'shoes',    names: ['踏雲靴', '疾風戰靴', '追月靴', '龍行千里靴'], baseStat: { def: 6, crit: 2 }, images: ['assets/items/item_13.png','assets/items/item_14.png','assets/items/item_15.png','assets/items/item_16.png']},
-    { slot: 'ringR',    names: ['白玉指環', '赤焰戒', '武聖扳指', '龍脈乾坤戒'], baseStat: { atk: 14, crit: 3 }, images: ['assets/items/item_17.png','assets/items/item_18.png','assets/items/item_19.png','assets/items/item_20.png']},
-    { slot: 'ringL',    names: ['翡翠指環', '寒冰戒', '破軍戒', '龍脈太極戒'], baseStat: { atk: 14, crit: 3 }, images: ['assets/items/item_21.png','assets/items/item_22.png','assets/items/item_23.png','assets/items/item_24.png']},
-    { slot: 'cape',     names: ['流雲披風', '血影斗篷', '天罡披風', '萬古龍皇披風'], baseStat: { def: 9, shield: 110 }, images: ['assets/items/item_25.png','assets/items/item_26.png','assets/items/item_27.png','assets/items/item_28.png']},
-    { slot: 'necklace', names: ['菩提唸珠', '勾玉項鍊', '攝魂魔鍊', '大秦傳國玉珮'], baseStat: { atk: 12, shield: 90 }, images: ['assets/items/item_29.png','assets/items/item_30.png','assets/items/item_31.png','assets/items/item_32.png']},
-    { slot: 'belt',     names: ['烏金腰帶', '磐石束腰', '狂龍腰帶', '皇陵鎮魂帶'], baseStat: { def: 7, hp: 130 }, images: ['assets/items/item_33.png','assets/items/item_34.png','assets/items/item_35.png','assets/items/item_36.png']},
-    { slot: 'gloves',   names: ['鐵布護腕', '天罡護手', '修羅血爪', '巨靈神力護手'], baseStat: { atk: 12, def: 6 }, images: ['assets/items/item_37.png','assets/items/item_38.png','assets/items/item_39.png','assets/items/item_40.png']}
-];
+const _wc = window.WEAPON_CATALOG || {};
+const _ac = window.ARMOR_CATALOG || {};
+const SLOT_IMG = {
+    weapon: ['assets/items/item_1.png','assets/items/item_2.png','assets/items/item_3.png','assets/items/item_4.png'],
+    helmet: ['assets/items/item_5.png','assets/items/item_6.png','assets/items/item_7.png','assets/items/item_8.png'],
+    armor: ['assets/items/item_9.png','assets/items/item_10.png','assets/items/item_11.png','assets/items/item_12.png'],
+    shoes: ['assets/items/item_13.png','assets/items/item_14.png','assets/items/item_15.png','assets/items/item_16.png'],
+    ringR: ['assets/items/item_17.png','assets/items/item_18.png','assets/items/item_19.png','assets/items/item_20.png'],
+    ringL: ['assets/items/item_21.png','assets/items/item_22.png','assets/items/item_23.png','assets/items/item_24.png'],
+    cape: ['assets/items/item_25.png','assets/items/item_26.png','assets/items/item_27.png','assets/items/item_28.png'],
+    necklace: ['assets/items/item_29.png','assets/items/item_30.png','assets/items/item_31.png','assets/items/item_32.png'],
+    belt: ['assets/items/item_33.png','assets/items/item_34.png','assets/items/item_35.png','assets/items/item_36.png'],
+    gloves: ['assets/items/item_37.png','assets/items/item_38.png','assets/items/item_39.png','assets/items/item_40.png']
+};
+
+/** 完整武器＋防具目錄展開成可掉落／可裝備清單 */
+function buildFullEquipCatalog() {
+    const list = [];
+    Object.keys(_wc).forEach((kind) => {
+        (_wc[kind] || []).forEach((w) => {
+            list.push({
+                slot: 'weapon', weaponId: kind, name: w.name, lv: w.lv, desc: w.desc || '',
+                atkMin: w.atk[0], atkMax: w.atk[1],
+                img: ((window.ITEM_ICON_MAP || {})[w.name]) || `assets/weapons/${kind}.png`
+            });
+        });
+    });
+    Object.keys(_ac).forEach((slot) => {
+        (_ac[slot] || []).forEach((a) => {
+            list.push({
+                slot, name: a.name, lv: a.lv, desc: a.desc || '',
+                atk: a.atk || 0, def: a.def || 0, hp: a.hp || 0,
+                shield: a.shield || 0, crit: a.crit || 0,
+                img: ((window.ITEM_ICON_MAP || {})[a.name])
+                    || (SLOT_IMG[slot] || SLOT_IMG.armor)[Math.min(3, Math.floor(a.lv / 30))]
+            });
+        });
+    });
+    return list;
+}
+const FULL_EQUIP_CATALOG = buildFullEquipCatalog();
+
+// 相容舊邏輯：每個槽位的名稱池＝完整目錄
+const EQUIP_ITEM_POOL = Object.keys(SLOT_IMG).map((slot) => {
+    const names = FULL_EQUIP_CATALOG.filter((e) => e.slot === slot).map((e) => e.name);
+    const sample = FULL_EQUIP_CATALOG.find((e) => e.slot === slot) || {};
+    return {
+        slot,
+        names: names.length ? names : ['無名之物'],
+        baseStat: {
+            atk: sample.atk || (slot === 'weapon' ? 22 : 0) || undefined,
+            def: sample.def || undefined,
+            hp: sample.hp || undefined,
+            shield: sample.shield || undefined,
+            crit: sample.crit || undefined
+        },
+        images: SLOT_IMG[slot]
+    };
+});
 
 const WORLD_W = 2400;
 const WORLD_H = 2400;
@@ -746,15 +942,25 @@ const critParticles = [];
 const bossAoeZones = [];
 let lastBossAoeCastTime = 0;
 
+const CHAR_VER = '20261020b'; // 去背新立繪快取版本
 const characterImages = {
-    sword: 'assets/chars/sword.png',
-    blade: 'assets/chars/blade.png',
-    spear: 'assets/chars/spear.png',
-    fist: 'assets/chars/fist.png',
-    bow: 'assets/chars/bow.png',
-    hidden: 'assets/chars/hidden.png',
-    default: 'assets/chars/sword.png'
+    sword: { male: `assets/chars/sword_male.png?v=${CHAR_VER}`, female: `assets/chars/sword_female.png?v=${CHAR_VER}` },
+    blade: { male: `assets/chars/blade_male.png?v=${CHAR_VER}`, female: `assets/chars/blade_female.png?v=${CHAR_VER}` },
+    spear: { male: `assets/chars/spear_male.png?v=${CHAR_VER}`, female: `assets/chars/spear_female.png?v=${CHAR_VER}` },
+    fist: { male: `assets/chars/fist_male.png?v=${CHAR_VER}`, female: `assets/chars/fist_female.png?v=${CHAR_VER}` },
+    bow: { male: `assets/chars/bow_male.png?v=${CHAR_VER}`, female: `assets/chars/bow_female.png?v=${CHAR_VER}` },
+    hidden: { male: `assets/chars/hidden_male.png?v=${CHAR_VER}`, female: `assets/chars/hidden_female.png?v=${CHAR_VER}` },
+    default: { male: `assets/chars/sword_male.png?v=${CHAR_VER}`, female: `assets/chars/sword_female.png?v=${CHAR_VER}` }
 };
+let createGender = 'male';
+let pendingNewAccount = null;
+
+function selectCreateGender(gender) {
+    createGender = (gender === 'female') ? 'female' : 'male';
+    document.querySelectorAll('.gender-card').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-gender') === createGender);
+    });
+}
 
 const fashionImages = {};
 EQUIP_ITEM_POOL.forEach(pool => {
@@ -779,14 +985,25 @@ function getCachedImage(url) {
     return imageCache[url];
 }
 
-function getCharacterImageUrl(weaponId) {
-    return characterImages[weaponId] || characterImages.default;
+function getCharacterImageUrl(weaponId, gender) {
+    const g = (gender === 'female' || gender === 'male') ? gender : (player && player.gender) || 'male';
+    const pack = characterImages[weaponId] || characterImages.default;
+    if (typeof pack === 'string') return pack;
+    return pack[g] || pack.male || characterImages.default.male;
 }
 
 function getItemImageUrl(item) {
     if (!item) return fashionImages.default;
-    if (item.img) return item.img;
+    const iconMap = window.ITEM_ICON_MAP || {};
+    // 1) 完整目錄名稱 → 官表切圖
+    if (item.name && iconMap[item.name]) return iconMap[item.name];
+    // 2) 已帶正確武器切圖路徑
+    if (item.img && String(item.img).includes('assets/items/weapons/')) return item.img;
+    // 3) 舊 fashion 對照
     if (item.name && fashionImages[item.name]) return fashionImages[item.name];
+    // 4) 物品自帶圖／兵器預設圖
+    if (item.img) return item.img;
+    if (item.weaponId) return `assets/weapons/${item.weaponId}.png`;
     const pool = EQUIP_ITEM_POOL.find(p => p.slot === item.slot);
     if (pool && pool.images) return pool.images[0];
     return fashionImages.default;
@@ -858,83 +1075,165 @@ function getMonsterAiProfile(tpl) {
         standDuration: tpl.standDuration || 1800,
         walkSpeed: tpl.walkSpeed || 0.85,
         runSpeed: tpl.runSpeed || (boss ? 1.25 : 1.55),
-        foreAttack: tpl.foreAttack !== false
+        // 地圖王怪不主動攻擊；被玩家鎖定後仍會反擊
+        foreAttack: boss ? false : (tpl.foreAttack !== false)
     };
 }
-[...Object.values(characterImages), ...Object.values(fashionImages), ...Object.values(monsterImages), 'assets/ui/mugong_jin.png', 'assets/fx/critical.png'].forEach(getCachedImage);
+Object.values(characterImages).forEach((pack) => {
+    if (typeof pack === 'string') getCachedImage(pack);
+    else Object.values(pack).forEach(getCachedImage);
+});
+[...Object.values(fashionImages), ...Object.values(monsterImages), 'assets/ui/mugong_jin.png', 'assets/ui/potion.png', 'assets/fx/critical.png'].forEach(getCachedImage);
 Object.values(WEAPONS).forEach(w => {
     if (w.img) getCachedImage(w.img);
     w.skills.forEach(s => { if (s.img) getCachedImage(s.img); });
 });
 
-function generateRandomEquipItem(mobLv = 5, isBoss = false) {
-    const pool = EQUIP_ITEM_POOL[Math.floor(Math.random() * EQUIP_ITEM_POOL.length)];
-    let tier = isBoss ? (Math.random() < 0.6 ? 3 : 2) : (Math.random() < 0.12 ? 2 : Math.random() < 0.45 ? 1 : 0);
+function pickFromFullCatalog(mobLv, preferWeaponId, forceSlot) {
+    let pool = FULL_EQUIP_CATALOG;
+    if (forceSlot) pool = pool.filter((e) => e.slot === forceSlot);
+    // 武器：優先當前兵器種類；否則全武器
+    if (!forceSlot && Math.random() < 0.45) {
+        const wPool = pool.filter((e) => e.slot === 'weapon' && (!preferWeaponId || e.weaponId === preferWeaponId));
+        if (wPool.length) pool = wPool;
+    } else if (!forceSlot) {
+        const aPool = pool.filter((e) => e.slot !== 'weapon');
+        if (aPool.length) pool = aPool;
+    }
+    // 取等級最接近的一組，再隨機
+    const ranked = pool
+        .map((e) => ({ e, d: Math.abs(e.lv - mobLv) }))
+        .sort((a, b) => a.d - b.d);
+    const bestD = ranked[0] ? ranked[0].d : 0;
+    const near = ranked.filter((x) => x.d <= bestD + 4).map((x) => x.e);
+    return near[Math.floor(Math.random() * near.length)] || pool[0] || null;
+}
+
+function catalogEntryToItem(entry, isBoss = false) {
+    if (!entry) return null;
+    let tier = isBoss ? (Math.random() < 0.55 ? 3 : 2) : (entry.lv >= 80 ? 2 : entry.lv >= 40 ? 1 : 0);
+    if (entry.name && entry.name.includes('真神')) tier = 3;
     const rarityColors = ['#9ca3af', '#38bdf8', '#c084fc', '#facc15'];
     const rarityLabels = ['凡品', '精良', '傳奇', '龍脈神裝'];
-    const mult = (1 + tier * 0.65) * (1 + mobLv * 0.08);
-
+    const tierMul = 1 + tier * 0.18;
     const stats = {};
-    if (pool.baseStat.atk) stats.atk = Math.round(pool.baseStat.atk * mult);
-    if (pool.baseStat.def) stats.def = Math.round(pool.baseStat.def * mult);
-    if (pool.baseStat.hp) stats.hp = Math.round(pool.baseStat.hp * mult);
-    if (pool.baseStat.shield) stats.shield = Math.round(pool.baseStat.shield * mult);
-    if (pool.baseStat.crit) stats.crit = Math.round(pool.baseStat.crit * (1 + tier * 0.5));
-
-    const slotMeta = [...EQUIP_SLOTS_LEFT, ...EQUIP_SLOTS_RIGHT].find(s => s.key === pool.slot);
+    if (entry.slot === 'weapon') {
+        const avg = Math.round(((entry.atkMin || 0) + (entry.atkMax || 0)) / 2);
+        stats.atk = Math.max(1, Math.round(avg * tierMul));
+        if (tier >= 2) stats.crit = 2 + tier;
+    } else {
+        if (entry.atk) stats.atk = Math.round(entry.atk * tierMul);
+        if (entry.def) stats.def = Math.round(entry.def * tierMul);
+        if (entry.hp) stats.hp = Math.round(entry.hp * tierMul);
+        if (entry.shield) stats.shield = Math.round(entry.shield * tierMul);
+        if (entry.crit) stats.crit = Math.round(entry.crit * (1 + tier * 0.25));
+    }
+    const slotMeta = [...EQUIP_SLOTS_LEFT, ...EQUIP_SLOTS_RIGHT].find((s) => s.key === entry.slot);
+    const imgs = SLOT_IMG[entry.slot] || SLOT_IMG.armor;
+    const iconMap = window.ITEM_ICON_MAP || {};
     return {
         uid: 'eq_' + Math.random().toString(36).slice(2, 9),
-        slot: pool.slot,
-        slotLabel: slotMeta ? slotMeta.label : pool.slot,
+        slot: entry.slot,
+        weaponId: entry.weaponId || undefined,
+        slotLabel: slotMeta ? slotMeta.label : entry.slot,
         icon: slotMeta ? slotMeta.icon : '📦',
-        img: (pool.images && pool.images[tier]) || fashionImages.default,
-        name: `${pool.names[tier]}`,
+        img: iconMap[entry.name] || entry.img || imgs[Math.min(tier, imgs.length - 1)],
+        name: entry.name,
         rarity: rarityLabels[tier],
         color: rarityColors[tier],
         plus: 0,
+        lv: entry.lv,
+        desc: entry.desc || '',
         stats,
-        price: (tier + 1) * 250
+        price: Math.max(50, entry.lv * 12 * (tier + 1))
     };
 }
 
+function generateRandomEquipItem(mobLv = 5, isBoss = false) {
+    const prefer = player && player.weaponId;
+    const entry = pickFromFullCatalog(mobLv, prefer);
+    return catalogEntryToItem(entry, isBoss) || {
+        uid: 'eq_' + Math.random().toString(36).slice(2, 9),
+        slot: 'armor', slotLabel: '衣服', icon: '🥋',
+        img: fashionImages.default, name: '布衣', rarity: '凡品', color: '#9ca3af',
+        plus: 0, stats: { def: 4, hp: 40 }, price: 50
+    };
+}
+
+function makeBossGuideLoot(bossName, x, y) {
+    const guide = window.BOSS_DROP_GUIDE || {};
+    const names = guide[bossName] || guide[toTraditional(bossName)];
+    if (!names || !names.length) return;
+    const pick = names[Math.floor(Math.random() * names.length)];
+    droppedItems.push({
+        type: 'equip',
+        equipData: {
+            uid: 'bd_' + Math.random().toString(36).slice(2, 9),
+            slot: 'necklace',
+            slotLabel: '王怪掉落',
+            icon: '👑',
+            img: 'assets/items/item_29.png',
+            name: pick,
+            rarity: '龍脈神裝',
+            color: '#facc15',
+            plus: 0,
+            stats: { atk: 28, shield: 140 },
+            price: 1200,
+            bossLoot: true
+        },
+        x: x + 28,
+        y: y - 18
+    });
+    addLog(`🎁 王怪掉落【${pick}】！`, 'text-amber-200 font-bold');
+}
+
 const STARTER_WEAPON_DEFS = [
-    { id: 'sword', name: '青鋒劍' },
-    { id: 'blade', name: '百煉寶刀' },
-    { id: 'spear', name: '破陣霸王槍' },
-    { id: 'fist', name: '鐵布拳套' },
-    { id: 'bow', name: '穿雲弓' },
-    { id: 'hidden', name: '飛蝗石' }
+    { id: 'sword', name: ((_wc.sword || [])[0] || {}).name || '桃木' },
+    { id: 'blade', name: ((_wc.blade || [])[0] || {}).name || '木刀' },
+    { id: 'spear', name: ((_wc.spear || [])[0] || {}).name || '竹刺' },
+    { id: 'fist', name: ((_wc.fist || [])[0] || {}).name || '棉掌' },
+    { id: 'bow', name: ((_wc.bow || [])[0] || {}).name || '木胎' },
+    { id: 'hidden', name: ((_wc.hidden || [])[0] || {}).name || '飛鏢' }
 ];
 
 function inferWeaponId(item) {
     if (!item || item.slot !== 'weapon') return null;
     if (item.weaponId && WEAPONS[item.weaponId]) return item.weaponId;
+    // 依完整武器表名稱反查
+    for (const kind of Object.keys(_wc)) {
+        if ((_wc[kind] || []).some((w) => w.name === item.name)) return kind;
+    }
     const n = item.name || '';
-    if (n.includes('弓')) return 'bow';
-    if (n.includes('槍') || n.includes('枪')) return 'spear';
-    if (n.includes('刀')) return 'blade';
-    if (n.includes('暗') || n.includes('石') || n.includes('鏢') || n.includes('镖')) return 'hidden';
-    if (n.includes('拳')) return 'fist';
-    if (n.includes('劍') || n.includes('剑')) return 'sword';
+    if (/弓|箭|弦/.test(n)) return 'bow';
+    if (/槍|矛|戟|槍/.test(n)) return 'spear';
+    if (/刀|刃/.test(n)) return 'blade';
+    if (/鏢|針|暗|星|針/.test(n)) return 'hidden';
+    if (/拳|掌|爪|手/.test(n)) return 'fist';
+    if (/劍|鋒/.test(n)) return 'sword';
     return null;
 }
 
 function makeStarterWeapon(weaponId) {
     const def = STARTER_WEAPON_DEFS.find(w => w.id === weaponId);
     const slotMeta = [...EQUIP_SLOTS_LEFT, ...EQUIP_SLOTS_RIGHT].find(s => s.key === 'weapon');
+    const catEntry = ((_wc[weaponId] || [])[0]) || null;
+    const name = (catEntry && catEntry.name) || (def ? def.name : WEAPONS[weaponId].name);
+    const atk = catEntry ? Math.round((catEntry.atk[0] + catEntry.atk[1]) / 2) : (weaponId === 'fist' ? 12 : 15);
+    const iconMap = window.ITEM_ICON_MAP || {};
     return {
         uid: 'wp_' + weaponId,
         slot: 'weapon',
         weaponId,
         slotLabel: slotMeta ? slotMeta.label : '武器',
         icon: slotMeta ? slotMeta.icon : '⚔️',
-        img: `assets/weapons/${weaponId}.png`,
-        name: def ? def.name : WEAPONS[weaponId].name,
+        img: iconMap[name] || `assets/weapons/${weaponId}.png`,
+        name,
         rarity: '精良',
         color: '#38bdf8',
         plus: 0,
-        stats: { atk: weaponId === 'fist' ? 8 : 18, crit: 1 },
-        price: 80
+        stats: { atk, crit: 1 },
+        price: 80,
+        desc: catEntry ? catEntry.desc : ''
     };
 }
 
@@ -944,7 +1243,7 @@ function ensureStarterWeapons() {
     Object.values(player.equipment || {}).forEach(scan);
     (player.bag || []).forEach(scan);
     STARTER_WEAPON_DEFS.forEach((w) => {
-        if (owned.has(w.id) || player.bag.length >= 20) return;
+        if (owned.has(w.id) || player.bag.length >= BAG_TOTAL_SLOTS) return;
         player.bag.push(makeStarterWeapon(w.id));
         owned.add(w.id);
     });
@@ -1104,6 +1403,65 @@ async function fetchGlobalChats() {
 
 const PRESENCE_STALE_MS = 4000;
 const MONSTER_RESPAWN_MS = 4000;
+const BOSS_RESPAWN_MS = 10 * 60 * 1000;       // 地圖王怪：10 分鐘
+const WORLD_BOSS_RESPAWN_MS = 60 * 60 * 1000; // 巨靈神／蚩牛：1 小時
+
+const EXTRA_BOSS_TEMPLATES = {
+    '巨靈神': {
+        kind: 250, name: '巨靈神', lv: 60, hp: 48000, atk: 230, def: 48,
+        exp: 520, sp: 120, gold: 900, color: '#facc15', radius: 54, isBoss: true,
+        img: 'assets/monsters/boss.png', searchRange: 320, pursuitForgiveDist: 700,
+        pursuitForgiveTime: 20000, domainRange: 200, walkSpeed: 0.7, runSpeed: 1.4,
+        foreAttack: false, objKind: 35
+    },
+    '蚩牛': {
+        kind: 184, name: '蚩牛', lv: 80, hp: 56000, atk: 250, def: 52,
+        exp: 480, sp: 100, gold: 780, color: '#f97316', radius: 56, isBoss: true,
+        img: 'assets/monsters/boss.png', searchRange: 300, pursuitForgiveDist: 650,
+        pursuitForgiveTime: 18000, domainRange: 200, walkSpeed: 0.85, runSpeed: 1.5,
+        foreAttack: false, objKind: 33
+    }
+};
+
+function findMapMonsterTpl(mapInfo, name) {
+    if (!mapInfo) return null;
+    return (mapInfo.monsters || []).find(t => t.name === name) || EXTRA_BOSS_TEMPLATES[name] || null;
+}
+
+function getMonsterRespawnMs(monster) {
+    if (!monster) return MONSTER_RESPAWN_MS;
+    if (monster.name === '巨靈神' || monster.name === '蚩牛') return WORLD_BOSS_RESPAWN_MS;
+    if (monster.isBoss) return BOSS_RESPAWN_MS;
+    return MONSTER_RESPAWN_MS;
+}
+
+function spawnNamedBoss(name, slotRx = 0.5, slotRy = 0.42) {
+    const mapInfo = MAPS[player.currentMapId];
+    const tpl = findMapMonsterTpl(mapInfo, name) || EXTRA_BOSS_TEMPLATES[name];
+    if (!tpl) return null;
+    const spot = slotToWorld({ rx: slotRx, ry: slotRy });
+    const id = `${player.currentMapId}_boss_${tpl.kind || name}`;
+    const existing = monsters.find(m => m.id === id || m.name === name);
+    if (existing) {
+        existing.hp = existing.maxHp;
+        existing.respawnAt = 0;
+        existing.mapResetOnRespawn = false;
+        existing.noAutoRespawn = false;
+        existing.x = spot.x; existing.y = spot.y;
+        existing.targetX = spot.x; existing.targetY = spot.y;
+        existing.homeX = spot.x; existing.homeY = spot.y;
+        existing.aiState = 'stand';
+        existing.isBoss = true;
+        existing.foreAttack = false;
+        pushMonsterStateToCloud(existing);
+        return existing;
+    }
+    const mob = createMonsterInstance({ ...tpl, isBoss: true, foreAttack: false }, id, player.currentMapId, spot.x, spot.y);
+    mob.foreAttack = false;
+    monsters.push(mob);
+    pushMonsterStateToCloud(mob);
+    return mob;
+}
 
 function supabaseHeaders(extra = {}) {
     return {
@@ -1159,6 +1517,8 @@ function respawnMonster(m) {
     m.pursuitStart = 0;
     m.lastRepath = 0;
     m.respawnAt = 0;
+    m.combatAggro = false;
+    if (m.isBoss) m.foreAttack = false;
     pushMonsterStateToCloud(m);
 }
 
@@ -1281,6 +1641,8 @@ async function syncPlayerPresence() {
 async function syncWorldMonsters() {
     const mapInfo = MAPS[player.currentMapId];
     if (!currentAccount || !mapInfo || mapInfo.safeZone || mapInfo.monsters.length === 0) return;
+    // 階段制首領圖由本機階段邏輯主導，避免雲端覆蓋出現順序
+    if (mapInfo.id === 'longmai' || mapInfo.id === 'm75') return;
 
     try {
         const res = await fetch(`${CLOUD_CONFIG.supabaseUrl}world_monsters?map_id=eq.${player.currentMapId}&order=id.asc`, {
@@ -1301,20 +1663,21 @@ async function syncWorldMonsters() {
         liveRows.forEach(r => {
             let localMob = monsters.find(m => m.id === r.id);
             const tplBoss = (mapInfo.monsters || []).some(t => t.name === r.name && t.isBoss);
-            const isBoss = mapInfo.bossOnly || tplBoss || r.name === '巨靈神';
+            const isBoss = mapInfo.bossOnly || tplBoss || r.name === '巨靈神' || r.name === '蚩牛';
             if (!localMob) {
-                monsters.push(createMonsterInstance({
-                    name: r.name, lv: r.lv, hp: r.hp, atk: r.atk, def: r.def,
-                    exp: r.exp, sp: r.sp, gold: r.gold, color: r.color, radius: r.radius, isBoss
-                }, r.id, r.map_id, r.x, r.y, r.max_hp, r.hp <= 0 ? Date.now() + MONSTER_RESPAWN_MS : 0, r.hp));
+                const stub = { name: r.name, lv: r.lv, hp: r.hp, atk: r.atk, def: r.def,
+                    exp: r.exp, sp: r.sp, gold: r.gold, color: r.color, radius: r.radius, isBoss };
+                monsters.push(createMonsterInstance(stub, r.id, r.map_id, r.x, r.y, r.max_hp,
+                    r.hp <= 0 ? Date.now() + getMonsterRespawnMs({ name: r.name, isBoss }) : 0, r.hp));
             } else {
                 localMob.maxHp = r.max_hp;
                 localMob.name = r.name; localMob.lv = r.lv;
                 localMob.color = r.color; localMob.radius = r.radius;
                 localMob.isBoss = isBoss;
+                if (isBoss) localMob.foreAttack = false;
                 if (r.hp <= 0) {
                     localMob.hp = 0;
-                    if (!localMob.respawnAt) localMob.respawnAt = Date.now() + MONSTER_RESPAWN_MS;
+                    if (!localMob.respawnAt) localMob.respawnAt = Date.now() + getMonsterRespawnMs(localMob);
                     if (player.targetMonster === localMob) player.targetMonster = null;
                 } else if (!localMob.respawnAt) {
                     localMob.hp = r.hp;
@@ -1649,6 +2012,7 @@ function getDefaultPlayerState() {
         stats: { str: 15, dex: 12, con: 15, int: 15 },
         derived: { atk: 45, innerBonusPct: 22, def: 12, critRate: '8.5' },
         hp: 525, maxHp: 525, shield: 330, maxShield: 330, mp: 220, maxMp: 220,
+        gender: 'male',
         currentWeapon: 'fist', currentSkillId: 'basic', weaponPlus: 0,
         skillLevels: {},
         learnedSkills: {},
@@ -1712,103 +2076,89 @@ function enhanceEquippedSlot(event, slotKey) {
     syncPlayerPresenceNow();
 }
 
+const EQUIP_SLOT_KEYS = ['helmet','weapon','shoes','ringR','ringL','armor','cape','necklace','gloves','belt'];
+const BAG_MAIN_SLOTS = 16;
+const BAG_EXTRA_SLOTS = 36;
+const BAG_TOTAL_SLOTS = BAG_MAIN_SLOTS + BAG_EXTRA_SLOTS;
+
+function renderEquipClassicSlot(slotKey) {
+    const el = document.getElementById('eq-slot-' + slotKey);
+    if (!el) return;
+    const eqItem = player.equipment[slotKey];
+    const meta = [...EQUIP_SLOTS_LEFT, ...EQUIP_SLOTS_RIGHT].find((s) => s.key === slotKey);
+    el.onclick = null;
+    el.oncontextmenu = null;
+    if (eqItem) {
+        const plus = eqItem.plus || 0;
+        const eff = getEffectiveItemStats(eqItem);
+        el.style.borderColor = eqItem.color || 'transparent';
+        el.title = `${eqItem.name}${plus ? ' +' + plus : ''} (${meta ? meta.label : slotKey})\n${formatItemStats(eff)}\n點擊卸下`;
+        el.innerHTML = `<img src="${getItemImageUrl(eqItem)}" alt="${eqItem.name}">${plus > 0 ? `<span class="plus-tag">+${plus}</span>` : ''}`;
+        el.onclick = () => unequipSlot(slotKey);
+        el.oncontextmenu = (e) => { e.preventDefault(); enhanceEquippedSlot(e, slotKey); };
+    } else {
+        el.style.borderColor = 'transparent';
+        el.title = (meta ? meta.label : slotKey) + '（空）';
+        el.innerHTML = '';
+    }
+}
+
+function renderBagCell(container, index) {
+    const item = player.bag[index];
+    const cell = document.createElement('div');
+    cell.className = 'bag-cell';
+    if (item) {
+        const plus = item.plus || 0;
+        cell.style.borderColor = item.color || 'transparent';
+        cell.title = `${item.name}${plus ? ' +' + plus : ''} (${item.slotLabel || ''}) - 點擊穿戴`;
+        cell.innerHTML = `<img src="${getItemImageUrl(item)}" alt="${item.name}">${plus > 0 ? `<span class="plus-tag">+${plus}</span>` : ''}`;
+        cell.onclick = () => equipFromBag(index);
+    }
+    container.appendChild(cell);
+}
+
 function renderEquipmentPanel() {
     document.getElementById('equip-char-name').textContent = currentAccount || '少俠';
-    const charUrl = getCharacterImageUrl(player.currentWeapon);
-    const fashionItem = player.equipment?.armor || player.equipment?.cape || player.equipment?.helmet;
-    document.getElementById('equip-char-img').src = charUrl;
+    document.getElementById('equip-char-img').src = getCharacterImageUrl(player.currentWeapon);
     const fashionEl = document.getElementById('equip-fashion-img');
-    if (fashionItem) {
-        fashionEl.src = getItemImageUrl(fashionItem);
-        fashionEl.classList.remove('hidden');
-        fashionEl.style.opacity = '0.72';
-    } else {
-        fashionEl.classList.add('hidden');
-    }
-    const leftCol = document.getElementById('equip-left-col');
-    const rightCol = document.getElementById('equip-right-col');
-    leftCol.innerHTML = '';
-    rightCol.innerHTML = '';
+    if (fashionEl) fashionEl.classList.add('hidden');
 
-    const createSlotHtml = (slotDef) => {
-        const eqItem = player.equipment[slotDef.key];
-        const div = document.createElement('div');
-        div.className = 'equip-slot p-1.5 rounded flex items-center justify-between gap-1';
-        if (eqItem) {
-            const plus = eqItem.plus || 0;
-            const nextCost = (plus + 1) * 250;
-            const effStats = getEffectiveItemStats(eqItem);
-            div.style.borderColor = eqItem.color;
-            div.innerHTML = `
-                <div onclick="unequipSlot('${slotDef.key}')" title="點擊卸下至背包" class="flex items-center gap-1.5 overflow-hidden flex-1 cursor-pointer">
-                    <img src="${getItemImageUrl(eqItem)}" alt="${eqItem.name}" class="w-8 h-8 rounded object-cover border border-amber-600/40 bg-gray-950 shrink-0">
-                    <div class="truncate">
-                        <div class="font-bold truncate text-[11px]" style="color:${eqItem.color}">
-                            ${eqItem.name} ${plus > 0 ? `<span class="text-amber-300 font-mono">+${plus}</span>` : ''}
-                        </div>
-                        <div class="text-[9px] text-gray-300 truncate">${formatItemStats(effStats)}</div>
-                    </div>
-                </div>
-                ${plus < 9 ? `
-                    <button onclick="enhanceEquippedSlot(event, '${slotDef.key}')" title="消耗 ${nextCost} 銀兩強化至 +${plus + 1}" class="bg-amber-600 hover:bg-amber-500 text-black font-bold px-1.5 py-1 rounded text-[9px] shrink-0 shadow">
-                        ⚒️+${plus + 1}<br><span class="text-[8px] font-mono">${nextCost}兩</span>
-                    </button>
-                ` : `
-                    <span class="bg-yellow-500/20 border border-yellow-400 text-yellow-300 font-bold px-1 py-0.5 rounded text-[9px] shrink-0">極限+9</span>
-                `}
-            `;
-        } else {
-            div.innerHTML = `
-                <div class="flex items-center gap-1.5 text-gray-500 py-1">
-                    <span class="w-8 h-8 rounded border border-gray-700 bg-gray-950/80 flex items-center justify-center text-sm opacity-60">${slotDef.icon}</span>
-                    <span>${slotDef.label}</span>
-                </div>
-                <span class="text-[9px] text-gray-600">空置</span>
-            `;
-        }
-        return div;
-    };
-
-    EQUIP_SLOTS_LEFT.forEach(s => leftCol.appendChild(createSlotHtml(s)));
-    EQUIP_SLOTS_RIGHT.forEach(s => rightCol.appendChild(createSlotHtml(s)));
+    EQUIP_SLOT_KEYS.forEach(renderEquipClassicSlot);
 
     const eqBonus = getEquipBonuses(player);
     document.getElementById('equip-bonus-summary').innerHTML = `
-        <div>裝備外功：<b class="text-amber-300">+${eqBonus.atk}</b></div>
-        <div>裝備防禦：<b class="text-sky-300">+${eqBonus.def}</b></div>
-        <div>裝備氣血：<b class="text-red-300">+${eqBonus.hp}</b></div>
-        <div>裝備護體：<b class="text-cyan-300">+${eqBonus.shield}</b></div>
-        <div>裝備暴擊：<b class="text-emerald-300">+${eqBonus.crit}%</b></div>
+        <div>攻 <b class="text-amber-300">+${eqBonus.atk}</b></div>
+        <div>防 <b class="text-sky-300">+${eqBonus.def}</b></div>
+        <div>血 <b class="text-red-300">+${eqBonus.hp}</b></div>
+        <div>護 <b class="text-cyan-300">+${eqBonus.shield}</b></div>
+        <div>暴 <b class="text-emerald-300">+${eqBonus.crit}%</b></div>
     `;
 
     const bagGrid = document.getElementById('bag-grid');
+    const bagExtra = document.getElementById('bag-grid-extra');
     bagGrid.innerHTML = '';
+    if (bagExtra) bagExtra.innerHTML = '';
     document.getElementById('bag-count').textContent = player.bag.length;
 
-    for (let i = 0; i < 20; i++) {
-        const item = player.bag[i];
-        const cell = document.createElement('div');
-        cell.className = 'equip-slot h-[4.75rem] rounded p-1 flex flex-col justify-between items-center text-center cursor-pointer relative';
-        if (item) {
-            const plus = item.plus || 0;
-            const effStats = getEffectiveItemStats(item);
-            cell.style.borderColor = item.color;
-            cell.onclick = () => equipFromBag(i);
-            cell.title = `${item.name} ${plus > 0 ? '+' + plus : ''} (${item.slotLabel}) - 點擊穿戴`;
-            cell.innerHTML = `
-                <div class="text-[9px] text-gray-400 w-full flex justify-between px-0.5">
-                    <span>${item.slotLabel}</span>
-                    <span class="text-amber-300 font-mono">${plus > 0 ? `+${plus}` : ''}</span>
-                </div>
-                <img src="${getItemImageUrl(item)}" alt="${item.name}" class="w-8 h-8 rounded object-cover border border-gray-700">
-                <div class="font-bold text-[10px] truncate w-full" style="color:${item.color}">${item.name}</div>
-                <div class="text-[9px] text-gray-300 truncate w-full">${formatItemStats(effStats)}</div>
-            `;
-        } else {
-            cell.className += ' opacity-35 cursor-default';
-            cell.innerHTML = `<span class="text-[10px] text-gray-600 m-auto">空</span>`;
-        }
-        bagGrid.appendChild(cell);
+    for (let i = 0; i < BAG_MAIN_SLOTS; i++) renderBagCell(bagGrid, i);
+    if (bagExtra) {
+        for (let i = 0; i < BAG_EXTRA_SLOTS; i++) renderBagCell(bagExtra, BAG_MAIN_SLOTS + i);
+    }
+
+    const bar = document.getElementById('equip-enhance-bar');
+    if (bar) {
+        bar.innerHTML = '';
+        EQUIP_SLOT_KEYS.forEach((key) => {
+            const it = player.equipment[key];
+            if (!it || (it.plus || 0) >= 9) return;
+            const plus = it.plus || 0;
+            const cost = (plus + 1) * 250;
+            const btn = document.createElement('button');
+            btn.className = 'bg-amber-700/80 hover:bg-amber-600 text-amber-50 px-1.5 py-0.5 rounded text-[10px] border border-amber-500/40';
+            btn.textContent = `⚒️${it.name}+${plus + 1}(${cost})`;
+            btn.onclick = (e) => enhanceEquippedSlot(e, key);
+            bar.appendChild(btn);
+        });
     }
 }
 
@@ -1850,8 +2200,8 @@ function equipFromBag(bagIdx) {
 function unequipSlot(slotKey) {
     const item = player.equipment[slotKey];
     if (!item) return;
-    if (player.bag.length >= 20) {
-        addLog(`⚠️ 行囊背包已滿 (20/20)，請先出售閒置裝備！`, 'text-red-400');
+    if (player.bag.length >= BAG_TOTAL_SLOTS) {
+        addLog(`⚠️ 行囊背包已滿 (${BAG_TOTAL_SLOTS}/${BAG_TOTAL_SLOTS})，請先出售閒置裝備！`, 'text-red-400');
         return;
     }
     player.equipment[slotKey] = null;
@@ -1938,7 +2288,9 @@ function createMonsterInstance(tpl, id, mapId, mx, my, maxHp, respawnAt, hp) {
         lastSearchTime: 0,
         pursuitStart: 0,
         lastRepath: 0,
-        respawnAt: respawnAt || 0
+        respawnAt: respawnAt || 0,
+        combatAggro: false,
+        foreAttack: !!tpl.isBoss ? false : (ai.foreAttack !== false)
     };
 }
 
@@ -1972,19 +2324,26 @@ function updateMonsterSourceAi(m) {
     const now = Date.now();
     if (!m.aiTimer || m.aiTimer > now + 20000) m.aiTimer = now + 400;
     if (!isMonsterAlive(m) || (m.stunUntil && now < m.stunUntil)) return false;
+    // 王怪永不主動索敵；需被打到（combatAggro）才會反擊
+    if (m.isBoss) m.foreAttack = false;
     const dist = currentAccount ? Math.hypot(player.x - m.x, player.y - m.y) : 9999;
     const skillRange = m.skillRange || ((m.radius || 20) + 38);
     const searchRange = m.searchRange || 170;
     const seePlayer = currentAccount && dist <= searchRange;
+    const canAutoAggro = !m.isBoss && m.foreAttack !== false;
 
     if (now - (m.lastSearchTime || 0) >= (m.searchPeriod || 800)) {
         m.lastSearchTime = now;
-        if (m.foreAttack !== false && seePlayer && (m.aiState === 'stand' || m.aiState === 'walkaround')) {
+        if (canAutoAggro && seePlayer && (m.aiState === 'stand' || m.aiState === 'walkaround')) {
             monsterEnterPersuit(m, now);
         }
     }
 
-    if (player.targetMonster === m && (m.aiState === 'stand' || m.aiState === 'walkaround')) {
+    // 小怪：被鎖定即反擊；王怪：只有挨打後才追擊
+    const engaged = m.isBoss
+        ? !!m.combatAggro
+        : (player.targetMonster === m || !!m.combatAggro);
+    if (engaged && (m.aiState === 'stand' || m.aiState === 'walkaround')) {
         monsterEnterPersuit(m, now);
     }
 
@@ -2018,6 +2377,7 @@ function updateMonsterSourceAi(m) {
         const forgiveDist = m.pursuitForgiveDist || 380;
         const forgiveTime = m.pursuitForgiveTime || 10000;
         if (!currentAccount || dist > forgiveDist || now - m.pursuitStart > forgiveTime) {
+            if (m.isBoss) m.combatAggro = false;
             monsterPickWander(m);
             m.aiState = 'walkaround';
             return false;
@@ -2059,14 +2419,96 @@ function initMonstersForCurrentMap() {
     const mapInfo = MAPS[player.currentMapId];
     if (mapInfo.safeZone || mapInfo.monsters.length === 0) return;
 
+    // 大秦龍脈：先刷地圖怪，全滅後才出巨靈神
+    if (mapInfo.id === 'longmai') {
+        const wave = mapInfo.monsters.filter(t => t.name !== '巨靈神');
+        FIXED_SLOTS.forEach((slot, idx) => {
+            const tpl = { ...wave[idx % wave.length], isBoss: false };
+            const spot = slotToWorld(slot);
+            const mob = createMonsterInstance(tpl, `${mapInfo.id}_w_${idx}`, mapInfo.id, spot.x, spot.y);
+            mob.noAutoRespawn = true; // 清場後才出王，過程中不重生
+            monsters.push(mob);
+        });
+        lastBossAoeCastTime = performance.now();
+        syncWorldMonsters();
+        return;
+    }
+
+    // 獄牛要塞：先出寂靜監視者 → 雙獄牛 → 蚩牛
+    if (mapInfo.id === 'm75') {
+        const first = findMapMonsterTpl(mapInfo, '寂静监视者') || mapInfo.monsters[0];
+        if (first) {
+            const spot = slotToWorld({ rx: 0.5, ry: 0.42 });
+            const mob = createMonsterInstance({ ...first, isBoss: true, foreAttack: false }, `${mapInfo.id}_boss_${first.kind}`, mapInfo.id, spot.x, spot.y);
+            mob.foreAttack = false;
+            mob.noAutoRespawn = true;
+            monsters.push(mob);
+        }
+        lastBossAoeCastTime = performance.now();
+        syncWorldMonsters();
+        return;
+    }
+
     const slotsToUse = mapInfo.bossOnly ? [{ rx: 0.5, ry: 0.45 }] : FIXED_SLOTS;
     slotsToUse.forEach((slot, idx) => {
         const tpl = mapInfo.monsters[idx % mapInfo.monsters.length];
         const spot = slotToWorld(slot);
-        monsters.push(createMonsterInstance(tpl, `${player.currentMapId}_w_${idx}`, player.currentMapId, spot.x, spot.y));
+        const mob = createMonsterInstance(tpl, `${player.currentMapId}_w_${idx}`, player.currentMapId, spot.x, spot.y);
+        if (mob.isBoss) mob.foreAttack = false;
+        monsters.push(mob);
     });
     lastBossAoeCastTime = performance.now();
     syncWorldMonsters();
+}
+
+function handleBossChainOnDeath(monster) {
+    const mapId = player.currentMapId;
+    if (mapId === 'longmai') {
+        if (monster.name === '巨靈神') {
+            monster.respawnAt = Date.now() + WORLD_BOSS_RESPAWN_MS;
+            monster.mapResetOnRespawn = true;
+            addLog(`👑 巨靈神倒下，龍脈將於 1 小時後重新匯聚……`, 'text-amber-300');
+            return;
+        }
+        monster.respawnAt = 0;
+        monster.noAutoRespawn = true;
+        const trashAlive = monsters.some(m => m.name !== '巨靈神' && isMonsterAlive(m));
+        const hasJuling = monsters.some(m => m.name === '巨靈神' && (isMonsterAlive(m) || m.respawnAt));
+        if (!trashAlive && !hasJuling) {
+            spawnNamedBoss('巨靈神', 0.5, 0.4);
+            addLog(`🌋 大秦龍脈異動！世界王【巨靈神】降臨！`, 'text-amber-300 font-bold');
+        }
+        return;
+    }
+
+    if (mapId === 'm75') {
+        if (monster.name === '寂静监视者') {
+            monster.respawnAt = 0;
+            monster.noAutoRespawn = true;
+            spawnNamedBoss('寒冰狱牛', 0.32, 0.42);
+            spawnNamedBoss('怒焰狱牛', 0.68, 0.42);
+            addLog(`❄️🔥 寂靜監視者倒下！寒冰獄牛與怒焰獄牛同時現身！`, 'text-cyan-300 font-bold');
+            return;
+        }
+        if (monster.name === '寒冰狱牛' || monster.name === '怒焰狱牛') {
+            monster.respawnAt = 0;
+            monster.noAutoRespawn = true;
+            const twinsAlive = monsters.some(m =>
+                (m.name === '寒冰狱牛' || m.name === '怒焰狱牛') && isMonsterAlive(m)
+            );
+            const hasChiniu = monsters.some(m => m.name === '蚩牛' && (isMonsterAlive(m) || m.respawnAt));
+            if (!twinsAlive && !hasChiniu) {
+                spawnNamedBoss('蚩牛', 0.5, 0.4);
+                addLog(`🐂 雙獄牛盡滅！最終首領【蚩牛】登場！`, 'text-orange-300 font-bold');
+            }
+            return;
+        }
+        if (monster.name === '蚩牛') {
+            monster.respawnAt = Date.now() + WORLD_BOSS_RESPAWN_MS;
+            monster.mapResetOnRespawn = true;
+            addLog(`🐂 蚩牛倒下，獄牛要塞將於 1 小時後重置……`, 'text-amber-300');
+        }
+    }
 }
 
 function triggerBossFullScreenAoe(bossMob, now) {
@@ -2170,6 +2612,13 @@ window.addEventListener('pointerdown', (e) => {
 });
 window.addEventListener('keydown', () => playBgm());
 
+function showGenderPicker(show) {
+    const box = document.getElementById('auth-gender-box');
+    if (!box) return;
+    box.classList.toggle('hidden', !show);
+    if (show) selectCreateGender(createGender || 'male');
+}
+
 async function handleLoginOrRegister() {
     const userIn = document.getElementById('auth-username').value.trim();
     const pwdIn = document.getElementById('auth-password').value;
@@ -2193,23 +2642,40 @@ async function handleLoginOrRegister() {
 
     const db = getAccountsDB();
     if (cloudData) {
+        showGenderPicker(false);
+        pendingNewAccount = null;
         if (cloudData.password_hash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
         db[userIn] = { passwordHash: pwdHash, saveData: cloudData.save_data };
         saveAccountsDB(db);
         completeLoginSession(userIn, cloudData.save_data, false, remember);
     } else if (db[userIn]) {
+        showGenderPicker(false);
+        pendingNewAccount = null;
         if (db[userIn].passwordHash !== pwdHash) { errEl.textContent = '❌ 密碼錯誤！'; return; }
         db[userIn] = { passwordHash: pwdHash, saveData: db[userIn].saveData };
         saveAccountsDB(db);
         completeLoginSession(userIn, db[userIn].saveData, false, remember);
         syncToCloud(userIn, pwdHash, db[userIn].saveData);
     } else {
+        // 新帳號：先選性別再建立
+        if (!pendingNewAccount || pendingNewAccount.userIn !== userIn) {
+            pendingNewAccount = { userIn, pwdHash, remember };
+            showGenderPicker(true);
+            errEl.textContent = '✨ 新帳號！請選擇男／女後再按一次「進入蘭州」';
+            errEl.className = 'text-amber-300 font-bold text-center min-h-[18px]';
+            return;
+        }
+        errEl.className = 'text-red-400 font-bold text-center min-h-[18px]';
+        errEl.textContent = '';
         const freshState = getDefaultPlayerState();
+        freshState.gender = createGender === 'female' ? 'female' : 'male';
         Object.assign(player, freshState);
         MoxiangFormula.recalcDerivedStats(player);
         const initialSave = serializePlayer();
         db[userIn] = { passwordHash: pwdHash, saveData: initialSave };
         saveAccountsDB(db);
+        pendingNewAccount = null;
+        showGenderPicker(false);
         completeLoginSession(userIn, initialSave, true, remember);
         syncToCloud(userIn, pwdHash, initialSave);
     }
@@ -2236,8 +2702,8 @@ function completeLoginSession(username, saveData, isNewAccount, remember) {
     if (isNewAccount) {
         switchMap('lanzhou', false);
         renderWeaponButtons(); updateSkillSelect(); renderEquipmentPanel(); updateUI(); saveGame(false);
-        addLog(`🎉 歡迎【${username}】在蘭州出生！行囊已放入劍、刀、槍、拳、弓、暗器。`, 'text-amber-300 font-bold');
-        addLog(`⚔️ 空手用拳。換上兵器後，只能施展該兵器的武功。`, 'text-emerald-300');
+        addLog(`🎉 歡迎【${username}】在蘭州出生！性別：${player.gender === 'female' ? '女' : '男'}。`, 'text-amber-300 font-bold');
+        addLog(`⚔️ 行囊已放入六種兵器；於背包更換武器即可切換武功與立繪。`, 'text-emerald-300');
     } else {
         applyLoadedData(saveData, false);
         switchMap('lanzhou', false);
@@ -2269,9 +2735,11 @@ window.addEventListener('pagehide', () => {
 
 function serializePlayer() {
     return {
-        version: 16, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
+        version: 17, account: currentAccount, level: player.level, exp: player.exp, maxExp: player.maxExp,
         gold: player.gold, sp: player.sp, statPoints: player.statPoints, stats: { ...player.stats },
-        hp: player.hp, shield: player.shield, mp: player.mp, currentWeapon: player.currentWeapon,
+        hp: player.hp, shield: player.shield, mp: player.mp,
+        gender: player.gender === 'female' ? 'female' : 'male',
+        currentWeapon: player.currentWeapon,
         currentSkillId: player.currentSkillId, weaponPlus: player.weaponPlus,
         skillLevels: { ...player.skillLevels }, skillExp: { ...player.skillExp },
         learnedSkills: { ...(player.learnedSkills || {}) },
@@ -2303,6 +2771,7 @@ function applyLoadedData(data, isImported = false) {
     if (data.stats) { player.stats.str = data.stats.str ?? 15; player.stats.dex = data.stats.dex ?? 12; player.stats.con = data.stats.con ?? 15; player.stats.int = data.stats.int ?? 15; }
     if (data.currentWeapon && WEAPONS[data.currentWeapon]) { player.currentWeapon = data.currentWeapon; }
     if (data.currentSkillId) { player.currentSkillId = migrateSkillKey(data.currentSkillId); } else { player.currentSkillId = 'basic'; }
+    player.gender = (data.gender === 'female') ? 'female' : 'male';
     player.weaponPlus = data.weaponPlus ?? 0;
     player.skillLevels = {};
     player.skillExp = {};
@@ -2381,6 +2850,52 @@ setInterval(() => { if (currentAccount) saveGame(false); }, 5000);
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+
+const CURSOR_MODES = ['cursor-attack','cursor-hunt','cursor-dealer','cursor-item','cursor-repair','cursor-mine','cursor-collect','cursor-block'];
+function setGameCursor(mode) {
+    CURSOR_MODES.forEach((c) => canvas.classList.remove(c));
+    if (mode) canvas.classList.add(mode);
+}
+function updateGameCursor(clientX, clientY) {
+    if (!currentAccount || !player) { setGameCursor(null); return; }
+    const rect = canvas.getBoundingClientRect();
+    const world = screenToWorld(clientX - rect.left, clientY - rect.top);
+    const mapInfo = MAPS[player.currentMapId];
+
+    for (const item of droppedItems) {
+        if (Math.hypot(item.x - world.x, item.y - world.y) <= 24) {
+            setGameCursor('cursor-item');
+            return;
+        }
+    }
+    if (player.currentMapId === BOOKSTORE_NPC.mapId) {
+        const npc = getBookstoreNpcPos();
+        if (Math.hypot(npc.x - world.x, npc.y - world.y) <= BOOKSTORE_NPC.radius + 16) {
+            setGameCursor('cursor-dealer');
+            return;
+        }
+    }
+    if (!mapInfo?.safeZone) {
+        for (const m of monsters) {
+            if (!isMonsterAlive(m)) continue;
+            if (Math.hypot(m.x - world.x, m.y - world.y) <= (m.radius || 22) + 8) {
+                setGameCursor(player.autoBot ? 'cursor-hunt' : 'cursor-attack');
+                return;
+            }
+        }
+        if (mapInfo?.pvp) {
+            for (const op of Object.values(onlinePlayersMap)) {
+                if (Math.hypot(op.x - world.x, op.y - world.y) <= 26) {
+                    setGameCursor('cursor-attack');
+                    return;
+                }
+            }
+        }
+    }
+    setGameCursor(player.autoBot ? 'cursor-hunt' : null);
+}
+canvas.addEventListener('mousemove', (e) => updateGameCursor(e.clientX, e.clientY));
+canvas.addEventListener('mouseleave', () => setGameCursor(null));
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
@@ -2399,6 +2914,17 @@ function renderWeaponButtons() {
 
 function switchWeapon(weaponId) {
     if (!currentAccount || !WEAPONS[weaponId]) return;
+    if (inferWeaponId(player.equipment.weapon) === weaponId) {
+        applyHeldWeapon(true);
+        renderWeaponButtons(); updateSkillSelect(); updateUI();
+        return;
+    }
+    const bagIdx = player.bag.findIndex(it => inferWeaponId(it) === weaponId);
+    if (bagIdx >= 0) {
+        equipFromBag(bagIdx);
+        return;
+    }
+    // 拳法特例：沒有拳套時可空手施展
     if (weaponId === 'fist') {
         if (player.equipment.weapon) {
             unequipSlot('weapon');
@@ -2411,17 +2937,7 @@ function switchWeapon(weaponId) {
         addLog('空手，改用拳法。', 'text-cyan-300');
         return;
     }
-    if (inferWeaponId(player.equipment.weapon) === weaponId) {
-        applyHeldWeapon(true);
-        renderWeaponButtons(); updateSkillSelect(); updateUI();
-        return;
-    }
-    const idx = player.bag.findIndex(it => inferWeaponId(it) === weaponId);
-    if (idx < 0) {
-        addLog(`行囊沒有${WEAPONS[weaponId].name}，不能用這門武功。`, 'text-red-400');
-        return;
-    }
-    equipFromBag(idx);
+    addLog(`行囊沒有${WEAPONS[weaponId].name}，不能用這門武功。`, 'text-red-400');
 }
 
 function switchSkill(skillId) {
@@ -2621,7 +3137,7 @@ function toggleBot(forceState) {
     if (player.autoBot) {
         badge.textContent = '掛機中'; badge.className = 'text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded animate-pulse';
         btn.textContent = '停止掛機 [F]'; btn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded shadow';
-        addLog(`【Auto-Bot】開始自動索敵與撿寶。`, 'text-emerald-400');
+        addLog(`【Auto-Bot】開始自動索敵與補血。`, 'text-emerald-400');
     } else {
         badge.textContent = '休息中'; badge.className = 'text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded';
         btn.textContent = '啟動掛機 [F]'; btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded shadow';
@@ -2760,7 +3276,8 @@ function updateUI() {
     const sLv = skill.basic ? 0 : (usable ? (player.skillLevels[sId] || 1) : 0);
     const sExp = skill.basic ? 0 : (player.skillExp[sId] || 0);
 
-    document.getElementById('ui-weapon-label').textContent = `主修：${w.name} (${MoxiangFormula.getSkillTitle(skill, Math.max(1, sLv || 1))})`;
+    const weaponLabel = document.getElementById('ui-weapon-label');
+    if (weaponLabel) weaponLabel.textContent = '';
     document.getElementById('ui-gold').textContent = player.gold.toLocaleString();
     document.getElementById('ui-sp').textContent = player.sp.toLocaleString();
     document.getElementById('ui-hp-text').textContent = `${Math.floor(player.hp)} / ${player.maxHp}`;
@@ -2782,10 +3299,11 @@ function updateUI() {
     document.getElementById('ui-def').textContent = player.derived.def;
     document.getElementById('ui-crit').textContent = `${player.derived.critRate}%`;
 
-    const charUrl = getCharacterImageUrl(player.currentWeapon);
+    const charUrl = getCharacterImageUrl(player.currentWeapon, player.gender);
     document.getElementById('hud-char-img').src = charUrl;
     const equipCharImg = document.getElementById('equip-char-img');
     if (equipCharImg) equipCharImg.src = charUrl;
+    if (currentAccount) document.getElementById('ui-char-title').textContent = currentAccount;
     document.getElementById('skill-img').src = skill.img || w.img || characterImages.default;
     document.getElementById('skill-name').textContent = skill.basic ? '普通攻擊' : (sLv > 0 ? MoxiangFormula.getSkillTitle(skill, sLv) : toTraditional(skill.name));
     document.getElementById('skill-lv').textContent = skill.basic ? '-' : (sLv > 0 ? sLv : 0);
@@ -2817,6 +3335,12 @@ function updateGame(now) {
     const nowMs = Date.now();
     for (const m of monsters) {
         if (m.hp <= 0 && m.respawnAt && nowMs >= m.respawnAt) {
+            if (m.mapResetOnRespawn) {
+                initMonstersForCurrentMap();
+                addLog(`♻️ 【${MAPS[player.currentMapId]?.name || '此地'}】首領勢力重新集結！`, 'text-amber-300');
+                break;
+            }
+            if (m.noAutoRespawn) continue;
             respawnMonster(m);
         }
     }
@@ -2827,15 +3351,6 @@ function updateGame(now) {
         cp.vx *= 0.92; cp.vy *= 0.92;
         cp.life--;
         if (cp.life <= 0) critParticles.splice(i, 1);
-    }
-
-    if (player.autoBot && document.getElementById('bot-auto-loot').checked && droppedItems.length > 0) {
-        for (let i = droppedItems.length - 1; i >= 0; i--) {
-            const item = droppedItems[i];
-            if (Math.hypot(player.x - item.x, player.y - item.y) < 135) {
-                droppedItems.splice(i, 1); lootItem(item); break;
-            }
-        }
     }
 
     const bossMob = monsters.find(m => m.isBoss && m.hp > 0);
@@ -2886,11 +3401,12 @@ function updateGame(now) {
                 player.hp = Math.max(1, player.hp - aoeDmg);
                 player.shield = Math.max(0, player.shield - Math.floor(player.maxShield * 0.5));
                 spawnFloatingText(player.x, player.y - 30, `🌋 震天滅地錘 -${aoeDmg}!`, '#ef4444', 18);
-                addLog(`💥 您未能及時閃避巨靈神的【震天滅地錘】紅圈，受到 ${aoeDmg} 點毀滅重創！`, 'text-red-400 font-bold');
+                const bossName = (bossMob && bossMob.name) || '首領';
+                addLog(`💥 您未能及時閃避【${bossName}】的範圍紅圈，受到 ${aoeDmg} 點毀滅重創！`, 'text-red-400 font-bold');
                 updateUI();
                 if (player.hp <= 1) {
                     bossAoeZones.length = 0;
-                    handlePlayerDeath('巨靈神·震天滅地錘');
+                    handlePlayerDeath(`${bossName}·範圍轟擊`);
                     return;
                 }
             }
@@ -2919,7 +3435,8 @@ function updateGame(now) {
     updateHotbarCd();
 
     if (player.autoBot && !mapInfo.safeZone) {
-        if (document.getElementById('bot-auto-hp').checked && player.hp < player.maxHp * 0.6) {
+        if (document.getElementById('bot-auto-hp').checked &&
+            (player.hp < player.maxHp * 0.6 || player.mp < player.maxMp * 0.6)) {
             usePotionManual();
         }
         if (mapInfo.pvp) {
@@ -2927,10 +3444,11 @@ function updateGame(now) {
                 const pNames = Object.keys(onlinePlayersMap);
                 player.targetPlayer = pNames.length > 0 ? pNames[0] : null;
             }
-        } else if (!player.targetMonster || !monsters.includes(player.targetMonster)) {
+        } else if (!player.targetMonster || !monsters.includes(player.targetMonster) || !isMonsterAlive(player.targetMonster) || player.targetMonster.isBoss) {
+            // 掛機優先打小怪，不主動鎖定王怪（避免誤觸發王怪反擊）
             let nearest = null, minDist = Infinity;
             for (const m of monsters) {
-                if (!isMonsterAlive(m)) continue;
+                if (!isMonsterAlive(m) || m.isBoss) continue;
                 const d = Math.hypot(m.x - player.x, m.y - player.y);
                 if (d < minDist) { minDist = d; nearest = m; }
             }
@@ -3053,6 +3571,7 @@ function performAttack(monster, now, skill) {
 
     const res = MoxiangFormula.calculateAttackDamage(player, monster, skill);
     monster.hp -= res.damage;
+    monster.combatAggro = true;
     const vamp = (skill.vampSung && skill.vampSung[sLv - 1]) || 0;
     if (vamp > 0) {
         const heal = Math.max(1, Math.floor(res.damage * vamp));
@@ -3107,15 +3626,17 @@ function performAttack(monster, now, skill) {
             bossAoeZones.length = 0;
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 20, y: monster.y - 10 });
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 5, y: monster.y + 22 });
-            addLog(`👑 【全服捷報】大秦龍脈世界王【${monster.name}】被討伐成功！地上爆出大量龍脈神裝！`, 'text-amber-300 font-bold');
+            makeBossGuideLoot(monster.name, monster.x, monster.y);
+            addLog(`👑 【全服捷報】首領【${monster.name}】被討伐成功！地上爆出大量神裝！`, 'text-amber-300 font-bold');
         } else if (MoxiangFormula.rollEquipDrop(false)) {
             droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, false), x: monster.x + 16, y: monster.y });
             addLog(`擊敗【${monster.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
         }
 
         monster.hp = 0;
-        monster.respawnAt = Date.now() + MONSTER_RESPAWN_MS;
+        monster.respawnAt = Date.now() + getMonsterRespawnMs(monster);
         player.targetMonster = null;
+        handleBossChainOnDeath(monster);
         pushMonsterStateToCloud(monster);
         checkLevelUp();
     } else {
@@ -3199,16 +3720,29 @@ function renderGame(now = performance.now()) {
     if (!mapInfo.safeZone) {
         const pulse = Math.sin(Date.now() / 200) * 3;
         for (const item of droppedItems) {
-            ctx.beginPath(); ctx.arc(item.x, item.y, 12 + pulse, 0, Math.PI * 2);
-            ctx.fillStyle = item.type === 'gold' ? 'rgba(250, 204, 21, 0.35)' : 'rgba(192, 132, 252, 0.4)';
+            ctx.beginPath(); ctx.arc(item.x, item.y, 14 + pulse, 0, Math.PI * 2);
+            ctx.fillStyle = item.type === 'gold' ? 'rgba(250, 204, 21, 0.35)' : 'rgba(192, 132, 252, 0.28)';
             ctx.fill();
-            ctx.beginPath(); ctx.arc(item.x, item.y, 7, 0, Math.PI * 2);
-            ctx.fillStyle = item.type === 'gold' ? '#facc15' : (item.equipData?.color || '#c084fc');
-            ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
-            ctx.font = 'bold 11px "Noto Sans TC"';
-            ctx.fillStyle = item.type === 'gold' ? '#fde047' : (item.equipData?.color || '#e9d5ff');
-            ctx.textAlign = 'center';
-            ctx.fillText(item.type === 'gold' ? `💰 ${item.amount}銀兩` : `${item.equipData.icon} ${item.equipData.name}`, item.x, item.y - 14);
+            if (item.type === 'equip' && item.equipData) {
+                const icon = getCachedImage(getItemImageUrl(item.equipData));
+                if (isImageReady(icon)) {
+                    ctx.drawImage(icon, item.x - 16, item.y - 16, 32, 32);
+                } else {
+                    ctx.beginPath(); ctx.arc(item.x, item.y, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = item.equipData.color || '#c084fc'; ctx.fill();
+                }
+                ctx.font = 'bold 11px "Noto Sans TC"';
+                ctx.fillStyle = item.equipData.color || '#e9d5ff';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.equipData.name, item.x, item.y - 20);
+            } else {
+                ctx.beginPath(); ctx.arc(item.x, item.y, 7, 0, Math.PI * 2);
+                ctx.fillStyle = '#facc15'; ctx.fill();
+                ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.font = 'bold 11px "Noto Sans TC"';
+                ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
+                ctx.fillText(`💰 ${item.amount}銀兩`, item.x, item.y - 14);
+            }
         }
 
         for (const m of monsters) {
