@@ -133,8 +133,9 @@
         }
         .equip-classic-slot {
             position: absolute;
-            width: 36px;
-            height: 36px;
+            box-sizing: border-box;
+            width: 40px;
+            height: 40px;
             border: 1px solid transparent;
             border-radius: 2px;
             background: transparent;
@@ -159,8 +160,8 @@
         }
         .equip-classic-char {
             position: absolute;
-            left: 78px; top: 42px;
-            width: 72px; height: 110px;
+            left: 48px; top: 4px;
+            width: 44px; height: 66px;
             display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
         }
@@ -169,15 +170,16 @@
         }
         .equip-classic-bag {
             position: absolute;
-            left: 18px; top: 198px;
-            width: 176px; height: 160px;
+            left: 5px; top: 181px;
+            width: 175px; height: 175px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 4px;
-            padding: 2px;
+            grid-template-columns: repeat(4, 40px);
+            grid-template-rows: repeat(4, 40px);
+            gap: 5px;
+            padding: 0;
         }
         .equip-classic-bag .bag-cell {
+            box-sizing: border-box;
             width: 100%; height: 100%;
             border: 1px solid transparent;
             border-radius: 2px;
@@ -192,15 +194,16 @@
         }
         .equip-classic-extra {
             position: absolute;
-            left: 210px; top: 42px;
-            width: 196px; height: 310px;
+            left: 219px; top: 61px;
+            width: 175px; height: 265px;
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(6, 1fr);
-            gap: 3px;
-            padding: 2px;
+            grid-template-columns: repeat(4, 40px);
+            grid-template-rows: repeat(6, 40px);
+            gap: 5px;
+            padding: 0;
         }
         .equip-classic-extra .bag-cell {
+            box-sizing: border-box; width: 100%; height: 100%;
             border: 1px solid transparent; border-radius: 2px; overflow: hidden; cursor: pointer; position: relative;
         }
         .equip-classic-extra .bag-cell:hover { border-color: #38bdf8; }
@@ -544,16 +547,16 @@
         </div>
         <div class="equip-classic-body" id="equip-classic-body">
             <!-- 槽位座標對應原作 UI（相對 420×380） -->
-            <div id="eq-slot-helmet" class="equip-classic-slot" style="left:18px;top:42px" title="頭飾"></div>
-            <div id="eq-slot-weapon" class="equip-classic-slot" style="left:18px;top:86px" title="武器"></div>
-            <div id="eq-slot-shoes" class="equip-classic-slot" style="left:18px;top:148px" title="鞋子"></div>
-            <div id="eq-slot-ringR" class="equip-classic-slot" style="left:92px;top:28px" title="右戒指"></div>
-            <div id="eq-slot-ringL" class="equip-classic-slot" style="left:136px;top:28px" title="左戒指"></div>
-            <div id="eq-slot-armor" class="equip-classic-slot" style="left:92px;top:72px" title="衣服"></div>
-            <div id="eq-slot-cape" class="equip-classic-slot" style="left:136px;top:72px" title="披風"></div>
-            <div id="eq-slot-necklace" class="equip-classic-slot" style="left:180px;top:72px" title="項鍊"></div>
-            <div id="eq-slot-gloves" class="equip-classic-slot" style="left:136px;top:116px" title="護手"></div>
-            <div id="eq-slot-belt" class="equip-classic-slot" style="left:180px;top:116px" title="腰帶"></div>
+            <div id="eq-slot-helmet" class="equip-classic-slot" style="left:5px;top:28px" title="頭飾"></div>
+            <div id="eq-slot-ringR" class="equip-classic-slot" style="left:95px;top:28px" title="右戒指"></div>
+            <div id="eq-slot-ringL" class="equip-classic-slot" style="left:140px;top:28px" title="左戒指"></div>
+            <div id="eq-slot-weapon" class="equip-classic-slot" style="left:5px;top:73px;box-shadow:inset 0 0 0 1px rgba(140,170,200,0.35)" title="武器"></div>
+            <div id="eq-slot-armor" class="equip-classic-slot" style="left:50px;top:73px" title="衣服"></div>
+            <div id="eq-slot-cape" class="equip-classic-slot" style="left:95px;top:73px" title="披風"></div>
+            <div id="eq-slot-necklace" class="equip-classic-slot" style="left:140px;top:73px" title="項鍊"></div>
+            <div id="eq-slot-shoes" class="equip-classic-slot" style="left:5px;top:118px" title="鞋子"></div>
+            <div id="eq-slot-gloves" class="equip-classic-slot" style="left:95px;top:118px" title="護手"></div>
+            <div id="eq-slot-belt" class="equip-classic-slot" style="left:140px;top:118px" title="腰帶"></div>
             <div class="equip-classic-char">
                 <img id="equip-char-img" src="assets/chars/sword_male.png?v=20261020b" alt="角色立繪">
                 <img id="equip-fashion-img" alt="時裝" class="absolute inset-0 w-full h-full object-contain hidden">
@@ -564,7 +567,7 @@
         <div class="equip-classic-meta space-y-1.5">
             <div class="flex justify-between items-center">
                 <span class="text-amber-200 font-bold" id="equip-char-name">少俠</span>
-                <span class="text-gray-400">背包 <span id="bag-count">0</span>/52 · 點擊穿戴／卸下</span>
+                <span class="text-gray-400">背包 <span id="bag-count">0</span>/40 · 點擊穿戴／卸下</span>
             </div>
             <div id="equip-bonus-summary" class="grid grid-cols-5 gap-1 text-[10px] text-gray-300">
                 <div>攻 <b class="text-amber-300">+0</b></div>
@@ -784,7 +787,7 @@ function buildFullEquipCatalog() {
             list.push({
                 slot: 'weapon', weaponId: kind, name: w.name, lv: w.lv, desc: w.desc || '',
                 atkMin: w.atk[0], atkMax: w.atk[1],
-                img: ((window.ITEM_ICON_MAP || {})[w.name]) || `assets/weapons/${kind}.png`
+                img: catalogItemIcon({ slot: 'weapon', weaponId: kind, name: w.name }) || `assets/weapons/${kind}.png`
             });
         });
     });
@@ -794,7 +797,7 @@ function buildFullEquipCatalog() {
                 slot, name: a.name, lv: a.lv, desc: a.desc || '',
                 atk: a.atk || 0, def: a.def || 0, hp: a.hp || 0,
                 shield: a.shield || 0, crit: a.crit || 0,
-                img: ((window.ITEM_ICON_MAP || {})[a.name])
+                img: catalogItemIcon({ slot, name: a.name })
                     || (SLOT_IMG[slot] || SLOT_IMG.armor)[Math.min(3, Math.floor(a.lv / 30))]
             });
         });
@@ -993,9 +996,31 @@ function getCharacterImageUrl(weaponId, gender) {
     return pack[g] || pack.male || characterImages.default.male;
 }
 
+function catalogItemIcon(item) {
+    if (!item || !item.name) return '';
+    if (item.weaponId && window.WEAPON_CATALOG && window.WEAPON_CATALOG[item.weaponId]) {
+        const list = window.WEAPON_CATALOG[item.weaponId];
+        const i = list.findIndex(w => w.name === item.name);
+        if (i >= 0) return `assets/items/weapons/${item.weaponId}/${String(i).padStart(2, '0')}.png`;
+    }
+    const slot = item.slot && item.slot !== 'weapon' ? item.slot : '';
+    if (slot && window.ARMOR_CATALOG && window.ARMOR_CATALOG[slot]) {
+        const list = window.ARMOR_CATALOG[slot];
+        const i = list.findIndex(a => a.name === item.name);
+        if (i >= 0) {
+            const grade = Math.min(5, Math.floor(i * 6 / Math.max(1, list.length)));
+            const iconSlot = (slot === 'ringR' || slot === 'ringL') ? 'ring' : slot;
+            return `assets/items/gear/${iconSlot}_${grade}.png`;
+        }
+    }
+    return '';
+}
+
 function getItemImageUrl(item) {
     if (!item) return fashionImages.default;
     const iconMap = window.ITEM_ICON_MAP || {};
+    const catalogIcon = catalogItemIcon(item);
+    if (catalogIcon) return catalogIcon;
     // 1) 完整目錄名稱 → 官表切圖
     if (item.name && iconMap[item.name]) return iconMap[item.name];
     // 2) 已帶正確武器切圖路徑
@@ -1024,6 +1049,98 @@ function drawRectSprite(img, cx, cy, w, h, strokeColor, lineWidth) {
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = lineWidth || 2;
     ctx.strokeRect(x, y, w, h);
+}
+
+function fullSetAuraLevel(equip) {
+    const bag = equip || {};
+    let min = 99;
+    for (const key of EQUIP_SLOT_KEYS) {
+        const item = bag[key];
+        if (!item) return 0;
+        const plus = item.plus || 0;
+        if (plus < min) min = plus;
+    }
+    if (min >= 9) return 9;
+    if (min >= 6) return 6;
+    if (min >= 3) return 3;
+    return 0;
+}
+
+const AURA_FIRE = {
+    3: ['#e0f2fe', '#7dd3fc', '#0284c7'],
+    6: ['#fae8ff', '#d8b4fe', '#7e22ce'],
+    9: ['#fff7ed', '#fb923c', '#dc2626']
+};
+
+function drawBodyFire(x, y, h, tier) {
+    const colors = AURA_FIRE[tier];
+    if (!colors) return;
+    const t = Date.now() / 1000;
+    const n = tier >= 9 ? 16 : tier >= 6 ? 11 : 8;
+    ctx.save();
+    for (let i = 0; i < n; i++) {
+        const side = i % 2 ? 1 : -1;
+        const rise = (t * (36 + tier * 5) + i * 19) % (h + 16);
+        const px = x + side * (7 + (i % 3) * 3.2) + Math.sin(t * 8 + i) * 1.6;
+        const py = y + h * 0.42 - rise;
+        const r = (tier >= 9 ? 4.2 : 3) + (i % 3) * 0.6;
+        const g = ctx.createRadialGradient(px, py - r, 0, px, py, r * 2.4);
+        g.addColorStop(0, colors[0]);
+        g.addColorStop(0.4, colors[1]);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.ellipse(px, py, r * 0.65, r * 1.7, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+}
+
+function mapleBox(img, height) {
+    const h = height || 68;
+    if (!isImageReady(img) || !img.naturalHeight) return { w: Math.round(h * 0.62), h };
+    const ratio = img.naturalWidth / img.naturalHeight;
+    return { w: Math.round(Math.max(16, Math.min(h * 0.95, h * ratio))), h };
+}
+
+function blitMaple(img, x, y, w, h, face, fallback, alpha) {
+    const dir = face < 0 ? -1 : 1;
+    ctx.save();
+    ctx.globalAlpha = alpha == null ? 1 : alpha;
+    ctx.imageSmoothingEnabled = false;
+    ctx.translate(x, y);
+    ctx.scale(dir, 1);
+    if (isImageReady(img)) ctx.drawImage(img, -w / 2, -h / 2, w, h);
+    else {
+        ctx.fillStyle = fallback || '#f8fafc';
+        ctx.fillRect(-w / 2, -h / 2, w, h);
+    }
+    ctx.restore();
+}
+
+function drawMapleActor(img, x, y, w, h, auraTier, swing, fallback, face, moving) {
+    const dir = face < 0 ? -1 : 1;
+    const step = moving ? Math.sin(Date.now() / 95) : Math.sin(Date.now() / 260);
+    const bob = step * (moving ? 2.6 : 1.15);
+    const yy = y + bob;
+    let leanX = 0;
+    let leanY = 0;
+    if (swing && Date.now() < swing.until) {
+        const k = 1 - (swing.until - Date.now()) / 320;
+        const amp = Math.sin(Math.min(1, k) * Math.PI) * 8;
+        leanX = dir * amp;
+        leanY = amp * 0.15;
+        blitMaple(img, x - leanX * 0.7, yy, w, h, dir, fallback, 0.22);
+    }
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + h * 0.46, w * 0.22, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    if (auraTier) drawBodyFire(x + leanX, yy + leanY, h * 0.72, auraTier);
+    blitMaple(img, x + leanX, yy + leanY, w, h, dir, fallback, 1);
 }
 
 convertImportedData();
@@ -1532,7 +1649,7 @@ async function syncPlayerPresenceNow() {
     if (!currentAccount || !CLOUD_CONFIG.supabaseUrl) return;
     try {
         const currentTargetId = player.targetMonster ? player.targetMonster.id : (player.targetPlayer ? `pvp_${player.targetPlayer}` : null);
-        const auraPlus = Math.max(player.weaponPlus || 0, player.equipment?.weapon?.plus || 0);
+        const auraPlus = fullSetAuraLevel(player.equipment);
         const payload = {
             username: currentAccount,
             map_id: player.currentMapId,
@@ -1964,6 +2081,9 @@ function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
             });
         }
     }
+    player.swing = { until: Date.now() + 320, x: tx, y: ty };
+    if (tx < ax - 4) player.face = -1;
+    else if (tx > ax + 4) player.face = 1;
     skillFx.push({
         type: 'cast', style, x: tx, y: ty, ox: ax, oy: ay, color,
         life, maxLife: life, trueSkill, rings, radius, drops, follow: rings > 0
@@ -1974,14 +2094,42 @@ function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
 }
 
 function drawFxArc(x, y, r, a0, a1, color, width, alpha) {
+    const radius = Math.max(4, r);
     ctx.beginPath();
-    ctx.arc(x, y, Math.max(4, r), a0, a1);
+    ctx.arc(x, y, radius, a0, a1);
+    ctx.strokeStyle = '#ffffff';
+    ctx.globalAlpha = Math.max(0, alpha * 0.9);
+    ctx.lineWidth = Math.max(1.2, width * 0.45);
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, a0, a1);
     ctx.strokeStyle = color;
     ctx.globalAlpha = Math.max(0, alpha);
-    ctx.lineWidth = width;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 14;
+    ctx.lineWidth = width + 1.5;
+    ctx.shadowBlur = 18;
     ctx.stroke();
+}
+
+function drawHitSpark(x, y, color, alpha) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.fillStyle = color;
+    ctx.shadowColor = '#fff7ed';
+    ctx.shadowBlur = 14;
+    for (let i = 0; i < 4; i++) {
+        ctx.rotate(Math.PI / 4);
+        ctx.beginPath();
+        ctx.moveTo(0, -12);
+        ctx.lineTo(2.2, 0);
+        ctx.lineTo(0, 12);
+        ctx.lineTo(-2.2, 0);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.restore();
 }
 
 function drawCastFx(fx) {
@@ -2004,10 +2152,13 @@ function drawCastFx(fx) {
     const ang = Math.atan2(ty - cy, tx - cx);
     if (fx.style === 'slash' || fx.style === 'pine' || fx.style === 'sweep' || fx.style === 'turn') {
         const dir = fx.style === 'turn' ? -1 : 1;
-        const reach = fx.rings > 0 ? fx.radius * 0.62 : 36;
+        const reach = fx.rings > 0 ? fx.radius * 0.62 : 46;
+        ctx.save();
         ctx.translate(fx.rings > 0 ? cx : tx, fx.rings > 0 ? cy : ty);
         ctx.rotate(ang + dir * (p - 0.35) * 2.4);
-        drawFxArc(0, 0, reach, -1.05, 1.05, fx.color, fx.trueSkill ? 6 : 4, alpha);
+        drawFxArc(0, 0, reach, -1.15, 0.15, fx.color, fx.trueSkill ? 5 : 3, alpha * 0.45);
+        drawFxArc(0, 0, reach, -0.85, 1.15, fx.color, fx.trueSkill ? 7 : 5, alpha);
+        ctx.restore();
     } else if (fx.style === 'moon') {
         drawFxArc(tx + 6, ty, 18 + p * 14, Math.PI * 0.65, Math.PI * 1.75, fx.color, 4, alpha);
     } else if (fx.style === 'phoenix' || fx.style === 'chop') {
@@ -2058,10 +2209,12 @@ function drawCastFx(fx) {
             ctx.stroke();
         }
     } else if (fx.style === 'whirl' || fx.style === 'dragon') {
+        ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(p * Math.PI * (fx.rings >= 2 ? 4 : 2));
         drawFxArc(0, 0, fx.rings > 0 ? fx.radius * 0.55 : 34, 0.15, 2.5, fx.color, 5, alpha);
         drawFxArc(0, 0, fx.rings > 0 ? fx.radius * 0.28 : 16, 2.1, 4.3, '#ffffff', 2, alpha * 0.8);
+        ctx.restore();
     } else if (fx.style === 'buddha' || fx.style === 'triple') {
         const n = fx.style === 'buddha' ? 5 : 3;
         for (let i = 0; i < n; i++) {
@@ -2120,6 +2273,13 @@ function drawCastFx(fx) {
             ctx.globalAlpha = alpha;
             ctx.fill();
         });
+    }
+    const sparkA = Math.sin(Math.min(1, p) * Math.PI);
+    if (fx.rings > 0) {
+        drawHitSpark(cx + Math.cos(p * 8) * fx.radius * 0.72, cy + Math.sin(p * 8) * fx.radius * 0.72, fx.color, sparkA);
+        if (fx.rings >= 2) drawHitSpark(cx - Math.cos(p * 6) * fx.radius * 0.4, cy - Math.sin(p * 6) * fx.radius * 0.4, '#fff7ed', sparkA * 0.8);
+    } else {
+        drawHitSpark(tx, ty, fx.color, sparkA);
     }
     ctx.restore();
 }
@@ -2300,7 +2460,7 @@ function enhanceEquippedSlot(event, slotKey) {
 
 const EQUIP_SLOT_KEYS = ['helmet','weapon','shoes','ringR','ringL','armor','cape','necklace','gloves','belt'];
 const BAG_MAIN_SLOTS = 16;
-const BAG_EXTRA_SLOTS = 36;
+const BAG_EXTRA_SLOTS = 24;
 const BAG_TOTAL_SLOTS = BAG_MAIN_SLOTS + BAG_EXTRA_SLOTS;
 
 function renderEquipClassicSlot(slotKey) {
@@ -3680,6 +3840,7 @@ function updateGame(now) {
 
     const skill = getCurrentSkill(player);
 
+    player.moving = false;
     if (walkHeld()) {
         let mx = 0, my = 0;
         if (walkKeys.KeyW || walkKeys.ArrowUp) my -= 1;
@@ -3691,12 +3852,18 @@ function updateGame(now) {
         player.y += (my / len) * player.speed;
         player.targetX = player.x;
         player.targetY = player.y;
+        player.moving = true;
+        if (mx < 0) player.face = -1;
+        else if (mx > 0) player.face = 1;
     } else if (mapInfo.pvp && player.targetPlayer && onlinePlayersMap[player.targetPlayer]) {
         const targetOp = onlinePlayersMap[player.targetPlayer];
         const dist = Math.hypot(targetOp.x - player.x, targetOp.y - player.y);
         if (dist > skill.range) {
             const angle = Math.atan2(targetOp.y - player.y, targetOp.x - player.x);
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
+            player.moving = true;
+            if (Math.cos(angle) < 0) player.face = -1;
+            else player.face = 1;
         } else if (now - player.lastAttackTime >= skill.cooldown) {
             performPvpAttack(targetOp, now, skill);
         }
@@ -3706,6 +3873,9 @@ function updateGame(now) {
         if (dist > skill.range + (m.isBoss ? 25 : 0)) {
             const angle = Math.atan2(m.y - player.y, m.x - player.x);
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
+            player.moving = true;
+            if (Math.cos(angle) < 0) player.face = -1;
+            else player.face = 1;
         } else if (now - player.lastAttackTime >= skill.cooldown) {
             performAttack(m, now, skill);
         }
@@ -3714,6 +3884,9 @@ function updateGame(now) {
         if (dist > 4) {
             const angle = Math.atan2(player.targetY - player.y, player.targetX - player.x);
             player.x += Math.cos(angle) * player.speed; player.y += Math.sin(angle) * player.speed;
+            player.moving = true;
+            if (Math.cos(angle) < -0.2) player.face = -1;
+            else if (Math.cos(angle) > 0.2) player.face = 1;
         }
     }
 
@@ -4024,37 +4197,23 @@ function renderGame(now = performance.now()) {
     Object.entries(onlinePlayersMap).forEach(([username, op]) => {
         if ((op.hp || 500) <= 1) return; // 略過死亡殘影
 
-        if ((op.weaponPlus || 0) >= 3) {
-            ctx.save();
-            let auraColor = op.weaponPlus >= 9 ? '#facc15' : op.weaponPlus >= 6 ? '#c084fc' : '#38bdf8';
-            let glowColor = op.weaponPlus >= 9 ? '#d97706' : op.weaponPlus >= 6 ? '#9333ea' : '#0284c7';
-            const pulse = Math.sin(Date.now() / 180) * 4;
-            const radius = 32 + pulse;
-            const auraGrad = ctx.createRadialGradient(op.x, op.y, 5, op.x, op.y, radius);
-            auraGrad.addColorStop(0, 'rgba(255,255,255,0.8)'); auraGrad.addColorStop(0.4, auraColor); auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.beginPath(); ctx.arc(op.x, op.y, radius, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
-            ctx.beginPath(); ctx.arc(op.x, op.y, radius - 4, 0, Math.PI * 2); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke();
-            ctx.restore();
-        }
-
+        const opTier = (op.weaponPlus >= 9) ? 9 : (op.weaponPlus >= 6) ? 6 : (op.weaponPlus >= 3) ? 3 : 0;
         if (player.targetPlayer === username) {
             ctx.beginPath(); ctx.arc(op.x, op.y, 24, 0, Math.PI * 2);
             ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.stroke();
         }
 
-        const opImg = getCachedImage(getCharacterImageUrl(op.weaponId || 'sword'));
-        if (isImageReady(opImg)) {
-            drawRectSprite(opImg, op.x, op.y, 28, 42);
-        } else {
-            const wColor = WEAPONS[op.weaponId || 'sword']?.color || '#38bdf8';
-            ctx.fillStyle = wColor;
-            ctx.fillRect(op.x - 14, op.y - 21, 28, 42);
-        }
+        const opImg = getCachedImage(getCharacterImageUrl(op.weaponId || 'sword', op.gender));
+        const opBox = mapleBox(opImg, 58);
+        const opFace = (op.targetX != null && op.targetX < op.x - 2) ? -1 : 1;
+        const opMoving = Math.hypot((op.targetX || op.x) - op.x, (op.targetY || op.y) - op.y) > 6;
+        drawMapleActor(opImg, op.x, op.y, opBox.w, opBox.h, opTier, null, WEAPONS[op.weaponId || 'sword']?.color || '#38bdf8', opFace, opMoving);
+        const opTop = op.y - opBox.h * 0.5;
         ctx.font = 'bold 11px "Noto Sans TC"'; ctx.fillStyle = mapInfo.pvp ? '#fca5a5' : '#38bdf8'; ctx.textAlign = 'center';
-        ctx.fillText(`【${username}】(+${op.weaponPlus || 0})`, op.x, op.y - 30);
+        ctx.fillText(opTier ? `【${username}】全身+${opTier}` : `【${username}】`, op.x, opTop - 12);
 
-        ctx.fillStyle = '#1f2937'; ctx.fillRect(op.x - 22, op.y - 24, 44, 4);
-        ctx.fillStyle = '#22c55e'; ctx.fillRect(op.x - 22, op.y - 24, 44 * Math.max(0, (op.hp || 500) / (op.maxHp || 500)), 4);
+        ctx.fillStyle = '#1f2937'; ctx.fillRect(op.x - 22, opTop - 8, 44, 4);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(op.x - 22, opTop - 8, 44 * Math.max(0, (op.hp || 500) / (op.maxHp || 500)), 4);
     });
 
     for (const p of projectiles) {
@@ -4090,37 +4249,15 @@ function renderGame(now = performance.now()) {
         return;
     }
 
-    const selfAuraLv = Math.max(player.weaponPlus || 0, player.equipment?.weapon?.plus || 0);
-    if (selfAuraLv >= 3) {
-        ctx.save();
-        let auraColor = selfAuraLv >= 9 ? '#facc15' : selfAuraLv >= 6 ? '#c084fc' : '#38bdf8';
-        let glowColor = selfAuraLv >= 9 ? '#d97706' : selfAuraLv >= 6 ? '#9333ea' : '#0284c7';
-        const pulse = Math.sin(Date.now() / 180) * 4;
-        const radius = 32 + pulse;
-        const auraGrad = ctx.createRadialGradient(player.x, player.y, 5, player.x, player.y, radius);
-        auraGrad.addColorStop(0, 'rgba(255,255,255,0.8)'); auraGrad.addColorStop(0.4, auraColor); auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.beginPath(); ctx.arc(player.x, player.y, radius, 0, Math.PI * 2); ctx.fillStyle = auraGrad; ctx.shadowColor = glowColor; ctx.shadowBlur = 18; ctx.fill();
-        ctx.beginPath(); ctx.arc(player.x, player.y, radius - 4, 0, Math.PI * 2); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke();
-        ctx.restore();
-    }
-
-    if (player.shield > 0) {
-        ctx.beginPath(); ctx.arc(player.x, player.y, 26, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.14)'; ctx.fill();
-        ctx.strokeStyle = player.buffTimer > 0 ? '#f87171' : 'rgba(56, 189, 248, 0.65)'; ctx.lineWidth = 2; ctx.stroke();
-    }
-
+    const selfAuraLv = fullSetAuraLevel(player.equipment);
     const w = WEAPONS[player.currentWeapon];
     const skill = getCurrentSkill(player);
     const selfImg = getCachedImage(getCharacterImageUrl(player.currentWeapon));
-    if (isImageReady(selfImg)) {
-        drawRectSprite(selfImg, player.x, player.y, 32, 48);
-    } else {
-        ctx.fillStyle = w.color;
-        ctx.fillRect(player.x - 16, player.y - 24, 32, 48);
-    }
+    const selfBox = mapleBox(selfImg, 68);
+    drawMapleActor(selfImg, player.x, player.y, selfBox.w, selfBox.h, selfAuraLv, player.swing, w.color, player.face || 1, !!player.moving);
     ctx.font = 'bold 12px "Noto Sans TC"'; ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
-    ctx.fillText(`[${w.name}:${MoxiangFormula.getSkillTitle(skill, player.skillLevels[skill.id] || 1)}] ${currentAccount || '未登入'} (+${selfAuraLv})`, player.x, player.y - 38);
+    const setTag = selfAuraLv ? ` 全身+${selfAuraLv}` : '';
+    ctx.fillText(`[${w.name}:${MoxiangFormula.getSkillTitle(skill, player.skillLevels[skill.id] || 1)}] ${currentAccount || '未登入'}${setTag}`, player.x, player.y - selfBox.h * 0.5 - 14);
 
     for (const ft of floatingTexts) {
         ctx.globalAlpha = Math.max(0, ft.alpha);
