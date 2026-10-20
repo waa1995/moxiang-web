@@ -1,0 +1,9 @@
+# 排除不應上傳為靜態資產的檔案（gitignore 語法）
+.git
+.gitattributes
+.assetsignore
+wrangler.toml
+sync.bat
+.wrangler
+.dev.vars*
+node_modules
