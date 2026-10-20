@@ -926,7 +926,8 @@ function migrateSkillKey(id) { return OLD_SKILL_IDS[id] || id; }
         WEAPONS[id].combo = (src.combo || []).filter((s) => s.srcIdx < 1000);
         WEAPONS[id].skills = (src.skills || []).map((s) => {
             const phy = s.phySung || [1];
-            s.desc = `限等 ${s.restrict}／外功 ${phy[0]}～${phy[phy.length - 1]}／內力 ${(s.mpSung && s.mpSung[0]) || 0}`;
+            const shape = (s.area >= 200) ? '2圈' : (s.area >= 100) ? '1圈' : '單體';
+            s.desc = `限等 ${s.restrict}／外功 ${phy[0]}～${phy[phy.length - 1]}／內力 ${(s.mpSung && s.mpSung[0]) || 0}／距離 ${s.range}／${shape}`;
             return s;
         });
     });
@@ -1295,7 +1296,8 @@ function skillBlurb(s) {
     const stun = Math.round(((s.stunSung && s.stunSung[0]) || 0) * 100);
     const crit = Math.round(((s.critSung && s.critSung[0]) || 0) * 100);
     const cd = ((s.cooldown || 0) / 1000).toFixed(1);
-    return `限等 ${s.restrict}　外功 ${phy[0]}～${phy[phy.length - 1]}　內力 ${mp}　冷卻 ${cd} 秒　距離 ${s.range}　暈眩 ${stun}%　暴擊 ${crit}%`;
+    const shape = (s.area >= 200) ? '2圈' : (s.area >= 100) ? '1圈' : '單體';
+    return `限等 ${s.restrict}　外功 ${phy[0]}～${phy[phy.length - 1]}　內力 ${mp}　冷卻 ${cd} 秒　距離 ${s.range}　${shape}　暈眩 ${stun}%　暴擊 ${crit}%`;
 }
 
 function hotbarSkills() {
@@ -1905,30 +1907,250 @@ function isTrueSkill(skill) {
     return !!(skill && (skill.premier || (skill.name && skill.name.charAt(0) === '真')));
 }
 
+function skillAreaRings(skill) {
+    const area = Math.max(0, Number(skill && skill.area) || 0);
+    if (area >= 200) return 2;
+    if (area >= 100) return 1;
+    return 0;
+}
+
+function collectSkillMonsters(skill, primary) {
+    if (skillAreaRings(skill) <= 0) return primary ? [primary] : [];
+    const r = skill.range || 90;
+    const list = [];
+    for (const m of monsters) {
+        if (!isMonsterAlive(m)) continue;
+        if (Math.hypot(m.x - player.x, m.y - player.y) <= r) list.push(m);
+    }
+    if (primary && isMonsterAlive(primary) && list.indexOf(primary) < 0) list.push(primary);
+    return list;
+}
+
+function collectSkillPlayers(skill, primary) {
+    if (skillAreaRings(skill) <= 0) return primary ? [primary] : [];
+    const r = skill.range || 90;
+    const list = [];
+    Object.values(onlinePlayersMap).forEach((op) => {
+        if (Math.hypot(op.x - player.x, op.y - player.y) <= r) list.push(op);
+    });
+    if (primary && list.indexOf(primary) < 0) list.push(primary);
+    return list;
+}
+
+const FX_TINT = {
+    pine: '#86efac', swallow: '#7dd3fc', turn: '#fde68a', moon: '#e0e7ff', phoenix: '#fb7185',
+    burst: '#c4b5fd', rush: '#a78bfa', seal: '#ddd6fe', whirl: '#fca5a5', chop: '#f87171',
+    buddha: '#fecaca', gust: '#d9f99d', triple: '#fb7185', pierce: '#fbbf24', sweep: '#fcd34d',
+    dragon: '#22d3ee', flash: '#fde047', arrow: '#34d399', volley: '#6ee7b7', ice: '#7dd3fc',
+    shock: '#fef08a', rain: '#f9a8d4', net: '#f472b6', fire: '#fb923c', silver: '#e5e7eb',
+    spring: '#93c5fd', slash: '#f8fafc', twin: '#c4b5fd'
+};
+
 function spawnOfficialSkillFx(skill, ax, ay, tx, ty) {
     const trueSkill = isTrueSkill(skill);
-    const fx = (skill && skill.fxUse) || '';
-    let color = (WEAPONS[player.currentWeapon] && WEAPONS[player.currentWeapon].color) || '#facc15';
-    let type = 'slash';
-    if (fx.indexOf('mu05') >= 0 || (skill && skill.range > 160)) type = 'arrow';
-    else if (fx.indexOf('mu06') >= 0) type = 'rain';
-    else if (fx.indexOf('mu02') >= 0) type = 'burst';
-    else if (fx.indexOf('mu04') >= 0) type = 'pierce';
-    else if (fx.indexOf('mu03') >= 0) type = 'arc';
-    if (trueSkill) {
-        skillFx.push({ type: 'jin', x: tx, y: ty, color: '#fde047', life: 22, maxLife: 22, img: 'assets/ui/mugong_jin.png' });
-        slashEffects.push({ x: tx, y: ty, radius: 16, maxRadius: 78, color: '#facc15', alpha: 1, width: 7 });
-    }
-    skillFx.push({ type, x: tx, y: ty, ox: ax, oy: ay, color, life: trueSkill ? 26 : 18, maxLife: trueSkill ? 26 : 18, trueSkill });
-    if (type === 'arrow' || type === 'rain') {
-        const n = type === 'rain' ? 8 : 3;
+    const style = (skill && skill.fxStyle) || 'slash';
+    const color = FX_TINT[style] || (WEAPONS[player.currentWeapon] && WEAPONS[player.currentWeapon].color) || '#facc15';
+    const rings = skillAreaRings(skill);
+    const radius = Math.max(48, skill.range || 90);
+    const life = trueSkill ? 38 : 28;
+    const drops = [];
+    if (style === 'rain' || style === 'fire' || style === 'spring' || style === 'volley' || style === 'swallow') {
+        const n = style === 'volley' ? 12 : (style === 'swallow' ? 3 : 9);
         for (let i = 0; i < n; i++) {
-            const ang = Math.atan2(ty - ay, tx - ax) + (Math.random() - 0.5) * 0.4;
-            projectiles.push({ x: ax, y: ay, vx: Math.cos(ang) * (12 + Math.random() * 5), vy: Math.sin(ang) * (12 + Math.random() * 5), color, radius: trueSkill ? 9 : 6, life: 22, glow: true });
+            drops.push({
+                a: (Math.PI * 2 * i) / n,
+                d: rings > 0 ? (20 + (i % 6) * (radius / 7)) : (12 + i * 7),
+                lag: (i % 4) * 0.07
+            });
         }
-    } else {
-        slashEffects.push({ x: tx, y: ty, radius: 10, maxRadius: trueSkill ? 70 : 38, color, alpha: 1, width: trueSkill ? 6 : 3 });
     }
+    skillFx.push({
+        type: 'cast', style, x: tx, y: ty, ox: ax, oy: ay, color,
+        life, maxLife: life, trueSkill, rings, radius, drops, follow: rings > 0
+    });
+    if (trueSkill) {
+        skillFx.push({ type: 'jinwind', follow: true, life: 46, maxLife: 46, radius: 54 });
+    }
+}
+
+function drawFxArc(x, y, r, a0, a1, color, width, alpha) {
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(4, r), a0, a1);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.lineWidth = width;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 14;
+    ctx.stroke();
+}
+
+function drawCastFx(fx) {
+    const p = 1 - fx.life / fx.maxLife;
+    const alpha = Math.max(0.15, 1 - p * 0.2);
+    const cx = fx.follow ? player.x : fx.ox;
+    const cy = fx.follow ? player.y : fx.oy;
+    const tx = fx.x;
+    const ty = fx.y;
+    ctx.save();
+    if (fx.rings > 0) {
+        const turns = fx.rings >= 2 ? 2 : 1;
+        const spin = p * Math.PI * 2 * turns;
+        for (let i = 1; i <= fx.rings; i++) {
+            const rr = fx.radius * (i / fx.rings);
+            drawFxArc(cx, cy, rr, spin, spin + Math.PI * 1.4, fx.color, 4, 0.92 * alpha);
+            drawFxArc(cx, cy, rr, spin + Math.PI, spin + Math.PI + 1.1, '#fff7ed', 2, 0.75 * alpha);
+        }
+    }
+    const ang = Math.atan2(ty - cy, tx - cx);
+    if (fx.style === 'slash' || fx.style === 'pine' || fx.style === 'sweep' || fx.style === 'turn') {
+        const dir = fx.style === 'turn' ? -1 : 1;
+        const reach = fx.rings > 0 ? fx.radius * 0.62 : 36;
+        ctx.translate(fx.rings > 0 ? cx : tx, fx.rings > 0 ? cy : ty);
+        ctx.rotate(ang + dir * (p - 0.35) * 2.4);
+        drawFxArc(0, 0, reach, -1.05, 1.05, fx.color, fx.trueSkill ? 6 : 4, alpha);
+    } else if (fx.style === 'moon') {
+        drawFxArc(tx + 6, ty, 18 + p * 14, Math.PI * 0.65, Math.PI * 1.75, fx.color, 4, alpha);
+    } else if (fx.style === 'phoenix' || fx.style === 'chop') {
+        ctx.strokeStyle = fx.color;
+        ctx.lineWidth = 4;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(tx, ty - 26 - p * 24);
+        ctx.lineTo(tx, ty + 18);
+        ctx.stroke();
+    } else if (fx.style === 'burst' || fx.style === 'twin') {
+        const n = fx.style === 'twin' ? 2 : 1;
+        for (let i = 0; i < n; i++) {
+            ctx.beginPath();
+            ctx.arc(tx + (i === 0 ? -12 : 12), ty, 8 + p * 28, 0, Math.PI * 2);
+            ctx.fillStyle = fx.color;
+            ctx.globalAlpha = (1 - p) * 0.5;
+            ctx.fill();
+        }
+    } else if (fx.style === 'rush' || fx.style === 'pierce' || fx.style === 'silver' || fx.style === 'arrow') {
+        ctx.strokeStyle = fx.color;
+        ctx.lineWidth = fx.style === 'pierce' ? 4 : 3;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (tx - cx) * p, cy + (ty - cy) * p);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx + (tx - cx) * p, cy + (ty - cy) * p, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+    } else if (fx.style === 'seal' || fx.style === 'shock' || fx.style === 'net') {
+        const atX = fx.rings > 0 ? cx : tx;
+        const atY = fx.rings > 0 ? cy : ty;
+        const rr = 18 + p * (fx.rings > 0 ? fx.radius * 0.45 : 32);
+        drawFxArc(atX, atY, rr, 0, Math.PI * 2, fx.color, 2.5, alpha);
+        if (fx.style === 'net') {
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const a = p * 2 + i * Math.PI / 3;
+                const px = atX + Math.cos(a) * rr;
+                const py = atY + Math.sin(a) * rr;
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = fx.color;
+            ctx.globalAlpha = alpha * 0.8;
+            ctx.stroke();
+        }
+    } else if (fx.style === 'whirl' || fx.style === 'dragon') {
+        ctx.translate(cx, cy);
+        ctx.rotate(p * Math.PI * (fx.rings >= 2 ? 4 : 2));
+        drawFxArc(0, 0, fx.rings > 0 ? fx.radius * 0.55 : 34, 0.15, 2.5, fx.color, 5, alpha);
+        drawFxArc(0, 0, fx.rings > 0 ? fx.radius * 0.28 : 16, 2.1, 4.3, '#ffffff', 2, alpha * 0.8);
+    } else if (fx.style === 'buddha' || fx.style === 'triple') {
+        const n = fx.style === 'buddha' ? 5 : 3;
+        for (let i = 0; i < n; i++) {
+            const ox = (i - (n - 1) / 2) * 16;
+            ctx.strokeStyle = fx.color;
+            ctx.globalAlpha = alpha;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(tx + ox, ty - 32 * Math.min(1, p + 0.2));
+            ctx.lineTo(tx + ox, ty + 16);
+            ctx.stroke();
+        }
+    } else if (fx.style === 'gust') {
+        for (let i = 0; i < 4; i++) {
+            const yy = ty - 18 + i * 12;
+            ctx.strokeStyle = i % 2 ? '#ecfccb' : fx.color;
+            ctx.globalAlpha = alpha;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.quadraticCurveTo((cx + tx) / 2, yy - 20, tx, yy);
+            ctx.stroke();
+        }
+    } else if (fx.style === 'flash') {
+        ctx.strokeStyle = fx.color;
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        for (let i = 1; i <= 5; i++) {
+            const t = (i / 5) * p;
+            ctx.lineTo(cx + (tx - cx) * t + (i % 2 ? 12 : -12), cy + (ty - cy) * t);
+        }
+        ctx.stroke();
+    } else if (fx.style === 'ice') {
+        ctx.strokeStyle = fx.color;
+        ctx.lineWidth = 3;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(tx, ty);
+        ctx.stroke();
+        for (let i = 0; i < 4; i++) {
+            drawFxArc(tx + Math.cos(i) * 14, ty + Math.sin(i * 1.7) * 12, 3 + p * 5, 0, Math.PI * 2, '#e0f2fe', 2, alpha);
+        }
+    } else if (fx.drops && fx.drops.length) {
+        fx.drops.forEach((d) => {
+            const local = Math.max(0, p - d.lag);
+            const baseX = fx.rings > 0 ? cx : tx;
+            const baseY = fx.rings > 0 ? cy : ty;
+            const x = baseX + Math.cos(d.a) * d.d * Math.min(1, local * 1.35);
+            const y = baseY + Math.sin(d.a) * d.d * Math.min(1, local * 1.35) - (1 - local) * 26;
+            ctx.beginPath();
+            ctx.arc(x, y, fx.style === 'fire' ? 3.6 : 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = fx.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+        });
+    }
+    ctx.restore();
+}
+
+function drawJinWind(fx) {
+    const p = 1 - fx.life / fx.maxLife;
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(p * Math.PI * 4);
+    for (let i = 0; i < 8; i++) {
+        const a = i * (Math.PI * 2 / 8);
+        ctx.beginPath();
+        ctx.strokeStyle = i % 2 ? '#fffbeb' : '#fbbf24';
+        ctx.globalAlpha = 0.9 * (1 - p * 0.25);
+        ctx.lineWidth = 3.5;
+        ctx.shadowColor = '#fde68a';
+        ctx.shadowBlur = 18;
+        ctx.arc(0, 0, 32 + (i % 2) * 12, a, a + 1.05);
+        ctx.stroke();
+    }
+    ctx.rotate(-p * Math.PI * 6);
+    for (let i = 0; i < 5; i++) {
+        const a = i * (Math.PI * 2 / 5);
+        ctx.beginPath();
+        ctx.strokeStyle = '#ffffff';
+        ctx.globalAlpha = 0.55;
+        ctx.lineWidth = 1.6;
+        ctx.arc(0, 0, 20, a, a + 0.75);
+        ctx.stroke();
+    }
+    ctx.restore();
 }
 
 function isSkillUsable(skill, p) {
@@ -1964,13 +2186,13 @@ function makeBasicSkill(p) {
     const hit = chain[step] || chain[0];
     const w = WEAPONS[p.currentWeapon];
     if (!hit) {
-        return { id: 'basic', basic: true, name: '普通攻擊', comboStep: 1, range: 90, cooldown: 720, baseAtk: 18, restrict: 1, phySung: [1,1,1,1,1,1,1,1,1,1,1,1], mpSung: [0], critSung: [0], stunSung: [0], vampSung: [0], fxUse: '', premier: false, img: 'assets/ui/wicon_sword.png', desc: '不耗內力的普通攻擊。' };
+        return { id: 'basic', basic: true, name: '普通攻擊', comboStep: 1, range: 90, area: 0, cooldown: 720, baseAtk: 18, restrict: 1, phySung: [1,1,1,1,1,1,1,1,1,1,1,1], mpSung: [0], critSung: [0], stunSung: [0], vampSung: [0], fxUse: '', fxStyle: 'slash', premier: false, img: 'assets/ui/wicon_sword.png', desc: '不耗內力的普通攻擊。' };
     }
     return {
         id: 'basic', basic: true, name: '普通攻擊', comboName: hit.name, comboStep: step + 1,
-        range: hit.range, cooldown: hit.cooldown, baseAtk: 18, restrict: 1,
+        range: hit.range, area: hit.area || 0, cooldown: hit.cooldown, baseAtk: 18, restrict: 1,
         phySung: hit.phySung, mpSung: [0], critSung: hit.critSung || [0], stunSung: hit.stunSung || [0], vampSung: [0],
-        fxUse: hit.fxUse, premier: false, img: `assets/ui/wicon_${w.id}.png`,
+        fxUse: hit.fxUse, fxStyle: hit.fxStyle || 'slash', premier: false, img: `assets/ui/wicon_${w.id}.png`,
         desc: `連擊 ${step + 1}/${chain.length}，不耗內力。等級越高，連擊段數越多。`
     };
 }
@@ -3532,25 +3754,26 @@ async function performPvpAttack(targetOp, now, skill) {
     if (skill.basic) advanceCombo(player);
     spawnOfficialSkillFx(skill, player.x, player.y, targetOp.x, targetOp.y);
 
-    const res = MoxiangFormula.calculateAttackDamage(player, { def: 15, lv: targetOp.level || player.level, isPlayer: true }, skill);
-    const pvpDmg = Math.max(8, Math.floor(res.damage * 0.65));
-
-    if (res.isCrit) {
-        screenShakeTimer = 12; screenShakeIntensity = 7;
+    const victims = collectSkillPlayers(skill, targetOp);
+    for (const op of victims) {
+        const res = MoxiangFormula.calculateAttackDamage(player, { def: 15, lv: op.level || player.level, isPlayer: true }, skill);
+        const pvpDmg = Math.max(8, Math.floor(res.damage * 0.65));
+        if (res.isCrit) {
+            screenShakeTimer = 12; screenShakeIntensity = 7;
+        }
+        spawnFloatingText(op.x, op.y - 28, res.isCrit ? `💥PVP暴擊 -${pvpDmg}` : `⚔️-${pvpDmg}`, '#facc15', 15);
+        try {
+            await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?username=eq.${encodeURIComponent(op.username)}`, {
+                method: 'PATCH',
+                headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pvp_hit_dmg: pvpDmg,
+                    pvp_hit_ts: Date.now(),
+                    pvp_attacker: currentAccount
+                })
+            });
+        } catch (e) {}
     }
-    spawnFloatingText(targetOp.x, targetOp.y - 28, res.isCrit ? `💥PVP暴擊 -${pvpDmg}` : `⚔️-${pvpDmg}`, '#facc15', 15);
-
-    try {
-        await fetch(`${CLOUD_CONFIG.supabaseUrl}game_presences?username=eq.${encodeURIComponent(targetOp.username)}`, {
-            method: 'PATCH',
-            headers: { 'apikey': CLOUD_CONFIG.supabaseAnonKey, 'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                pvp_hit_dmg: pvpDmg,
-                pvp_hit_ts: Date.now(),
-                pvp_attacker: currentAccount
-            })
-        });
-    } catch (e) {}
     updateUI();
 }
 
@@ -3569,39 +3792,64 @@ function performAttack(monster, now, skill) {
     if (skill.basic) advanceCombo(player);
     spawnOfficialSkillFx(skill, player.x, player.y, monster.x, monster.y);
 
-    const res = MoxiangFormula.calculateAttackDamage(player, monster, skill);
-    monster.hp -= res.damage;
-    monster.combatAggro = true;
+    const victims = collectSkillMonsters(skill, monster);
+    let primaryRes = null;
+    victims.forEach((m) => {
+        const res = MoxiangFormula.calculateAttackDamage(player, m, skill);
+        if (m === monster) primaryRes = res;
+        m.hp -= res.damage;
+        m.combatAggro = true;
+        const stunRate = (skill.stunSung && skill.stunSung[sLv - 1]) || 0;
+        if (stunRate > 0 && Math.random() < stunRate) {
+            m.stunUntil = Date.now() + 900;
+            spawnFloatingText(m.x, m.y - 40, '暈眩', '#e0e7ff', 12);
+        }
+        if (res.isCrit) {
+            screenShakeTimer = 15;
+            screenShakeIntensity = 8;
+            for (let i = 0; i < 8; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 6;
+                critParticles.push({
+                    x: m.x, y: m.y,
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                    color: Math.random() > 0.5 ? '#facc15' : '#fde047',
+                    radius: 2 + Math.random() * 3,
+                    life: 20 + Math.random() * 15
+                });
+            }
+        }
+        const sTitle = skill.basic ? `連擊${skill.comboStep || 1}` : MoxiangFormula.getSkillTitle(skill, sLv);
+        spawnFloatingText(m.x, m.y - (m.isBoss ? 65 : 25), res.isCrit ? `💥暴擊 ${sTitle} -${res.damage}` : `${sTitle} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
+        if (m.hp <= 0) {
+            player.exp += m.exp; player.sp += m.sp;
+            droppedItems.push({ type: 'gold', amount: m.gold, x: m.x - 16, y: m.y });
+            if (m.isBoss) {
+                bossAoeZones.length = 0;
+                droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(m.lv, true), x: m.x + 20, y: m.y - 10 });
+                droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(m.lv, true), x: m.x + 5, y: m.y + 22 });
+                makeBossGuideLoot(m.name, m.x, m.y);
+                addLog(`👑 【全服捷報】首領【${m.name}】被討伐成功！地上爆出大量神裝！`, 'text-amber-300 font-bold');
+            } else if (MoxiangFormula.rollEquipDrop(false)) {
+                droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(m.lv, false), x: m.x + 16, y: m.y });
+                addLog(`擊敗【${m.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
+            }
+            m.hp = 0;
+            m.respawnAt = Date.now() + getMonsterRespawnMs(m);
+            if (player.targetMonster === m) player.targetMonster = null;
+            handleBossChainOnDeath(m);
+            pushMonsterStateToCloud(m);
+            checkLevelUp();
+        } else {
+            pushMonsterStateToCloud(m);
+        }
+    });
     const vamp = (skill.vampSung && skill.vampSung[sLv - 1]) || 0;
-    if (vamp > 0) {
-        const heal = Math.max(1, Math.floor(res.damage * vamp));
+    if (vamp > 0 && primaryRes) {
+        const heal = Math.max(1, Math.floor(primaryRes.damage * vamp));
         player.hp = Math.min(player.maxHp, player.hp + heal);
         spawnFloatingText(player.x, player.y - 22, `+${heal}`, '#86efac', 12);
     }
-    const stunRate = (skill.stunSung && skill.stunSung[sLv - 1]) || 0;
-    if (stunRate > 0 && Math.random() < stunRate) {
-        monster.stunUntil = Date.now() + 900;
-        spawnFloatingText(monster.x, monster.y - 40, '暈眩', '#e0e7ff', 12);
-    }
-
-    if (res.isCrit) {
-        screenShakeTimer = 15;
-        screenShakeIntensity = 8;
-        for (let i = 0; i < 25; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 2 + Math.random() * 6;
-            critParticles.push({
-                x: monster.x, y: monster.y,
-                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                color: Math.random() > 0.5 ? '#facc15' : '#fde047',
-                radius: 2 + Math.random() * 3,
-                life: 20 + Math.random() * 15
-            });
-        }
-    }
-
-    const sTitle = skill.basic ? `連擊${skill.comboStep || 1}` : MoxiangFormula.getSkillTitle(skill, sLv);
-    spawnFloatingText(monster.x, monster.y - (monster.isBoss ? 65 : 25), res.isCrit ? `💥暴擊 ${sTitle} -${res.damage}` : `${sTitle} -${res.damage}`, res.isCrit ? '#facc15' : w.color, res.isCrit ? 16 : 13);
 
     if (!skill.basic) {
         const sId = skill.id;
@@ -3616,31 +3864,6 @@ function performAttack(monster, now, skill) {
                 saveGame(false);
             }
         }
-    }
-
-    if (monster.hp <= 0) {
-        player.exp += monster.exp; player.sp += monster.sp;
-        droppedItems.push({ type: 'gold', amount: monster.gold, x: monster.x - 16, y: monster.y });
-
-        if (monster.isBoss) {
-            bossAoeZones.length = 0;
-            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 20, y: monster.y - 10 });
-            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, true), x: monster.x + 5, y: monster.y + 22 });
-            makeBossGuideLoot(monster.name, monster.x, monster.y);
-            addLog(`👑 【全服捷報】首領【${monster.name}】被討伐成功！地上爆出大量神裝！`, 'text-amber-300 font-bold');
-        } else if (MoxiangFormula.rollEquipDrop(false)) {
-            droppedItems.push({ type: 'equip', equipData: generateRandomEquipItem(monster.lv, false), x: monster.x + 16, y: monster.y });
-            addLog(`擊敗【${monster.name}】掉落了裝備與銀兩！`, 'text-amber-300 font-bold');
-        }
-
-        monster.hp = 0;
-        monster.respawnAt = Date.now() + getMonsterRespawnMs(monster);
-        player.targetMonster = null;
-        handleBossChainOnDeath(monster);
-        pushMonsterStateToCloud(monster);
-        checkLevelUp();
-    } else {
-        pushMonsterStateToCloud(monster);
     }
     updateUI();
 }
@@ -3851,23 +4074,8 @@ function renderGame(now = performance.now()) {
     }
 
     for (const fx of skillFx) {
-        const t = fx.life / fx.maxLife;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, t);
-        if (fx.type === 'jin') {
-            const img = getCachedImage(fx.img);
-            const sz = 48 + (1 - t) * 36;
-            if (isImageReady(img)) ctx.drawImage(img, fx.x - sz / 2, fx.y - sz / 2, sz, sz);
-            ctx.beginPath(); ctx.arc(fx.x, fx.y, 28 + (1 - t) * 40, 0, Math.PI * 2);
-            ctx.strokeStyle = '#fde047'; ctx.lineWidth = 3; ctx.shadowColor = '#facc15'; ctx.shadowBlur = 18; ctx.stroke();
-        } else if (fx.type === 'burst') {
-            ctx.beginPath(); ctx.arc(fx.x, fx.y, 18 + (1 - t) * 28, 0, Math.PI * 2);
-            ctx.fillStyle = fx.color; ctx.globalAlpha = t * 0.35; ctx.fill();
-        } else if (fx.type === 'pierce') {
-            ctx.strokeStyle = fx.color; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(fx.ox || fx.x - 20, fx.oy || fx.y); ctx.lineTo(fx.x, fx.y); ctx.stroke();
-        }
-        ctx.restore();
+        if (fx.type === 'jinwind') drawJinWind(fx);
+        else drawCastFx(fx);
     }
 
     for (const cp of critParticles) {
